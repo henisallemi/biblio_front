@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:nativewrappers';
 import 'package:flutter/cupertino.dart';
-import 'package:projetbiblio/ouvrages/add_livre.dart';
 import 'package:projetbiblio/ouvrages/add_ouvrage.dart';
 import 'package:projetbiblio/ouvrages/modifier_ouvrage.dart';
 import 'package:projetbiblio/ouvrages/ouvrage.dart';
@@ -60,16 +59,6 @@ class _MenuState extends State<Menu> {
               );
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.edit_document),
-            title: const Text('Modifier Ouvrage'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ModifierOuvrage()),
-              );
-            },
-          ),
           const Divider(
             color: Colors.black,
             thickness: 5.0,
@@ -82,22 +71,12 @@ class _MenuState extends State<Menu> {
           ListTile(
             leading: const Icon(CupertinoIcons.person_add),
             title: const Text('Ajouter adhérent'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AjouteLivre()),
-              );
-            },
+            onTap: () {},
           ),
           ListTile(
             leading: const Icon(Icons.mode_edit),
             title: const Text('Modifier adhérent'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AjouteLivre()),
-              );
-            },
+            onTap: () {},
           ),
           ListTile(
             leading: const Icon(Icons.history),

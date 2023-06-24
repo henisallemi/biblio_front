@@ -1,21 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:projetbiblio/model/model.dart';
+import 'package:projetbiblio/ouvrages/livres_formulaire.dart';
 
-class BookTable extends StatefulWidget {
-  @override
-  _BookTableState createState() => _BookTableState();
-}
+class BookTable extends StatelessWidget {
+  List<Livre> livres;
 
-class _BookTableState extends State<BookTable> {
-  List<List<String>> bookData = [
-    ["Titre", "Auteur", "Année", "Editeur", "ISBN"],
-  ];
-
-  void addBook(
-      String title, String author, String year, String publisher, String isbn) {
-    setState(() {
-      bookData.add([title, author, year, publisher, isbn]);
-    });
-  }
+  BookTable({super.key, required this.livres});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +28,13 @@ class _BookTableState extends State<BookTable> {
         dataRowColor: MaterialStateColor.resolveWith(
             (states) => Colors.white), // Couleur des lignes de données
         columns: const [
+          DataColumn(
+            label: Text(
+              'ISBN',
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+          ),
           DataColumn(
             label: Text(
               'Titre',
@@ -67,28 +64,60 @@ class _BookTableState extends State<BookTable> {
             ),
           ),
           DataColumn(
-            label: Text(
-              'ISBN',
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+            label: Expanded(
+              child: Center(
+                child: Text(
+                  'Actions',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+              ),
             ),
           ),
         ],
-        rows: bookData
-            .map(
-              (row) => DataRow(
-                cells: row
-                    .map(
-                      (cell) => DataCell(
-                        Text(
-                          cell,
-                          style: TextStyle(color: Colors.black),
+        rows: livres
+            .map((livre) => DataRow(
+                  cells: [
+                    DataCell(Text(livre.ouvrage.isbn)),
+                    DataCell(Text(livre.ouvrage.titre)),
+                    DataCell(Text(livre.ouvrage.auteur1)),
+                    DataCell(Text(livre.ouvrage.annee)),
+                    DataCell(Text(livre.ouvrage.editeur)),
+                    DataCell(Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            // Show action
+                          },
+                          icon: Icon(Icons.visibility),
                         ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            )
+                        IconButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return FractionallySizedBox(
+                                  child: Dialog(
+                                    // Dialog content here
+                                    child: Container(
+                                        child: LivreFormulaire(livre: livre)),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          icon: Icon(Icons.edit),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            // Delete action
+                          },
+                          icon: Icon(Icons.delete),
+                        ),
+                      ],
+                    )),
+                  ],
+                ))
             .toList(),
       ),
     );

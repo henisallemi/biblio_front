@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TabData {
-  final dynamic title; // Can be a String or an Icon
+  final dynamic title;
   final Widget content;
 
   TabData({required this.title, required this.content});
@@ -9,30 +9,28 @@ class TabData {
 
 // ignore: must_be_immutable
 class TabView extends StatelessWidget {
-  final List<TabData> tabs;
+  List<TabData> tabs;
+  Widget appTitle;
 
-  const TabView({super.key, required this.tabs});
+  TabView({super.key, required this.tabs, required this.appTitle});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: DefaultTabController(
-        length: tabs.length,
-        child: Scaffold(
-          appBar: AppBar(
-            bottom: TabBar(
-              tabs: tabs.map((tab) {
-                return Tab(
-                  child:
-                      tab.title is String ? Text(tab.title) : Icon(tab.title),
-                );
-              }).toList(),
-            ),
-            title: const Text('Tabs Demo'),
+    return DefaultTabController(
+      length: tabs.length,
+      child: Scaffold(
+        appBar: AppBar(
+          bottom: TabBar(
+            tabs: tabs.map((tab) {
+              return Tab(
+                child: tab.title is String ? Text(tab.title) : tab.title,
+              );
+            }).toList(),
           ),
-          body: TabBarView(
-            children: tabs.map((tab) => tab.content).toList(),
-          ),
+          title: appTitle,
+        ),
+        body: TabBarView(
+          children: tabs.map((tab) => tab.content).toList(),
         ),
       ),
     );
