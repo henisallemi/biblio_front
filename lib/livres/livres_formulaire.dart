@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
 class LivreFormulaire extends StatefulWidget {
@@ -185,11 +186,11 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
 
     Future<void> _selectDate(BuildContext context) async {
       final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate ?? DateTime.now(),
-        firstDate: DateTime(1900),
-        lastDate: DateTime(2100),
-      );
+          context: context,
+          initialDate: selectedDate ?? DateTime.now(),
+          firstDate: DateTime(1900),
+          lastDate: DateTime(2100),
+          locale: const Locale("fr", 'FR'));
 
       if (picked != null && picked != selectedDate) {
         setState(() {

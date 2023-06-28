@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projetbiblio/home/first_page.dart';
 import 'package:projetbiblio/home/menu.dart';
-import 'package:projetbiblio/connect/inscrire_utilisateur.dart';
+import 'package:projetbiblio/connect/user_formulaire.dart';
 
 class FormScreen extends StatefulWidget {
   const FormScreen({super.key});
@@ -20,7 +20,7 @@ class _FormScreenState extends State<FormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Connecté à cette bibliothèque"),
+        title: const Text("Connecter à cette bibliothèque"),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -118,34 +118,6 @@ class _FormScreenState extends State<FormScreen> {
               const SizedBox(
                 height: 20,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "vous n'avez pas de compte ?",
-                    style: TextStyle(fontSize: 17),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  MaterialButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => InscrireUtilisateur()),
-                      );
-                    },
-                    child: const Text(
-                      "S'inscrire",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              )
             ],
           ),
         ),

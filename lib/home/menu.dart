@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:nativewrappers';
 import 'package:flutter/cupertino.dart';
+import 'package:projetbiblio/connect/user_formulaire.dart';
 import 'package:projetbiblio/ouvrages/ouvrage.dart';
 
 class Menu extends StatefulWidget {
@@ -52,10 +53,14 @@ class _MenuState extends State<Menu> {
             thickness: 5.0,
           ),
           ListTile(
-            leading: const Icon(Icons.people_alt),
-            title: const Text('Adhérents'),
-            onTap: () {},
-          ),
+              leading: const Icon(Icons.people_alt),
+              title: const Text('Adhérents'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UserFormulaire()),
+                );
+              }),
           ListTile(
             leading: const Icon(CupertinoIcons.person_add),
             title: const Text('Ajouter adhérent'),

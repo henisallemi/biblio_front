@@ -1,17 +1,15 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:projetbiblio/connect/from_Screen.dart';
 import 'package:http/http.dart' as http;
 
-class InscrireUtilisateur extends StatefulWidget {
-  const InscrireUtilisateur({super.key});
+class UserFormulaire extends StatefulWidget {
+  const UserFormulaire({super.key});
 
   @override
-  State<InscrireUtilisateur> createState() => _InscrireUtilisateurState();
+  State<UserFormulaire> createState() => _UserFormulaireState();
 }
 
-class _InscrireUtilisateurState extends State<InscrireUtilisateur> {
+class _UserFormulaireState extends State<UserFormulaire> {
   final _fromfield = GlobalKey<FormState>();
   final nom = TextEditingController();
   final prenom = TextEditingController();
@@ -53,13 +51,11 @@ class _InscrireUtilisateurState extends State<InscrireUtilisateur> {
         child: Form(
           child: Column(
             children: [
-              Image.asset(
-                "images/forms.png",
-                height: 150,
-                width: 200,
-              ),
               const SizedBox(
                 height: 20,
+              ),
+              Row(
+                children: [],
               ),
               Row(
                 children: [
@@ -207,33 +203,6 @@ class _InscrireUtilisateurState extends State<InscrireUtilisateur> {
               const SizedBox(
                 height: 20,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Vous avez déjà un compte?",
-                    style: TextStyle(fontSize: 17),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => FormScreen()),
-                      );
-                    },
-                    child: const Text(
-                      "Connexion",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              )
             ],
           ),
         ),
