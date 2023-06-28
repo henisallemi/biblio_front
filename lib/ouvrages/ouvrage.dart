@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projetbiblio/components/tab_view.dart';
-import 'package:projetbiblio/ouvrages/list_articles.dart';
-import 'package:projetbiblio/ouvrages/liste_livres.dart';
-import 'package:projetbiblio/ouvrages/liste_revues.dart';
+
+import 'package:projetbiblio/livres/liste_livres.dart';
 
 class Ouvrage extends StatelessWidget {
   const Ouvrage({super.key});
@@ -16,16 +15,16 @@ class Ouvrage extends StatelessWidget {
               content: ListeLivres(
                 key: super.key,
               )),
-          TabData(
-              title: "Articles",
-              content: ListeArticles(
-                key: super.key,
-              )),
-          TabData(
-              title: "Revues",
-              content: ListeRevues(
-                key: super.key,
-              )),
+          // TabData(
+          //     title: "Articles",
+          //     content: ListeArticles(
+          //       key: super.key,
+          //     )),
+          // TabData(
+          //     title: "Revues",
+          //     content: ListeRevues(
+          //       key: super.key,
+          //     )),
         ],
         appTitle: const Row(
           mainAxisAlignment: MainAxisAlignment.center,

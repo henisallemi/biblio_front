@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:nativewrappers';
 import 'package:flutter/cupertino.dart';
-import 'package:projetbiblio/ouvrages/add_ouvrage.dart';
-import 'package:projetbiblio/ouvrages/modifier_ouvrage.dart';
 import 'package:projetbiblio/ouvrages/ouvrage.dart';
 
 class Menu extends StatefulWidget {
@@ -46,16 +44,6 @@ class _MenuState extends State<Menu> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => Ouvrage()),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.library_add),
-            title: const Text('Ajouter Ouvrage'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddOuvrage()),
               );
             },
           ),

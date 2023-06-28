@@ -1,17 +1,20 @@
 class Livre {
+  int id;
   String auteur2;
   String auteur3;
   String auteur4;
   Ouvrage ouvrage;
 
   Livre(
-      {required this.auteur2,
+      {required this.id,
+      required this.auteur2,
       required this.auteur3,
       required this.auteur4,
       required this.ouvrage});
 
   factory Livre.fromJson(Map<String, dynamic> json) {
     return Livre(
+        id: json['id'] as int,
         auteur2: json['auteur2'] ?? "",
         auteur3: json['auteur3'] ?? "",
         auteur4: json['auteur4'] ?? "",
@@ -24,15 +27,17 @@ class Livre {
 }
 
 class Ouvrage {
+  int id;
   String isbn;
   String titre;
   String editeur;
   String annee;
   DateTime? date;
   String auteur1;
-  String nombreExemplaire;
+  int nombreExemplaire;
 
   Ouvrage({
+    required this.id,
     required this.isbn,
     required this.titre,
     required this.editeur,
@@ -44,13 +49,14 @@ class Ouvrage {
 
   factory Ouvrage.fromJson(Map<String, dynamic> json) {
     return Ouvrage(
+      id: json['id'] as int,
       isbn: json['isbn'] ?? "",
       titre: json['titre'] ?? "",
       editeur: json['editeur'] ?? "",
       annee: json["annee"] ?? "",
-      date: json["annee"] != null ? DateTime.parse(json["annee"]) : null,
+      date: json["date"] != null ? DateTime.parse(json["date"]) : null,
       auteur1: json["auteur1"] ?? "",
-      nombreExemplaire: json["nombreExemplaire"] ?? "",
+      nombreExemplaire: json["nombreExemplaire"] ?? 0,
     );
   }
 }

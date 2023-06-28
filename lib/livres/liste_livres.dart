@@ -1,12 +1,12 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:projetbiblio/model/model.dart';
-import 'package:projetbiblio/ouvrages/book_table.dart';
+import 'package:projetbiblio/livres/book_table_livre.dart';
 import 'package:http/http.dart' as http;
+import 'dart:async';
 
 class ListeLivres extends StatefulWidget {
-  const ListeLivres({super.key});
+  const ListeLivres({Key? key}) : super(key: key);
 
   @override
   State<ListeLivres> createState() => _ListeLivresState();
@@ -17,15 +17,76 @@ class _ListeLivresState extends State<ListeLivres> {
   List<Livre> livres = [];
   String selectedOption = "1";
 
+  bool isLoading = true;
+  bool isDataLoaded = false;
+  int page = 1;
+  int limit = 15;
+  int totalCount = 0;
+
+  Future<void> fetchLivres(int page, int limit) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    var url =
+        Uri.parse('http://localhost:4000/api/livres?page=$page&limit=$limit');
+
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        setState(() {
+          livres =
+              List<Livre>.from(data['livres'].map((x) => Livre.fromJson(x)));
+          totalCount = data['totalCount'];
+          isDataLoaded = true;
+        });
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void nextPage() {
+    setState(() {
+      if (page < (totalCount / limit).ceil()) {
+        page++;
+        fetchLivres(page, limit);
+      }
+    });
+  }
+
+  void previousPage() {
+    setState(() {
+      if (page > 1) {
+        page--;
+        fetchLivres(page, limit);
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    getData();
+
+    fetchLivres(page, limit).then((_) {
+      Timer(Duration(seconds: 5), () {
+        // Appeler getData() après un délai de 5 seconde
+        getData();
+      });
+    });
   }
 
   Future<void> getData() async {
     var url = Uri.parse(
-        'http://localhost:4000/api/livres?recherche=${recherche.text.trim()}&target=${selectedOption}');
+        'http://localhost:4000/api/livres?recherche=${recherche.text.trim()}&target=$selectedOption');
+
     var headers = {'Content-Type': 'application/json'};
 
     var response = await http.get(url, headers: headers);
@@ -81,8 +142,7 @@ class _ListeLivresState extends State<ListeLivres> {
                             children: [
                               SizedBox(width: 30),
                               DropdownButton<String>(
-                                value:
-                                    selectedOption, // Utilisez la valeur sélectionnée
+                                value: selectedOption,
                                 items: const [
                                   DropdownMenuItem<String>(
                                     value: "1",
@@ -99,8 +159,7 @@ class _ListeLivresState extends State<ListeLivres> {
                                 ],
                                 onChanged: (String? value) {
                                   setState(() {
-                                    selectedOption = value ??
-                                        '1'; // Mettez à jour la valeur sélectionnée
+                                    selectedOption = value ?? '1';
                                   });
                                 },
                                 hint: Text(selectedOption),
@@ -113,8 +172,7 @@ class _ListeLivresState extends State<ListeLivres> {
                               Expanded(
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal:
-                                          7.0), // Ajout du padding horizontal
+                                      horizontal: 7.0),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(8),
@@ -151,17 +209,13 @@ class _ListeLivresState extends State<ListeLivres> {
                                   ),
                                 ),
                                 style: ElevatedButton.styleFrom(
-                                  primary: Colors
-                                      .indigo, // Couleur de fond du bouton
+                                  primary: Colors.indigo,
                                   padding: EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical:
-                                          10), // Espacement interne du bouton
+                                      horizontal: 21, vertical: 21),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        8), // Bord arrondi du bouton
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  elevation: 3, // Élévation du bouton
+                                  elevation: 3,
                                 ),
                               ),
                             ],
@@ -175,30 +229,50 @@ class _ListeLivresState extends State<ListeLivres> {
                   ),
                   Expanded(
                     child: Container(
-                      child: Column(children: [
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Icon(Icons.list_alt),
-                              SizedBox(width: 5),
-                              Text(
-                                'Liste des livres disponibles',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        BookTable(
-                          livres: livres,
-                        ),
-                      ]),
-                      height: 300,
                       color: Colors.white,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.list_alt),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'Liste des livres disponibles',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (isDataLoaded)
+                              BookTable(
+                                livres: livres,
+                                page: page,
+                                limit: limit,
+                                totalCount: totalCount,
+                                nextPage: nextPage,
+                                previousPage: previousPage,
+                                refreshData: () => getData(),
+                              ),
+                            if (isLoading && !isDataLoaded)
+                              Container(
+                                height: 200,
+                                alignment: Alignment.center,
+                                child: CircularProgressIndicator(),
+                              ),
+                            const SizedBox(height: 30),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(

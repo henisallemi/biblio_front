@@ -14,14 +14,6 @@ class _FirstPageState extends State<FirstPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.indigo,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              // Action à effectuer lors du clic sur l'icône de recherche
-            },
-          ),
-        ],
         title: Row(
           children: [
             Expanded(
