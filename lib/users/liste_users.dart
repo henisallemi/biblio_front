@@ -1,27 +1,25 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:projetbiblio/livres/check_livre.dart';
-import 'package:projetbiblio/livres/affichier_livre.dart';
+import 'package:projetbiblio/Users/users_formulaire.dart';
 import 'package:projetbiblio/livres/livres_formulaire.dart';
 import 'package:projetbiblio/model/model.dart';
 import 'package:http/http.dart' as http;
-import 'package:projetbiblio/roles.dart';
 import 'dart:async';
+import 'package:projetbiblio/roles.dart';
+import 'package:projetbiblio/users/affichier_user.dart';
 
-import 'package:projetbiblio/user_state.dart';
-import 'package:provider/provider.dart';
-
-class ListeLivres extends StatefulWidget {
-  const ListeLivres({Key? key}) : super(key: key);
+// ignore: must_be_immutable
+class ListeUsers extends StatefulWidget {
+  int role = Roles.adherant;
+  ListeUsers({Key? key, required this.role}) : super(key: key);
 
   @override
-  State<ListeLivres> createState() => _ListeLivresState();
+  State<ListeUsers> createState() => _ListeUsersState();
 }
 
-class _ListeLivresState extends State<ListeLivres> {
+class _ListeUsersState extends State<ListeUsers> {
   TextEditingController recherche = TextEditingController();
-  List<Livre> livres = [];
+  List<User> users = [];
   String selectedOption = "1";
   int page = 1;
   int limit = 15;
@@ -29,21 +27,20 @@ class _ListeLivresState extends State<ListeLivres> {
   bool isLoading = true;
   bool isDataLoaded = false;
 
-  Future<void> fetchLivres() async {
+  Future<void> fetchUsers() async {
     setState(() {
       isLoading = true;
     });
 
     var url = Uri.parse(
-        'http://localhost:4000/api/livres?page=$page&limit=$limit&recherche=${recherche.text.trim()}&target=$selectedOption');
+        'http://localhost:4000/api/users?page=$page&limit=$limit&recherche=${recherche.text.trim()}&target=$selectedOption&role=${widget.role}');
 
     try {
       var response = await http.get(url);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         setState(() {
-          livres =
-              List<Livre>.from(data['livres'].map((x) => Livre.fromJson(x)));
+          users = List<User>.from(data['users'].map((x) => User.fromJson(x)));
           totalCount = data['totalCount'];
           isDataLoaded = true;
         });
@@ -62,14 +59,14 @@ class _ListeLivresState extends State<ListeLivres> {
   @override
   void initState() {
     super.initState();
-    fetchLivres();
+    fetchUsers();
   }
 
   void nextPage() {
     setState(() {
       if (page < (totalCount / limit).ceil()) {
         page++;
-        fetchLivres();
+        fetchUsers();
       }
     });
   }
@@ -78,18 +75,18 @@ class _ListeLivresState extends State<ListeLivres> {
     setState(() {
       if (page > 1) {
         page--;
-        fetchLivres();
+        fetchUsers();
       }
     });
   }
 
-  Future<void> deleteRequest(Livre livre) async {
-    var url = Uri.parse('http://localhost:4000/api/livres/${livre.id}');
+  Future<void> deleteRequest(User user) async {
+    var url = Uri.parse('http://localhost:4000/api/users/${user.id}');
 
     try {
       var response = await http.delete(url);
       if (response.statusCode == 200) {
-        await fetchLivres();
+        await fetchUsers();
       } else {
         print('Request failed with status: ${response.statusCode}');
       }
@@ -101,7 +98,6 @@ class _ListeLivresState extends State<ListeLivres> {
   @override
   Widget build(BuildContext context) {
     final int totalPages = (totalCount / limit).ceil();
-    final userState = Provider.of<UserState>(context);
 
     return Row(
       children: [
@@ -124,14 +120,14 @@ class _ListeLivresState extends State<ListeLivres> {
                     color: Colors.white,
                     child: Column(
                       children: [
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Row(
                             children: [
                               Icon(Icons.search),
                               SizedBox(width: 5),
                               Text(
-                                'Chercher un livre',
+                                'Chercher un ${widget.role == Roles.adherant ? "adherant" : "admin"}',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
@@ -151,15 +147,15 @@ class _ListeLivresState extends State<ListeLivres> {
                                 items: const [
                                   DropdownMenuItem<String>(
                                     value: "1",
-                                    child: Text('Titre'),
+                                    child: Text('cin'),
                                   ),
                                   DropdownMenuItem<String>(
                                     value: "2",
-                                    child: Text('Auteur'),
+                                    child: Text('nom'),
                                   ),
                                   DropdownMenuItem<String>(
                                     value: "3",
-                                    child: Text('Année'),
+                                    child: Text('prénom'),
                                   ),
                                 ],
                                 onChanged: (String? value) {
@@ -205,7 +201,7 @@ class _ListeLivresState extends State<ListeLivres> {
                               ),
                               const SizedBox(width: 30),
                               ElevatedButton(
-                                onPressed: fetchLivres,
+                                onPressed: fetchUsers,
                                 child: const Text(
                                   'Rechercher',
                                   style: TextStyle(
@@ -238,14 +234,14 @@ class _ListeLivresState extends State<ListeLivres> {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8.0),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
                               child: Row(
                                 children: [
                                   Icon(Icons.list_alt),
                                   SizedBox(width: 5),
                                   Text(
-                                    'Liste des livres disponibles',
+                                    'Liste des ${widget.role == Roles.adherant ? "adherants" : "admins"} disponibles',
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 16,
@@ -295,9 +291,10 @@ class _ListeLivresState extends State<ListeLivres> {
                                                     child: Dialog(
                                                       // Contenu de la boîte de dialogue ici
                                                       child: Container(
-                                                        child: LivreFormulaire(
+                                                        child: UserFormulaire(
+                                                          role: widget.role,
                                                           afterSubmit: () =>
-                                                              fetchLivres(),
+                                                              fetchUsers(),
                                                         ),
                                                       ),
                                                     ),
@@ -305,10 +302,10 @@ class _ListeLivresState extends State<ListeLivres> {
                                                 },
                                               );
                                             },
-                                            icon: const Icon(Icons
+                                            icon: Icon(Icons
                                                 .library_add), // Icône à afficher
-                                            label: const Text(
-                                              'Ajouter un livre',
+                                            label: Text(
+                                              'Ajouter un ${widget.role == Roles.adherant ? "adherant" : "admin"}',
                                               style: TextStyle(
                                                 fontSize: 18.0,
                                                 fontWeight: FontWeight.bold,
@@ -342,7 +339,7 @@ class _ListeLivresState extends State<ListeLivres> {
                                             width:
                                                 120, // Largeur de la première colonne (ISBN)
                                             child: Text(
-                                              'ISBN',
+                                              'CIN',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -354,7 +351,7 @@ class _ListeLivresState extends State<ListeLivres> {
                                             width:
                                                 200, // Largeur de la deuxième colonne (Titre)
                                             child: Text(
-                                              'Titre',
+                                              'Nom',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -366,7 +363,7 @@ class _ListeLivresState extends State<ListeLivres> {
                                             width:
                                                 150, // Largeur de la troisième colonne (Auteur)
                                             child: Text(
-                                              'Premier Auteur',
+                                              'Prénom',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -378,7 +375,7 @@ class _ListeLivresState extends State<ListeLivres> {
                                             width:
                                                 110, // Largeur de la quatrième colonne (Année)
                                             child: Text(
-                                              'année d\'\édition',
+                                              'email',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -389,7 +386,7 @@ class _ListeLivresState extends State<ListeLivres> {
                                           label: SizedBox(
                                             width: 100,
                                             child: Text(
-                                              'Nombre d\'exemplaire',
+                                              'Telephone',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -412,22 +409,15 @@ class _ListeLivresState extends State<ListeLivres> {
                                         ),
                                       ],
 
-                                      rows: livres
-                                          .map((livre) => DataRow(
+                                      rows: users
+                                          .map((user) => DataRow(
                                                 cells: [
-                                                  DataCell(
-                                                      Text(livre.ouvrage.isbn)),
+                                                  DataCell(Text(user.cin)),
+                                                  DataCell(Text(user.nom)),
+                                                  DataCell(Text(user.prenom)),
                                                   DataCell(Text(
-                                                      livre.ouvrage.titre)),
-                                                  DataCell(Text(
-                                                      livre.ouvrage.auteur1)),
-                                                  DataCell(Text(DateFormat(
-                                                          'yyyy-MM-dd')
-                                                      .format(
-                                                          livre.ouvrage.date!)
-                                                      .toString())),
-                                                  DataCell(Text(livre
-                                                      .ouvrage.nombreExemplaire
+                                                      user.email.toString())),
+                                                  DataCell(Text(user.telephone
                                                       .toString())),
                                                   DataCell(Row(
                                                     children: [
@@ -442,9 +432,9 @@ class _ListeLivresState extends State<ListeLivres> {
                                                                 child: Dialog(
                                                                   child:
                                                                       Container(
-                                                                    child: AffichierLivre(
-                                                                        livre:
-                                                                            livre),
+                                                                    child: AffichierUser(
+                                                                        user:
+                                                                            user),
                                                                   ),
                                                                 ),
                                                               );
@@ -457,133 +447,101 @@ class _ListeLivresState extends State<ListeLivres> {
                                                           color: Colors.green,
                                                         ),
                                                       ),
-                                                      ...(userState
-                                                                  .connectedUser
-                                                                  ?.role ==
-                                                              Roles.admin
-                                                          ? [
-                                                              IconButton(
-                                                                onPressed: () {
-                                                                  showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder:
-                                                                        (BuildContext
-                                                                            context) {
-                                                                      return FractionallySizedBox(
-                                                                        child:
-                                                                            Dialog(
-                                                                          // Dialog content here
-                                                                          child:
-                                                                              Container(
-                                                                            child:
-                                                                                LivreFormulaire(
-                                                                              livre: livre,
-                                                                              afterSubmit: () => fetchLivres(),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                },
-                                                                icon:
-                                                                    const Icon(
-                                                                  Icons.edit,
-                                                                  size:
-                                                                      32, // Taille de l'icône
-                                                                  color: Colors
-                                                                      .blue, // Couleur de l'icône
+                                                      IconButton(
+                                                        onPressed: () {
+                                                          showDialog(
+                                                            context: context,
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              return FractionallySizedBox(
+                                                                child: Dialog(
+                                                                  // Dialog content here
+                                                                  child:
+                                                                      Container(
+                                                                    child:
+                                                                        UserFormulaire(
+                                                                      role: user
+                                                                          .role,
+                                                                      user:
+                                                                          user,
+                                                                      afterSubmit:
+                                                                          fetchUsers,
+                                                                    ),
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              IconButton(
-                                                                onPressed: () {
-                                                                  showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder:
-                                                                        (BuildContext
-                                                                            context) {
-                                                                      return AlertDialog(
-                                                                        title: Text(
-                                                                            'Confirmation de suppression du livre ${livre.ouvrage.titre}'),
-                                                                        content:
-                                                                            Column(
-                                                                          crossAxisAlignment:
-                                                                              CrossAxisAlignment.start,
-                                                                          mainAxisSize:
-                                                                              MainAxisSize.min,
-                                                                          children: [
-                                                                            Text('Êtes-vous sûr de vouloir supprimer le livre suivant ?'),
-                                                                            SizedBox(height: 16),
-                                                                            //Text('titre : ${livre.titre}'),
-                                                                            //Text('Auteur : ${livre.auteur}'),
-                                                                          ],
-                                                                        ),
-                                                                        actions: <Widget>[
-                                                                          TextButton(
-                                                                            child:
-                                                                                Text('Annuler'),
-                                                                            onPressed:
-                                                                                () {
-                                                                              Navigator.of(context).pop();
-                                                                            },
-                                                                          ),
-                                                                          TextButton(
-                                                                            child:
-                                                                                Text('Supprimer'),
-                                                                            onPressed:
-                                                                                () {
-                                                                              deleteRequest(livre);
-                                                                              Navigator.of(context).pop();
-                                                                            },
-                                                                          ),
-                                                                        ],
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                },
-                                                                icon: Icon(
-                                                                  Icons.delete,
-                                                                  size: 32,
-                                                                  color: Colors
-                                                                      .red,
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                        icon: const Icon(
+                                                          Icons.edit,
+                                                          size:
+                                                              32, // Taille de l'icône
+                                                          color: Colors
+                                                              .blue, // Couleur de l'icône
+                                                        ),
+                                                      ),
+                                                      IconButton(
+                                                        onPressed: () {
+                                                          showDialog(
+                                                            context: context,
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              return AlertDialog(
+                                                                title: Text(
+                                                                    'Confirmation de suppression d"utilisateur ${user.nom} ${user.prenom}'),
+                                                                content:
+                                                                    const Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: [
+                                                                    Text(
+                                                                        'Êtes-vous sûr de vouloir supprimer l"utilisateur suivant ?'),
+                                                                    SizedBox(
+                                                                        height:
+                                                                            16),
+                                                                  ],
                                                                 ),
-                                                              ),
-                                                              IconButton(
-                                                                onPressed: () {
-                                                                  showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder:
-                                                                        (BuildContext
-                                                                            context) {
-                                                                      return FractionallySizedBox(
-                                                                        child:
-                                                                            Dialog(
-                                                                          // Dialog content here
-                                                                          child: Container(
-                                                                              child: CheckLivre(
-                                                                            livre:
-                                                                                livre,
-                                                                          )),
-                                                                        ),
-                                                                      );
+                                                                actions: <Widget>[
+                                                                  TextButton(
+                                                                    child: const Text(
+                                                                        'Annuler'),
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
                                                                     },
-                                                                  );
-                                                                },
-                                                                icon:
-                                                                    const Icon(
-                                                                  Icons
-                                                                      .check_box,
-                                                                  size:
-                                                                      32, // Taille de l'icône
-                                                                  color: Colors
-                                                                      .green, // Couleur de l'icône
-                                                                ),
-                                                              )
-                                                            ]
-                                                          : []),
+                                                                  ),
+                                                                  TextButton(
+                                                                    child: const Text(
+                                                                        'Supprimer'),
+                                                                    onPressed:
+                                                                        () {
+                                                                      deleteRequest(
+                                                                          user);
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                    },
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                        icon: Icon(
+                                                          Icons.delete,
+                                                          size: 32,
+                                                          color: Colors.red,
+                                                        ),
+                                                      ),
                                                     ],
                                                   )),
                                                 ],

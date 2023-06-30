@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:nativewrappers';
 import 'package:flutter/cupertino.dart';
-import 'package:projetbiblio/connect/user_formulaire.dart';
-import 'package:projetbiblio/ouvrages/ouvrage_livre.dart';
+import 'package:projetbiblio/ouvrages/adherants.dart';
+import 'package:projetbiblio/livres/ouvrage_livre.dart';
+import 'package:projetbiblio/ouvrages/admins.dart';
+import 'package:projetbiblio/roles.dart';
+import 'package:projetbiblio/user_state.dart';
+import 'package:provider/provider.dart';
 
 import '../connect/from_Screen.dart';
 
@@ -16,13 +20,15 @@ class Menu extends StatefulWidget {
 class _MenuState extends State<Menu> {
   @override
   Widget build(BuildContext context) {
+    var userState = Provider.of<UserState>(context);
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text("Heni sellami"),
-            accountEmail: Text("Heni.sellami@gmail.com"),
+            accountName: Text(userState.connectedUser?.nom ?? ""),
+            accountEmail: Text(userState.connectedUser?.email ?? ""),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: Image.asset('images/avatar.jpg'),
@@ -54,26 +60,28 @@ class _MenuState extends State<Menu> {
             color: Colors.black,
             thickness: 5.0,
           ),
-          ListTile(
-              leading: const Icon(Icons.people_alt),
-              title: const Text('Adhérents'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const UserFormulaire()),
-                );
-              }),
-          ListTile(
-              leading: const Icon(Icons.people_alt),
-              title: const Text('Admin'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const UserFormulaire()),
-                );
-              }),
+          ...(userState.connectedUser?.role == Roles.admin
+              ? [
+                  ListTile(
+                      leading: const Icon(Icons.people_alt),
+                      title: const Text('Liste des Adhérents'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Adherants()),
+                        );
+                      }),
+                  ListTile(
+                      leading: const Icon(Icons.people_alt),
+                      title: const Text('Admin'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Admins()),
+                        );
+                      })
+                ]
+              : []),
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Paramètres'),

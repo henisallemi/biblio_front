@@ -1,3 +1,50 @@
+import 'package:projetbiblio/roles.dart';
+
+class User {
+  int id;
+  String image;
+  String cin;
+  String nom;
+  String prenom;
+  String email;
+  String telephone;
+  String motDePasse;
+  int nombreLivrePrendre;
+  int role;
+
+  User({
+    required this.id,
+    required this.image,
+    required this.cin,
+    required this.nom,
+    required this.prenom,
+    required this.email,
+    required this.telephone,
+    required this.motDePasse,
+    required this.nombreLivrePrendre,
+    required this.role,
+  });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'] as int,
+      image: json['image'] ?? "",
+      cin: json['cin'] ?? "",
+      nom: json['nom'] ?? "",
+      prenom: json['prenom'] ?? "",
+      email: json["email"] ?? "",
+      telephone: json["telephone"] ?? "",
+      motDePasse: json["motDePasse"] ?? "",
+      nombreLivrePrendre: json["nombreLivrePrendre"] ?? 0,
+      role: json["role"] ?? Roles.adherant,
+    );
+  }
+
+  static List<User> fromJsonArray(List<dynamic> jsonList) {
+    return jsonList.map((json) => User.fromJson(json)).toList();
+  }
+}
+
 class Livre {
   int id;
   String auteur2;
@@ -62,7 +109,7 @@ class Ouvrage {
       date: json["date"] != null ? DateTime.parse(json["date"]) : null,
       auteur1: json["auteur1"] ?? "",
       nombreExemplaire: json["nombreExemplaire"] ?? 0,
-      nombreDisponible: json["nombreExemplaire"] ?? 0,
+      nombreDisponible: json["nombreDisponible"] ?? 0,
     );
   }
 }

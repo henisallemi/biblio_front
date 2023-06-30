@@ -1,12 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:projetbiblio/model/model.dart';
 import 'package:provider/provider.dart';
 
 class UserState extends ChangeNotifier {
   String jwt = "";
-  String connectedUser = "";
+  User? connectedUser;
 
-  void setUser(String jwt, String connectedUser) {
+  void setUser(String jwt, User connectedUser) {
     this.jwt = jwt;
     this.connectedUser = connectedUser;
     notifyListeners();

@@ -1,9 +1,78 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:projetbiblio/model/model.dart';
+import 'package:projetbiblio/roles.dart';
+import 'package:http/http.dart' as http;
 
-class CheckLivre extends StatelessWidget {
+class CheckLivre extends StatefulWidget {
   Livre? livre;
-  CheckLivre({super.key, this.livre});
+  CheckLivre({super.key, required this.livre});
+
+  @override
+  State<CheckLivre> createState() => _CheckLivreState();
+}
+
+class _CheckLivreState extends State<CheckLivre> {
+  String? selectedAdherent = '';
+  List<User> adherentList = [];
+  bool isLoading = true;
+
+  Future<void> getAdherents() async {
+    setState(() {
+      isLoading = true;
+    });
+    var url =
+        Uri.parse('http://localhost:4000/api/users/role/${Roles.adherant}');
+
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        setState(() {
+          adherentList =
+              List<User>.from(data['users'].map((x) => User.fromJson(x)));
+          selectedAdherent = adherentList[0].id.toString();
+        });
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> submit(Function closeForm) async {
+    var url = Uri.parse('http://localhost:4000/api/ouvrages/emprunt');
+
+    var headers = {'Content-Type': 'application/json'};
+    var body = json.encode({
+      'adherant': int.parse(selectedAdherent ?? ""),
+      "ouvrage": widget.livre?.ouvrage?.id
+    });
+
+    try {
+      var response = await http.post(url, headers: headers, body: body);
+      if (response.statusCode == 200) {
+        print("test");
+        closeForm();
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getAdherents();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,11 +80,14 @@ class CheckLivre extends StatelessWidget {
       Navigator.pop(context); // Revenir en arrière
     }
 
-    String selectedAdherent = '';
-    List<String> adherentList = [];
+    if (isLoading && adherentList.isEmpty) {
+      return Row(
+        children: [],
+      );
+    }
 
     return Row(
-      children: [  
+      children: [
         const SizedBox(height: 5),
         Expanded(
           child: SingleChildScrollView(
@@ -42,7 +114,7 @@ class CheckLivre extends StatelessWidget {
                               ),
                               const SizedBox(width: 5),
                               const Text(
-                                "Prends le livre intitulé ",
+                                "Prendre le livre intitulé ",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
@@ -51,7 +123,7 @@ class CheckLivre extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                "${livre?.ouvrage.titre}",
+                                "${widget.livre?.ouvrage.titre}",
                                 style: const TextStyle(
                                   color: Colors.red,
                                   fontSize: 16,
@@ -98,13 +170,19 @@ class CheckLivre extends StatelessWidget {
                               Expanded(
                                 child: DropdownButton<String>(
                                   value: selectedAdherent,
-                                  onChanged: (String? newValue) {},
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      selectedAdherent = newValue;
+                                    });
+                                  },
                                   items: adherentList
                                       .map<DropdownMenuItem<String>>(
-                                          (String value) {
+                                          (User user) {
                                     return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
+                                      value: user.id.toString(),
+                                      child: Text(
+                                        user.nom + ' ' + user.prenom,
+                                      ),
                                     );
                                   }).toList(),
                                 ),
@@ -116,42 +194,22 @@ class CheckLivre extends StatelessWidget {
                             children: [
                               SizedBox(width: 10),
                               Text(
-                                'Le nombre d\'exemplaires de ce livre : ',
+                                'Le nombre d\'exemplaires de ce livre : ${widget.livre?.ouvrage.nombreExemplaire}',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: 'Roboto',
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Expanded(
-                                child: TextField(
-                                  keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
-                                    hintText:
-                                        "${livre?.ouvrage.nombreExemplaire}",
-                                  ),
                                 ),
                               ),
                               SizedBox(width: 10),
                               Text(
-                                'Le nombre de ce livre qui est actuellement disponible : ',
+                                'Le nombre de ce livre qui est actuellement disponible : ${widget.livre?.ouvrage.nombreDisponible}',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: 'Roboto',
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Expanded(
-                                child: TextField(
-                                  keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
-                                    hintText:
-                                        "${livre?.ouvrage.nombreDisponible}",
-                                  ),
                                 ),
                               ),
                             ],
@@ -187,10 +245,7 @@ class CheckLivre extends StatelessWidget {
                           ),
                           const SizedBox(height: 20),
                           ElevatedButton(
-                            onPressed: () {
-                              // Action à effectuer lors du clic sur le bouton
-                              // Exemple : prendre le livre
-                            },
+                            onPressed: () => submit(closeForm),
                             style: ElevatedButton.styleFrom(
                               primary: Colors.green,
                               onPrimary: Colors.white,

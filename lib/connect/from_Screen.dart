@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:projetbiblio/home/first_page.dart';
 import 'package:projetbiblio/home/menu.dart';
-import 'package:projetbiblio/connect/user_formulaire.dart';
+import 'package:http/http.dart' as http;
+import 'package:projetbiblio/model/model.dart';
+import 'package:projetbiblio/user_state.dart';
+import 'package:provider/provider.dart';
 
 class FormScreen extends StatefulWidget {
   const FormScreen({super.key});
@@ -15,6 +20,32 @@ class _FormScreenState extends State<FormScreen> {
   final emailController = TextEditingController();
   final passController = TextEditingController();
   bool passToggle = true;
+
+  Future<void> connect(context) async {
+    var url = Uri.parse('http://localhost:4000/api/users/login');
+    var userState = Provider.of<UserState>(context, listen: false);
+    var headers = {'Content-Type': 'application/json'};
+    var body = json.encode({
+      'email': emailController.text.trim(),
+      "motDePasse": passController.text.trim()
+    });
+
+    try {
+      var response = await http.post(url, headers: headers, body: body);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        userState.setUser("jwt", User.fromJson(data["user"]));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FirstPage()),
+        );
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,10 +123,7 @@ class _FormScreenState extends State<FormScreen> {
               ),
               MaterialButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => FirstPage()),
-                  );
+                  connect(context);
                 },
                 child: Container(
                   height: 50,
