@@ -186,16 +186,19 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
 
     Future<void> _selectDate(BuildContext context) async {
       final DateTime? picked = await showDatePicker(
-          context: context,
-          initialDate: selectedDate ?? DateTime.now(),
-          firstDate: DateTime(1900),
-          lastDate: DateTime(2100),
-          locale: const Locale("fr", 'FR'));
+        context: context,
+        initialDate: selectedDate ?? DateTime.now(),
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2100),
+        locale: const Locale("fr", 'FR'),
+      );
 
       if (picked != null && picked != selectedDate) {
         setState(() {
-          selectedDate = picked;
-          date.text = DateFormat('yyyy-MM-dd').format(picked);
+          selectedDate = DateTime(picked.year, picked.month, picked.day);
+
+          // Utilisez le format 'yyyy-MM-dd' pour extraire la date sans les heures
+          date.text = DateFormat('yyyy-MM-dd').format(selectedDate!);
         });
       }
     }
@@ -227,7 +230,7 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
                 SizedBox(width: 5),
                 Text(
                   isUpdateMode ? "Modifier le livre" : 'Ajouter un livre',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -235,7 +238,7 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
                         'Roboto', // Remplacez 'Roboto' par la police souhaitée
                   ),
                 ),
-                Text(
+                const Text(
                   ' (* = obligatoire)',
                   style: TextStyle(
                     color: Colors.red,
@@ -378,29 +381,33 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
               children: [
                 Expanded(
                   child: Container(
-                    height: 50, // Adjust the height as needed
+                    height: 50, // Ajustez la hauteur selon vos besoins
                     child: TextFormField(
                       controller: date,
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
                       ],
-                      keyboardType: TextInputType.number,
-                      readOnly: true, // Set the field as read-only
-                      onTap: () =>
-                          _selectDate(context), // Open DatePickerDialog on tap
+                      readOnly: true, // Définissez le champ en lecture seule
+                      onTap: () => _selectDate(
+                          context), // Ouvrir le DatePickerDialog lorsqu'il est cliqué
                       decoration: InputDecoration(
                         labelText: 'Date d\'édition *',
                         border: OutlineInputBorder(),
                         suffixIcon: RichText(
                           text: TextSpan(
-                            text: '*', // Character "*" to be displayed in red
+                            text: '*', // Caractère "*" à afficher en rouge
                             style: TextStyle(
                               color: Colors.red,
-                              fontSize: 23, // Red color for the "*"
+                              fontSize: 23, // Couleur rouge pour le "*"
                             ),
                           ),
                         ),
                       ),
+                      // Ajoutez un initialValue pour afficher la date au format 'yyyy-MM-dd'
+                      // Utilisez un formatage pour afficher la date sans les heures
+                      initialValue: selectedDate != null
+                          ? DateFormat('yyyy-MM-dd').format(selectedDate!)
+                          : null,
                     ),
                   ),
                 ),

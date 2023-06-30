@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:projetbiblio/livres/affichier_livre.dart';
+import 'package:projetbiblio/livres/check_livre.dart';
 import 'package:projetbiblio/model/model.dart';
 import 'package:projetbiblio/livres/livres_formulaire.dart';
 import 'package:http/http.dart' as http;
@@ -90,8 +91,8 @@ class BookTable extends StatelessWidget {
                       },
                     );
                   },
-                  icon: Icon(Icons.library_add), // Icône à afficher
-                  label: Text(
+                  icon: const Icon(Icons.library_add), // Icône à afficher
+                  label: const Text(
                     'Ajouter un livre',
                     style: TextStyle(
                       fontSize: 18.0,
@@ -108,10 +109,12 @@ class BookTable extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 28,
           ),
           DataTable(
+            columnSpacing:
+                60, // Espacement horizontal entre les colonnes si nécessaire
             headingRowColor: MaterialStateColor.resolveWith((states) =>
                 Colors.indigoAccent), // Couleur de la ligne d'en-tête
             dataRowColor:
@@ -119,42 +122,58 @@ class BookTable extends StatelessWidget {
 
             columns: [
               DataColumn(
-                label: Text(
-                  'ISBN',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
+                label: SizedBox(
+                  width: 120, // Largeur de la première colonne (ISBN)
+                  child: Text(
+                    'ISBN',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
                 ),
               ),
               DataColumn(
-                label: Text(
-                  'Titre',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
+                label: SizedBox(
+                  width: 200, // Largeur de la deuxième colonne (Titre)
+                  child: Text(
+                    'Titre',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
                 ),
               ),
               DataColumn(
-                label: Text(
-                  'Auteur',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
+                label: SizedBox(
+                  width: 150, // Largeur de la troisième colonne (Auteur)
+                  child: Text(
+                    'Premier Auteur',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
                 ),
               ),
               DataColumn(
-                label: Text(
-                  'Année',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
+                label: SizedBox(
+                  width: 110, // Largeur de la quatrième colonne (Année)
+                  child: Text(
+                    'année d\'\édition',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
                 ),
               ),
               DataColumn(
-                label: Text(
-                  'Editeur',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
+                label: SizedBox(
+                  width: 100,
+                  child: Text(
+                    'Nombre d\'exemplaire',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
                 ),
               ),
               DataColumn(
-                label: Expanded(
+                label: SizedBox(
+                  width: 150, // Largeur de la sixième colonne (Actions)
                   child: Center(
                     child: Text(
                       'Actions',
@@ -172,8 +191,9 @@ class BookTable extends StatelessWidget {
                         DataCell(Text(livre.ouvrage.isbn)),
                         DataCell(Text(livre.ouvrage.titre)),
                         DataCell(Text(livre.ouvrage.auteur1)),
-                        DataCell(Text(livre.ouvrage.annee)),
-                        DataCell(Text(livre.ouvrage.editeur)),
+                        DataCell(Text(livre.ouvrage.date.toString())),
+                        DataCell(
+                            Text(livre.ouvrage.nombreExemplaire.toString())),
                         DataCell(Row(
                           children: [
                             IconButton(
@@ -265,6 +285,26 @@ class BookTable extends StatelessWidget {
                                 Icons.delete,
                                 size: 32,
                                 color: Colors.red,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return FractionallySizedBox(
+                                      child: Dialog(
+                                        // Dialog content here
+                                        child: Container(child: CheckLivre()),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.check_box,
+                                size: 32, // Taille de l'icône
+                                color: Colors.green, // Couleur de l'icône
                               ),
                             ),
                           ],

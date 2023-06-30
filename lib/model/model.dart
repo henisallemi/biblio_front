@@ -31,20 +31,24 @@ class Ouvrage {
   String isbn;
   String titre;
   String editeur;
+  String description;
   String annee;
   DateTime? date;
   String auteur1;
   int nombreExemplaire;
+  int nombreDisponible;
 
   Ouvrage({
     required this.id,
     required this.isbn,
     required this.titre,
     required this.editeur,
+    required this.description,
     required this.annee,
     required this.date,
     required this.auteur1,
     required this.nombreExemplaire,
+    required this.nombreDisponible,
   });
 
   factory Ouvrage.fromJson(Map<String, dynamic> json) {
@@ -53,10 +57,12 @@ class Ouvrage {
       isbn: json['isbn'] ?? "",
       titre: json['titre'] ?? "",
       editeur: json['editeur'] ?? "",
+      description: json['description'] ?? "",
       annee: json["annee"] ?? "",
       date: json["date"] != null ? DateTime.parse(json["date"]) : null,
       auteur1: json["auteur1"] ?? "",
       nombreExemplaire: json["nombreExemplaire"] ?? 0,
+      nombreDisponible: json["nombreExemplaire"] ?? 0,
     );
   }
 }

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:nativewrappers';
 import 'package:flutter/cupertino.dart';
 import 'package:projetbiblio/connect/user_formulaire.dart';
-import 'package:projetbiblio/ouvrages/ouvrage.dart';
+import 'package:projetbiblio/ouvrages/ouvrage_livre.dart';
+
+import '../connect/from_Screen.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -35,16 +37,16 @@ class _MenuState extends State<Menu> {
           ),
           ListTile(
             leading: const Icon(Icons.account_circle),
-            title: const Text('Profil'),
+            title: const Text('Tableau de bord'),
             onTap: () {},
           ),
           ListTile(
             leading: const Icon(Icons.description),
-            title: const Text('Liste des Ouvrages'),
+            title: const Text('Liste des Livres'),
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Ouvrage()),
+                MaterialPageRoute(builder: (context) => OuvrageLivre()),
               );
             },
           ),
@@ -58,24 +60,20 @@ class _MenuState extends State<Menu> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => UserFormulaire()),
+                  MaterialPageRoute(
+                      builder: (context) => const UserFormulaire()),
                 );
               }),
           ListTile(
-            leading: const Icon(CupertinoIcons.person_add),
-            title: const Text('Ajouter adhérent'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.mode_edit),
-            title: const Text('Modifier adhérent'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.history),
-            title: const Text('Historique'),
-            onTap: () {},
-          ),
+              leading: const Icon(Icons.people_alt),
+              title: const Text('Admin'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const UserFormulaire()),
+                );
+              }),
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Paramètres'),
@@ -84,7 +82,12 @@ class _MenuState extends State<Menu> {
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Déconnecter'),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FormScreen()),
+              );
+            },
           ),
         ],
       ),

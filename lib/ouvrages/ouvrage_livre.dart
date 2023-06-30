@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:projetbiblio/components/tab_view.dart';
-
 import 'package:projetbiblio/livres/liste_livres.dart';
 
-class Ouvrage extends StatelessWidget {
-  const Ouvrage({super.key});
+class OuvrageLivre extends StatelessWidget {
+  const OuvrageLivre({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +28,12 @@ class Ouvrage extends StatelessWidget {
         appTitle: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.description), // Icône de document
+            Icon(
+              Icons.book,
+              size: 33,
+            ), // Icône de document
             SizedBox(width: 15),
-            Text('Liste des Ouvrages'), // Texte du titre
+            Text('Liste des livres'), // Texte du titre
           ],
         ));
   }
