@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:nativewrappers';
 import 'package:flutter/cupertino.dart';
-import 'package:projetbiblio/ouvrages/adherants.dart';
+import 'package:projetbiblio/users/adherants.dart';
 import 'package:projetbiblio/livres/ouvrage_livre.dart';
-import 'package:projetbiblio/ouvrages/admins.dart';
+import 'package:projetbiblio/users/admins.dart';
 import 'package:projetbiblio/roles.dart';
 import 'package:projetbiblio/user_state.dart';
 import 'package:provider/provider.dart';
 
+import '../article/ouvrage_article.dart';
 import '../connect/from_Screen.dart';
 
 class Menu extends StatefulWidget {
@@ -47,8 +48,28 @@ class _MenuState extends State<Menu> {
             onTap: () {},
           ),
           ListTile(
-            leading: const Icon(Icons.description),
+            leading: const Icon(Icons.book),
             title: const Text('Liste des Livres'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => OuvrageLivre()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.article),
+            title: const Text('Liste des Articles'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => OuvrageArticle()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.library_books),
+            title: const Text('Liste des Revues'),
             onTap: () {
               Navigator.push(
                 context,
@@ -73,7 +94,7 @@ class _MenuState extends State<Menu> {
                       }),
                   ListTile(
                       leading: const Icon(Icons.people_alt),
-                      title: const Text('Admin'),
+                      title: const Text('Liste des Admins'),
                       onTap: () {
                         Navigator.push(
                           context,
