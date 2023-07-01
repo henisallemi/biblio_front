@@ -70,12 +70,7 @@ class _MenuState extends State<Menu> {
           ListTile(
             leading: const Icon(Icons.library_books),
             title: const Text('Liste des Revues'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => OuvrageLivre()),
-              );
-            },
+            onTap: () {},
           ),
           const Divider(
             color: Colors.black,

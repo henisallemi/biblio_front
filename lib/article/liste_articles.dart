@@ -42,7 +42,7 @@ class _ListeArticlesState extends State<ListeArticles> {
         var data = json.decode(response.body);
         setState(() {
           articles = List<Artilce>.from(
-              data['livres'].map((x) => Artilce.fromJson(x)));
+              data['articles'].map((x) => Artilce.fromJson(x)));
           totalCount = data['totalCount'];
           isDataLoaded = true;
         });
@@ -340,9 +340,9 @@ class _ListeArticlesState extends State<ListeArticles> {
                                         DataColumn(
                                           label: SizedBox(
                                             width:
-                                                120, // Largeur de la première colonne (ISBN)
+                                                150, // Largeur de la première colonne (ISBN)
                                             child: Text(
-                                              'ISBN',
+                                              'Titre',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -352,9 +352,9 @@ class _ListeArticlesState extends State<ListeArticles> {
                                         DataColumn(
                                           label: SizedBox(
                                             width:
-                                                200, // Largeur de la deuxième colonne (Titre)
+                                                120, // Largeur de la deuxième colonne (Titre)
                                             child: Text(
-                                              'Titre',
+                                              'Éditeur',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -387,9 +387,9 @@ class _ListeArticlesState extends State<ListeArticles> {
                                         ),
                                         DataColumn(
                                           label: SizedBox(
-                                            width: 100,
+                                            width: 120,
                                             child: Text(
-                                              'Nombre d\'exemplaire',
+                                              'Nbr d\'exemplaire',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -399,7 +399,7 @@ class _ListeArticlesState extends State<ListeArticles> {
                                         DataColumn(
                                           label: SizedBox(
                                             width:
-                                                150, // Largeur de la sixième colonne (Actions)
+                                                170, // Largeur de la sixième colonne (Actions)
                                             child: Center(
                                               child: Text(
                                                 'Actions',
@@ -416,9 +416,9 @@ class _ListeArticlesState extends State<ListeArticles> {
                                           .map((article) => DataRow(
                                                 cells: [
                                                   DataCell(Text(
-                                                      article.ouvrage.isbn)),
-                                                  DataCell(Text(
                                                       article.ouvrage.titre)),
+                                                  DataCell(Text(
+                                                      article.ouvrage.editeur)),
                                                   DataCell(Text(
                                                       article.ouvrage.auteur1)),
                                                   DataCell(Text(DateFormat(
@@ -430,6 +430,14 @@ class _ListeArticlesState extends State<ListeArticles> {
                                                       .ouvrage.nombreExemplaire
                                                       .toString())),
                                                   DataCell(Row(
+                                                    mainAxisAlignment: userState
+                                                                .connectedUser
+                                                                ?.role ==
+                                                            Roles.admin
+                                                        ? MainAxisAlignment
+                                                            .start // Align icons to the start
+                                                        : MainAxisAlignment
+                                                            .center,
                                                     children: [
                                                       IconButton(
                                                         onPressed: () {
@@ -505,8 +513,40 @@ class _ListeArticlesState extends State<ListeArticles> {
                                                                         (BuildContext
                                                                             context) {
                                                                       return AlertDialog(
-                                                                        title: Text(
-                                                                            'Confirmation de suppression du livre ${article.ouvrage.titre}'),
+                                                                        title:
+                                                                            RichText(
+                                                                          text:
+                                                                              TextSpan(
+                                                                            style:
+                                                                                DefaultTextStyle.of(context).style,
+                                                                            children: [
+                                                                              const TextSpan(
+                                                                                text: 'Confirmation de suppression du livre ',
+                                                                                style: TextStyle(
+                                                                                  color: Colors.black,
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  fontSize: 18,
+                                                                                ),
+                                                                              ),
+                                                                              TextSpan(
+                                                                                text: '${article.ouvrage.titre}',
+                                                                                style: const TextStyle(
+                                                                                  color: Colors.red,
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  fontSize: 20,
+                                                                                ),
+                                                                              ),
+                                                                              const TextSpan(
+                                                                                text: ' :',
+                                                                                style: TextStyle(
+                                                                                  color: Colors.black,
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  fontSize: 18,
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ),
                                                                         content:
                                                                             Column(
                                                                           crossAxisAlignment:

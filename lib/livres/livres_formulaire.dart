@@ -215,6 +215,7 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
           widget.livre?.ouvrage.nombreExemplaire.toString() ?? "";
       annee.text = widget.livre?.ouvrage.annee ?? "";
       editeur.text = widget.livre?.ouvrage.editeur ?? "";
+      description.text = widget.livre?.ouvrage.description ?? "";
     }
 
     var form = Container(
@@ -244,13 +245,11 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
                     color: Colors.red,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    fontFamily:
-                        'Roboto', // Remplacez 'Roboto' par la police souhaitée
+                    fontFamily: 'Roboto',
                   ),
                 ),
                 Spacer(),
                 Visibility(
-                  // Afficher l'icône uniquement si isUpdateMode est true
                   child: IconButton(
                     icon: Icon(Icons.close),
                     iconSize: 32,
@@ -453,14 +452,11 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Container(
-                    height: 50, // Ajustez la hauteur selon vos besoins
-                    child: TextFormField(
-                      controller: description,
-                      decoration: InputDecoration(
-                        labelText: 'Description du livre',
-                        border: OutlineInputBorder(),
-                      ),
+                  child: TextFormField(
+                    controller: description,
+                    decoration: InputDecoration(
+                      labelText: 'Description du livre',
+                      border: OutlineInputBorder(),
                     ),
                   ),
                 ),

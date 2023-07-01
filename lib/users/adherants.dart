@@ -11,7 +11,7 @@ class Adherants extends StatelessWidget {
     return TabView(
         tabs: [
           TabData(
-              title: "Adhérants",
+              title: "Adhérents",
               content: ListeUsers(
                 role: Roles.adherant,
                 key: super.key,
@@ -25,7 +25,7 @@ class Adherants extends StatelessWidget {
               size: 30,
             ), // Icône de document
             SizedBox(width: 15),
-            Text('Liste des Adhérants'), // Texte du titre
+            Text('Liste des Adhérents'), // Texte du titre
           ],
         ));
   }

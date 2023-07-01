@@ -47,12 +47,22 @@ class User {
 
 class Artilce {
   int id;
+  String auteur2;
+  String conference;
   Ouvrage ouvrage;
-  Artilce({required this.id, required this.ouvrage});
+  Artilce(
+      {required this.id,
+      required this.auteur2,
+      required this.conference,
+      required this.ouvrage});
   factory Artilce.fromJson(Map<String, dynamic> json) {
     return Artilce(
-        id: json['id'] as int, ouvrage: Ouvrage.fromJson(json['ouvrage']));
+        id: json['id'] as int,
+        auteur2: json['auteur2'] ?? "",
+        conference: json['conference'] ?? "",
+        ouvrage: Ouvrage.fromJson(json['ouvrage']));
   }
+
   static List<Artilce> fromJsonArray(List<dynamic> jsonList) {
     return jsonList.map((json) => Artilce.fromJson(json)).toList();
   }

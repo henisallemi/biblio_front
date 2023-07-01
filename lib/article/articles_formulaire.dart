@@ -19,11 +19,11 @@ class _ArticleFormulaireState extends State<ArticleFormulaire> {
   TextEditingController titre = TextEditingController();
   TextEditingController editeur = TextEditingController();
   TextEditingController nombreExemplaire = TextEditingController();
-  TextEditingController annee = TextEditingController();
   TextEditingController date = TextEditingController();
   TextEditingController auteur1 = TextEditingController();
   TextEditingController auteur2 = TextEditingController();
   TextEditingController conference = TextEditingController();
+
   bool checkFields() {
     return titre.text.isNotEmpty &&
         editeur.text.isNotEmpty &&
@@ -104,7 +104,6 @@ class _ArticleFormulaireState extends State<ArticleFormulaire> {
     var body = json.encode({
       'titre': titre.text.trim(),
       'editeur': editeur.text.trim(),
-      'annee': annee.text.trim(),
       'nombreExemplaire': nombreExemplaire.text.trim(),
       'date': date.text.trim(),
       "auteur1": auteur1.text.trim(),
@@ -184,7 +183,6 @@ class _ArticleFormulaireState extends State<ArticleFormulaire> {
       if (picked != null && picked != selectedDate) {
         setState(() {
           selectedDate = DateTime(picked.year, picked.month, picked.day);
-
           // Utilisez le format 'yyyy-MM-dd' pour extraire la date sans les heures
           date.text = DateFormat('yyyy-MM-dd').format(selectedDate!);
         });
@@ -194,17 +192,16 @@ class _ArticleFormulaireState extends State<ArticleFormulaire> {
     if (isUpdateMode) {
       auteur1.text = widget.artilce?.ouvrage.auteur1 ?? "";
       auteur2.text = widget.artilce?.auteur2 ?? "";
+      conference.text = widget.artilce?.conference ?? "";
       titre.text = widget.artilce?.ouvrage.titre ?? "";
-
       date.text = widget.artilce?.ouvrage?.date.toString() ?? "";
       nombreExemplaire.text =
           widget.artilce?.ouvrage.nombreExemplaire.toString() ?? "";
-      annee.text = widget.artilce?.ouvrage.annee ?? "";
       editeur.text = widget.artilce?.ouvrage.editeur ?? "";
     }
 
     var form = Container(
-      height: 530,
+      height: 470,
       color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -248,23 +245,17 @@ class _ArticleFormulaireState extends State<ArticleFormulaire> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
             Row(
               children: [
                 Expanded(
                   child: TextFormField(
                     controller: titre,
-                    inputFormatters: [
-                      FilteringTextInputFormatter
-                          .digitsOnly, // Accepter uniquement des chiffres
-                    ],
-                    keyboardType:
-                        TextInputType.number, // Utiliser le clavier numérique
                     decoration: InputDecoration(
                       labelText: 'Titre',
                       border: OutlineInputBorder(),
                       suffixIcon: RichText(
-                        text: TextSpan(
+                        text: const TextSpan(
                           text: '*', // Caractère "*" à mettre en rouge
                           style: TextStyle(
                             color: Colors.red,
@@ -344,7 +335,7 @@ class _ArticleFormulaireState extends State<ArticleFormulaire> {
                       onTap: () => _selectDate(
                           context), // Ouvrir le DatePickerDialog lorsqu'il est cliqué
                       decoration: InputDecoration(
-                        labelText: 'Date d\'édition *',
+                        labelText: 'Date d\'édition ',
                         border: OutlineInputBorder(),
                         suffixIcon: RichText(
                           text: TextSpan(
@@ -366,20 +357,6 @@ class _ArticleFormulaireState extends State<ArticleFormulaire> {
                 ),
                 SizedBox(width: 10),
                 Expanded(
-                  child: TextFormField(
-                    controller: conference,
-                    decoration: InputDecoration(
-                      labelText: 'Conférence',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
                   child: Container(
                     height: 50, // Ajustez la hauteur selon vos besoins
                     child: TextFormField(
@@ -389,7 +366,7 @@ class _ArticleFormulaireState extends State<ArticleFormulaire> {
                       ],
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: 'Nombre d\'exemplaire *',
+                        labelText: 'Nombre d\'exemplaire ',
                         border: OutlineInputBorder(),
                         suffixIcon: RichText(
                           text: TextSpan(
@@ -404,11 +381,24 @@ class _ArticleFormulaireState extends State<ArticleFormulaire> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: conference,
+                    decoration: InputDecoration(
+                      labelText: 'Conférence',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
               ],
             ),
             SizedBox(
-              height: 35,
+              height: 40,
             ),
             Center(
               child: ElevatedButton.icon(
@@ -444,15 +434,10 @@ class _ArticleFormulaireState extends State<ArticleFormulaire> {
 
     return Row(
       children: [
-        const SizedBox(
-          height: 5,
-        ),
         Expanded(
           child: SingleChildScrollView(
             child: Container(
               padding: const EdgeInsets.all(10),
-              height: 550,
-              width: 150,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [form],

@@ -53,7 +53,7 @@ class AffichierLivre extends StatelessWidget {
                 children: [
                   const Icon(Icons.circle_sharp, color: Colors.green),
                   const Text(
-                    " Le numéro international normalisé du livre (ISBN) du livre ",
+                    " Le numéro international normalisé(ISBN) du livre ",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
