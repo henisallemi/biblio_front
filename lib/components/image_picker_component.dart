@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImagePickerComponent extends StatefulWidget {
-  const ImagePickerComponent(
-      {Key? key, required TextEditingController controller})
+  String? imagePath;
+  final TextEditingController _controller;
+  ImagePickerComponent(
+      {Key? key, required TextEditingController controller, this.imagePath})
       : _controller = controller,
         super(key: key);
-
-  final TextEditingController _controller;
 
   @override
   State<ImagePickerComponent> createState() => _ImagePickerComponentState();
@@ -21,11 +21,12 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
 
   @override
   Widget build(BuildContext context) {
+    print("ImagePath is : ${widget.imagePath ?? 'no'}");
     return GestureDetector(
       onTap: () async {
         XFile? image = await imagePicker.pickImage(source: ImageSource.gallery);
         setState(() {
-          _image = File(image?.path ?? "");
+          _image = image != null ? File(image.path) : null;
           if (_image != null) {
             widget._controller.text = _image!
                 .path; // Update the TextEditingController with the selected image path
@@ -43,12 +44,19 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
             width: 2.0,
           ),
         ),
-        child: _image != null
+        child: _image != null || widget.imagePath != null
             ? ClipOval(
-                child: Image.file(
-                  _image!,
-                  fit: BoxFit.cover,
-                ),
+                child: _image != null
+                    ? Image.file(
+                        _image!,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.network(
+                        "http://localhost:4000/${widget.imagePath!.isNotEmpty ? widget.imagePath : 'uploads/avatar.jpg'}",
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                        return Image.asset("images/avatar.jpg");
+                      }),
               )
             : Icon(
                 Icons.camera_alt,

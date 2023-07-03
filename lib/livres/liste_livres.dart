@@ -607,6 +607,8 @@ class _ListeLivresState extends State<ListeLivres> {
                                                                               child: CheckLivre(
                                                                             livre:
                                                                                 livre,
+                                                                            afterSubmit: () =>
+                                                                                fetchLivres(),
                                                                           )),
                                                                         ),
                                                                       );

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:projetbiblio/dashboard/dashboard_admin.dart';
 import 'package:projetbiblio/users/adherants.dart';
 import 'package:projetbiblio/livres/ouvrage_livre.dart';
 import 'package:projetbiblio/users/admins.dart';
 import 'package:projetbiblio/roles.dart';
 import 'package:projetbiblio/user_state.dart';
 import 'package:provider/provider.dart';
-
 import '../article/ouvrage_article.dart';
 import '../connect/from_Screen.dart';
+import '../dashboard/dashboard1.dart';
+import '../dashboard/dashboard_adherent.dart';
 import '../revue/ouvrage_revue.dart';
 
 class Menu extends StatefulWidget {
@@ -33,7 +34,12 @@ class _MenuState extends State<Menu> {
             accountEmail: Text(userState.connectedUser?.email ?? ""),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
-                child: Image.asset('images/avatar.jpg'),
+                child: Image.network(
+                    "http://localhost:4000/${userState.connectedUser!.imagePath.isNotEmpty ? userState.connectedUser!.imagePath : 'uploads/avatar.jpg'}",
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                  return Image.asset('images/avatar.jpg');
+                }),
               ),
             ),
             decoration: const BoxDecoration(
@@ -46,12 +52,22 @@ class _MenuState extends State<Menu> {
           ListTile(
             leading: Icon(Icons.equalizer_outlined),
             title: Text('Tableau de bord'),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DashboardAdmin()),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.dashboard),
             title: const Text('Tableau de bord'),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Dashbord1()),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.book),
@@ -117,7 +133,8 @@ class _MenuState extends State<Menu> {
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Déconnecter'),
-            onTap: () {
+            onTap: () async {
+              await userState.logout();
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const FormScreen()),

@@ -28,7 +28,6 @@ class _UserFormulaireState extends State<UserFormulaire> {
   TextEditingController prenom = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController telephone = TextEditingController();
-  TextEditingController nombreLivrePrendre = TextEditingController();
   TextEditingController motDePasse = TextEditingController();
   TextEditingController image = TextEditingController();
 
@@ -109,27 +108,27 @@ class _UserFormulaireState extends State<UserFormulaire> {
       return;
     }
 
-    var headers = {'Content-Type': 'application/json'};
-    var body = json.encode({
-      'cin': cin.text.trim(),
-      'nom': nom.text.trim(),
-      'prenom': prenom.text.trim(),
-      'telephone': telephone.text.trim(),
-      'email': email.text.trim(),
-      'motDePasse': motDePasse.text.trim(),
-      'role': widget.user?.role ?? widget.role,
-      "nombreLivrePrendre": nombreLivrePrendre.text.trim(),
-      "image": image.text.trim(),
-    });
-
     try {
-      var response = updateMode
-          ? await http.put(
-              Uri.parse('http://localhost:4000/api/users/${widget.user?.id}'),
-              headers: headers,
-              body: body)
-          : await http.post(Uri.parse('http://localhost:4000/api/users'),
-              headers: headers, body: body);
+      var formData = http.MultipartRequest(
+          'POST',
+          Uri.parse(
+              "http://localhost:4000/api/users/${widget.user?.id ?? ''}"));
+
+      formData.fields.addAll({
+        'cin': cin.text.trim(),
+        'nom': nom.text.trim(),
+        'prenom': prenom.text.trim(),
+        'telephone': telephone.text.trim(),
+        'email': email.text.trim(),
+        'motDePasse': motDePasse.text.trim(),
+        'role': widget.user?.role.toString() ?? widget.role.toString(),
+      });
+
+      formData.files
+          .add(await http.MultipartFile.fromPath('image', image.text.trim()));
+
+      var response = await formData.send();
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         await widget.afterSubmit();
         final snackBar = SnackBar(
@@ -204,12 +203,10 @@ class _UserFormulaireState extends State<UserFormulaire> {
       cin.text = widget.user?.cin ?? "";
       nom.text = widget.user?.nom ?? "";
       prenom.text = widget.user?.prenom ?? "";
-      nombreLivrePrendre.text =
-          widget.user?.nombreLivrePrendre.toString() ?? "";
       telephone.text = widget.user?.telephone ?? "";
       email.text = widget.user?.email ?? "";
       motDePasse.text = widget.user?.motDePasse ?? "";
-      image.text = widget.user?.image ?? "";
+      image.text = widget.user?.imagePath ?? "";
     }
 
     var form = Container(
@@ -261,11 +258,12 @@ class _UserFormulaireState extends State<UserFormulaire> {
             const SizedBox(height: 10),
             Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 530,
                 ),
                 ImagePickerComponent(
                   controller: image,
+                  imagePath: widget.user?.imagePath ?? null,
                 ),
               ],
             ),
@@ -393,79 +391,58 @@ class _UserFormulaireState extends State<UserFormulaire> {
                   ),
                 ),
                 SizedBox(width: 10),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: motDePasse,
-                          decoration: InputDecoration(
-                            labelText: 'Mot de passe',
-                            border: OutlineInputBorder(),
-                            suffixIcon: RichText(
-                              text: TextSpan(
-                                text: '*', // Caractère "*" à mettre en rouge
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 23, // Couleur rouge pour le "*"
+                ...(widget.user == null
+                    ? [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextFormField(
+                                  controller: motDePasse,
+                                  decoration: InputDecoration(
+                                    labelText: 'Mot de passe',
+                                    border: OutlineInputBorder(),
+                                    suffixIcon: RichText(
+                                      text: TextSpan(
+                                        text:
+                                            '*', // Caractère "*" à mettre en rouge
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                          fontSize:
+                                              23, // Couleur rouge pour le "*"
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                              const SizedBox(
+                                  width:
+                                      10), // Espacement entre le champ de texte et le bouton
+                              Container(
+                                height: 52, // Hauteur du bouton
+                                child: ElevatedButton.icon(
+                                  onPressed: generatePassword,
+                                  icon: Icon(Icons
+                                      .lock), // Icône du cadenas représentant un mot de passe
+                                  label: Text(
+                                    'Générer un mot de passe',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight
+                                          .bold, // Style en gras (bold)
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors
+                                        .green, // Couleur verte pour le bouton
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                          width:
-                              10), // Espacement entre le champ de texte et le bouton
-                      Container(
-                        height: 52, // Hauteur du bouton
-                        child: ElevatedButton.icon(
-                          onPressed: generatePassword,
-                          icon: Icon(Icons
-                              .lock), // Icône du cadenas représentant un mot de passe
-                          label: Text(
-                            'Générer un mot de passe',
-                            style: TextStyle(
-                              fontWeight:
-                                  FontWeight.bold, // Style en gras (bold)
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            primary:
-                                Colors.green, // Couleur verte pour le bouton
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: nombreLivrePrendre,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'nombre de  Livre Prendre ',
-                      border: OutlineInputBorder(),
-                      suffixIcon: RichText(
-                        text: TextSpan(
-                          text: '*', // Caractère "*" à mettre en rouge
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 23, // Couleur rouge pour le "*"
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                      ]
+                    : [])
               ],
             ),
             SizedBox(

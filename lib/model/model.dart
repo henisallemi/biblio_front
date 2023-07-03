@@ -1,43 +1,56 @@
+import 'dart:io';
+
 import 'package:projetbiblio/roles.dart';
 
 class User {
   int id;
-  String image;
+  String imagePath;
   String cin;
   String nom;
   String prenom;
   String email;
   String telephone;
   String motDePasse;
-  int nombreLivrePrendre;
   int role;
 
   User({
     required this.id,
-    required this.image,
+    required this.imagePath,
     required this.cin,
     required this.nom,
     required this.prenom,
     required this.email,
     required this.telephone,
     required this.motDePasse,
-    required this.nombreLivrePrendre,
     required this.role,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'] as int,
-      image: json['image'] ?? "",
+      imagePath: json['imagePath'] ?? "",
       cin: json['cin'] ?? "",
       nom: json['nom'] ?? "",
       prenom: json['prenom'] ?? "",
       email: json["email"] ?? "",
       telephone: json["telephone"] ?? "",
       motDePasse: json["motDePasse"] ?? "",
-      nombreLivrePrendre: json["nombreLivrePrendre"] ?? 0,
       role: json["role"] ?? Roles.adherant,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "imagePath": imagePath,
+      "cin": cin,
+      "nom": nom,
+      "prenom": prenom,
+      "email": email,
+      "telephone": telephone,
+      "motDePasse": motDePasse,
+      "role": role,
+    };
   }
 
   static List<User> fromJsonArray(List<dynamic> jsonList) {

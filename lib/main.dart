@@ -8,7 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() {
   runApp(
     ChangeNotifierProvider<UserState>(
-      create: (_) => UserState(),
+      create: (_) => UserState()..initializeUser(),
       child: const MyApp(),
     ),
   );
@@ -24,6 +24,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    var userState = Provider.of<UserState>(context);
+
     return MaterialApp(
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -37,7 +39,9 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: FormScreen(),
+      home: userState.connectedUser != null
+          ? const FormScreen()
+          : const FirstPage(),
     );
   }
 }

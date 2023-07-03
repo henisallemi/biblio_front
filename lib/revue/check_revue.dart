@@ -16,6 +16,8 @@ class _CheckRevueState extends State<CheckRevue> {
   String? selectedAdherent = '';
   List<User> adherentList = [];
   bool isLoading = true;
+  TextEditingController dateEmprunt = TextEditingController();
+  TextEditingController dateDeRetour = TextEditingController();
 
   Future<void> getAdherents() async {
     setState(() {
@@ -51,7 +53,9 @@ class _CheckRevueState extends State<CheckRevue> {
     var headers = {'Content-Type': 'application/json'};
     var body = json.encode({
       'adherant': int.parse(selectedAdherent ?? ""),
-      "ouvrage": widget.revue?.ouvrage?.id
+      "ouvrage": widget.revue?.ouvrage?.id,
+      "dateEmprunt": dateEmprunt.text.trim(),
+      "dateDeRetour": dateDeRetour.text.trim(),
     });
 
     try {

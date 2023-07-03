@@ -210,7 +210,10 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
       titre.text = widget.livre?.ouvrage.titre ?? "";
       auteur3.text = widget.livre?.auteur3 ?? "";
       auteur4.text = widget.livre?.auteur4 ?? "";
-      date.text = widget.livre?.ouvrage?.date.toString() ?? "";
+      date.text = widget.livre?.ouvrage.date != null
+          ? DateFormat('yyyy-MM-dd')
+              .format(widget.livre!.ouvrage.date as DateTime)
+          : "";
       nombreExemplaire.text =
           widget.livre?.ouvrage.nombreExemplaire.toString() ?? "";
       annee.text = widget.livre?.ouvrage.annee ?? "";

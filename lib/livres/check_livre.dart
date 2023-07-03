@@ -9,7 +9,8 @@ import 'package:intl/intl.dart';
 
 class CheckLivre extends StatefulWidget {
   Livre? livre;
-  CheckLivre({super.key, required this.livre});
+  Function afterSubmit;
+  CheckLivre({super.key, required this.livre, required this.afterSubmit});
 
   @override
   State<CheckLivre> createState() => _CheckLivreState();
@@ -19,7 +20,8 @@ class _CheckLivreState extends State<CheckLivre> {
   String? selectedAdherent = '';
   List<User> adherentList = [];
   bool isLoading = true;
-  TextEditingController dateRetoure = TextEditingController();
+  TextEditingController dateEmprunt = TextEditingController();
+  TextEditingController dateDeRetour = TextEditingController();
 
   Future<void> getAdherents() async {
     setState(() {
@@ -55,14 +57,15 @@ class _CheckLivreState extends State<CheckLivre> {
     var headers = {'Content-Type': 'application/json'};
     var body = json.encode({
       'adherant': int.parse(selectedAdherent ?? ""),
-      "ouvrage": widget.livre?.ouvrage?.id
+      "ouvrage": widget.livre?.ouvrage?.id,
+      "dateDeRetour": dateDeRetour.text.trim(),
     });
 
     try {
       var response = await http.post(url, headers: headers, body: body);
       if (response.statusCode == 200) {
-        print("test");
         closeForm();
+        widget.afterSubmit();
       } else {
         print('Request failed with status: ${response.statusCode}');
       }
@@ -95,7 +98,7 @@ class _CheckLivreState extends State<CheckLivre> {
           selectedDate = DateTime(picked.year, picked.month, picked.day);
 
           // Utilisez le format 'yyyy-MM-dd' pour extraire la date sans les heures
-          dateRetoure.text = DateFormat('yyyy-MM-dd').format(selectedDate!);
+          dateDeRetour.text = DateFormat('yyyy-MM-dd').format(selectedDate!);
         });
       }
     }
@@ -241,7 +244,7 @@ class _CheckLivreState extends State<CheckLivre> {
                               Expanded(
                                 // Ajustez la hauteur selon vos besoins
                                 child: TextFormField(
-                                  controller: dateRetoure,
+                                  controller: dateDeRetour,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.digitsOnly,
                                   ],

@@ -14,16 +14,6 @@ class OuvrageLivre extends StatelessWidget {
               content: ListeLivres(
                 key: super.key,
               )),
-          // TabData(
-          //     title: "Articles",
-          //     content: ListeArticles(
-          //       key: super.key,
-          //     )),
-          // TabData(
-          //     title: "Revues",
-          //     content: ListeRevues(
-          //       key: super.key,
-          //     )),
         ],
         appTitle: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
