@@ -68,6 +68,29 @@ class Artilce {
   }
 }
 
+class Revue {
+  int id;
+  String auteur2;
+  String numeroVolume;
+  Ouvrage ouvrage;
+  Revue(
+      {required this.id,
+      required this.auteur2,
+      required this.numeroVolume,
+      required this.ouvrage});
+  factory Revue.fromJson(Map<String, dynamic> json) {
+    return Revue(
+        id: json['id'] as int,
+        auteur2: json['auteur2'] ?? "",
+        numeroVolume: json['numeroVolume'] ?? "",
+        ouvrage: Ouvrage.fromJson(json['ouvrage']));
+  }
+
+  static List<Revue> fromJsonArray(List<dynamic> jsonList) {
+    return jsonList.map((json) => Revue.fromJson(json)).toList();
+  }
+}
+
 class Livre {
   int id;
   String auteur2;

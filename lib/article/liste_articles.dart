@@ -529,7 +529,7 @@ class _ListeArticlesState extends State<ListeArticles> {
                                                                                 ),
                                                                               ),
                                                                               TextSpan(
-                                                                                text: '${article.ouvrage.titre}',
+                                                                                text: '"${article.ouvrage.titre}"',
                                                                                 style: const TextStyle(
                                                                                   color: Colors.red,
                                                                                   fontWeight: FontWeight.bold,
@@ -554,7 +554,7 @@ class _ListeArticlesState extends State<ListeArticles> {
                                                                           mainAxisSize:
                                                                               MainAxisSize.min,
                                                                           children: [
-                                                                            Text('Êtes-vous sûr de vouloir supprimer le livre suivant ?'),
+                                                                            Text('Êtes-vous sûr de vouloir supprimer l\'article suivant ?'),
                                                                             SizedBox(height: 16),
                                                                             //Text('titre : ${livre.titre}'),
                                                                             //Text('Auteur : ${livre.auteur}'),

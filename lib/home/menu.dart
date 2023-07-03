@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:nativewrappers';
 import 'package:flutter/cupertino.dart';
 import 'package:projetbiblio/users/adherants.dart';
 import 'package:projetbiblio/livres/ouvrage_livre.dart';
@@ -10,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../article/ouvrage_article.dart';
 import '../connect/from_Screen.dart';
+import '../revue/ouvrage_revue.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -28,7 +28,8 @@ class _MenuState extends State<Menu> {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text(userState.connectedUser?.nom ?? ""),
+            accountName: Text(
+                "${userState.connectedUser?.prenom ?? ""} ${userState.connectedUser?.nom ?? ""}"),
             accountEmail: Text(userState.connectedUser?.email ?? ""),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
@@ -43,7 +44,12 @@ class _MenuState extends State<Menu> {
                 )),
           ),
           ListTile(
-            leading: const Icon(Icons.account_circle),
+            leading: Icon(Icons.equalizer_outlined),
+            title: Text('Tableau de bord'),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.dashboard),
             title: const Text('Tableau de bord'),
             onTap: () {},
           ),
@@ -53,7 +59,7 @@ class _MenuState extends State<Menu> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => OuvrageLivre()),
+                MaterialPageRoute(builder: (context) => const OuvrageLivre()),
               );
             },
           ),
@@ -63,14 +69,19 @@ class _MenuState extends State<Menu> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => OuvrageArticle()),
+                MaterialPageRoute(builder: (context) => const OuvrageArticle()),
               );
             },
           ),
           ListTile(
             leading: const Icon(Icons.library_books),
             title: const Text('Liste des Revues'),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const OuvrageRevue()),
+              );
+            },
           ),
           const Divider(
             color: Colors.black,

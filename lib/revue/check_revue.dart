@@ -3,23 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:projetbiblio/model/model.dart';
 import 'package:projetbiblio/roles.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 
-class CheckLivre extends StatefulWidget {
-  Livre? livre;
-  CheckLivre({super.key, required this.livre});
+class CheckRevue extends StatefulWidget {
+  Revue? revue;
+  CheckRevue({super.key, required this.revue});
 
   @override
-  State<CheckLivre> createState() => _CheckLivreState();
+  State<CheckRevue> createState() => _CheckRevueState();
 }
 
-class _CheckLivreState extends State<CheckLivre> {
+class _CheckRevueState extends State<CheckRevue> {
   String? selectedAdherent = '';
   List<User> adherentList = [];
   bool isLoading = true;
-  TextEditingController dateRetoure = TextEditingController();
 
   Future<void> getAdherents() async {
     setState(() {
@@ -55,7 +51,7 @@ class _CheckLivreState extends State<CheckLivre> {
     var headers = {'Content-Type': 'application/json'};
     var body = json.encode({
       'adherant': int.parse(selectedAdherent ?? ""),
-      "ouvrage": widget.livre?.ouvrage?.id
+      "ouvrage": widget.revue?.ouvrage?.id
     });
 
     try {
@@ -79,27 +75,6 @@ class _CheckLivreState extends State<CheckLivre> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime? selectedDate;
-
-    Future<void> _selectDate(BuildContext context) async {
-      final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate ?? DateTime.now(),
-        firstDate: DateTime(1900),
-        lastDate: DateTime(2100),
-        locale: const Locale("fr", 'FR'),
-      );
-
-      if (picked != null && picked != selectedDate) {
-        setState(() {
-          selectedDate = DateTime(picked.year, picked.month, picked.day);
-
-          // Utilisez le format 'yyyy-MM-dd' pour extraire la date sans les heures
-          dateRetoure.text = DateFormat('yyyy-MM-dd').format(selectedDate!);
-        });
-      }
-    }
-
     void closeForm() {
       Navigator.pop(context); // Revenir en arrière
     }
@@ -138,7 +113,7 @@ class _CheckLivreState extends State<CheckLivre> {
                               ),
                               const SizedBox(width: 5),
                               const Text(
-                                "Prendre le livre intitulé ",
+                                "Prendre la revue intitulée ",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
@@ -147,17 +122,17 @@ class _CheckLivreState extends State<CheckLivre> {
                                 ),
                               ),
                               Text(
-                                '"${widget.livre?.ouvrage.titre}"',
+                                "${widget.revue?.ouvrage.titre}",
                                 style: const TextStyle(
                                   color: Colors.red,
-                                  fontSize: 18,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const Text(
-                                " :",
+                                ' (* = obligatoire)',
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: Colors.red,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: 'Roboto',
@@ -205,75 +180,11 @@ class _CheckLivreState extends State<CheckLivre> {
                                     return DropdownMenuItem<String>(
                                       value: user.id.toString(),
                                       child: Text(
-                                        'CIN :' +
-                                            user.cin +
-                                            ', ' +
-                                            user.prenom +
-                                            ' ' +
-                                            user.nom,
+                                        user.nom + ' ' + user.prenom,
                                       ),
                                     );
                                   }).toList(),
                                 ),
-                              ),
-                              SizedBox(
-                                width: 850,
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                '  Date de retour de ce livre : ',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Roboto',
-                                ),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                // Ajustez la hauteur selon vos besoins
-                                child: TextFormField(
-                                  controller: dateRetoure,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                  ],
-                                  readOnly:
-                                      true, // Définissez le champ en lecture seule
-                                  onTap: () => _selectDate(
-                                      context), // Ouvrir le DatePickerDialog lorsqu'il est cliqué
-                                  decoration: InputDecoration(
-                                    labelText: 'Date de retour du livre',
-                                    border: OutlineInputBorder(),
-                                    suffixIcon: RichText(
-                                      text: TextSpan(
-                                        text:
-                                            '*', // Caractère "*" à afficher en rouge
-                                        style: TextStyle(
-                                          color: Colors.red,
-                                          fontSize:
-                                              23, // Couleur rouge pour le "*"
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  // Ajoutez un initialValue pour afficher la date au format 'yyyy-MM-dd'
-                                  // Utilisez un formatage pour afficher la date sans les heures
-                                  initialValue: selectedDate != null
-                                      ? DateFormat('yyyy-MM-dd')
-                                          .format(selectedDate!)
-                                      : null,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 800,
                               ),
                             ],
                           ),
@@ -282,7 +193,7 @@ class _CheckLivreState extends State<CheckLivre> {
                             children: [
                               SizedBox(width: 10),
                               Text(
-                                'Le nombre d\'exemplaires de ce livre : ',
+                                'Le nombre d\'exemplaires de ce revue : ${widget.revue?.ouvrage.nombreExemplaire}',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
@@ -290,40 +201,43 @@ class _CheckLivreState extends State<CheckLivre> {
                                   fontFamily: 'Roboto',
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              SizedBox(width: 10),
                               Text(
-                                '${widget.livre?.ouvrage.nombreExemplaire}',
+                                'Le nombre de ce revue qui est actuellement disponible : ${widget.revue?.ouvrage.nombreDisponible}',
                                 style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 18,
+                                  color: Colors.black,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: 'Roboto',
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(
-                            height: 20,
-                          ),
+                          const SizedBox(height: 20),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Text(
-                                '  Le nombre de ce livre qui est actuellement disponible : ',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Roboto',
-                                ),
+                              const Icon(
+                                Icons.note,
+                                color: Colors.green,
+                                size: 24.0,
                               ),
-                              SizedBox(),
-                              Text(
-                                '${widget.livre?.ouvrage.nombreDisponible}',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Roboto',
+                              SizedBox(width: 8.0),
+                              RichText(
+                                text: const TextSpan(
+                                  text:
+                                      'Le nombre maximal d\'adhérents pouvant emprunter cinq revues.',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.black,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.black,
+                                    decorationThickness: 1.5,
+                                    decorationStyle: TextDecorationStyle
+                                        .double, // Utilise une ligne en double
+                                    // Ajuste l'espace entre le texte et la ligne de soulignement
+                                  ),
                                 ),
                               ),
                             ],
@@ -336,8 +250,8 @@ class _CheckLivreState extends State<CheckLivre> {
                               onPrimary: Colors.white,
                               minimumSize: Size(120.0, 50.0),
                             ),
-                            child: Text(
-                              'Prendre ce livre',
+                            child: const Text(
+                              'Prendre cette revue',
                               style: TextStyle(
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.bold,

@@ -1,25 +1,26 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:projetbiblio/Users/users_formulaire.dart';
-import 'package:projetbiblio/livres/livres_formulaire.dart';
+import 'package:intl/intl.dart';
 import 'package:projetbiblio/model/model.dart';
 import 'package:http/http.dart' as http;
-import 'dart:async';
 import 'package:projetbiblio/roles.dart';
-import 'package:projetbiblio/users/affichier_user.dart';
+import 'dart:async';
+import 'package:projetbiblio/user_state.dart';
+import 'package:provider/provider.dart';
+import 'affichier_revue.dart';
+import 'revues_formulaire.dart';
+import 'check_revue.dart';
 
-// ignore: must_be_immutable
-class ListeUsers extends StatefulWidget {
-  int role = Roles.adherant;
-  ListeUsers({Key? key, required this.role}) : super(key: key);
+class ListeRevues extends StatefulWidget {
+  const ListeRevues({Key? key}) : super(key: key);
 
   @override
-  State<ListeUsers> createState() => _ListeUsersState();
+  State<ListeRevues> createState() => _ListeRevuesState();
 }
 
-class _ListeUsersState extends State<ListeUsers> {
+class _ListeRevuesState extends State<ListeRevues> {
   TextEditingController recherche = TextEditingController();
-  List<User> users = [];
+  List<Revue> revues = [];
   String selectedOption = "1";
   int page = 1;
   int limit = 15;
@@ -27,20 +28,21 @@ class _ListeUsersState extends State<ListeUsers> {
   bool isLoading = true;
   bool isDataLoaded = false;
 
-  Future<void> fetchUsers() async {
+  Future<void> fetchRevues() async {
     setState(() {
       isLoading = true;
     });
 
     var url = Uri.parse(
-        'http://localhost:4000/api/users?page=$page&limit=$limit&recherche=${recherche.text.trim()}&target=$selectedOption&role=${widget.role}');
+        'http://localhost:4000/api/revues?page=$page&limit=$limit&recherche=${recherche.text.trim()}&target=$selectedOption');
 
     try {
       var response = await http.get(url);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         setState(() {
-          users = List<User>.from(data['users'].map((x) => User.fromJson(x)));
+          revues =
+              List<Revue>.from(data['revues'].map((x) => Revue.fromJson(x)));
           totalCount = data['totalCount'];
           isDataLoaded = true;
         });
@@ -59,14 +61,14 @@ class _ListeUsersState extends State<ListeUsers> {
   @override
   void initState() {
     super.initState();
-    fetchUsers();
+    fetchRevues();
   }
 
   void nextPage() {
     setState(() {
       if (page < (totalCount / limit).ceil()) {
         page++;
-        fetchUsers();
+        fetchRevues();
       }
     });
   }
@@ -75,18 +77,18 @@ class _ListeUsersState extends State<ListeUsers> {
     setState(() {
       if (page > 1) {
         page--;
-        fetchUsers();
+        fetchRevues();
       }
     });
   }
 
-  Future<void> deleteRequest(User user) async {
-    var url = Uri.parse('http://localhost:4000/api/users/${user.id}');
+  Future<void> deleteRequest(Revue revue) async {
+    var url = Uri.parse('http://localhost:4000/api/revues/${revue.id}');
 
     try {
       var response = await http.delete(url);
       if (response.statusCode == 200) {
-        await fetchUsers();
+        await fetchRevues();
       } else {
         print('Request failed with status: ${response.statusCode}');
       }
@@ -98,6 +100,7 @@ class _ListeUsersState extends State<ListeUsers> {
   @override
   Widget build(BuildContext context) {
     final int totalPages = (totalCount / limit).ceil();
+    final userState = Provider.of<UserState>(context);
 
     return Row(
       children: [
@@ -120,14 +123,14 @@ class _ListeUsersState extends State<ListeUsers> {
                     color: Colors.white,
                     child: Column(
                       children: [
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Row(
                             children: [
                               Icon(Icons.search),
                               SizedBox(width: 5),
                               Text(
-                                'Chercher un ${widget.role == Roles.adherant ? "adhérent" : "admin"}',
+                                'Chercher une revue',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
@@ -147,15 +150,15 @@ class _ListeUsersState extends State<ListeUsers> {
                                 items: const [
                                   DropdownMenuItem<String>(
                                     value: "1",
-                                    child: Text('cin'),
+                                    child: Text('Titre'),
                                   ),
                                   DropdownMenuItem<String>(
                                     value: "2",
-                                    child: Text('nom'),
+                                    child: Text('Auteur'),
                                   ),
                                   DropdownMenuItem<String>(
                                     value: "3",
-                                    child: Text('prénom'),
+                                    child: Text('Année'),
                                   ),
                                 ],
                                 onChanged: (String? value) {
@@ -201,7 +204,7 @@ class _ListeUsersState extends State<ListeUsers> {
                               ),
                               const SizedBox(width: 30),
                               ElevatedButton(
-                                onPressed: fetchUsers,
+                                onPressed: fetchRevues,
                                 child: const Text(
                                   'Rechercher',
                                   style: TextStyle(
@@ -234,14 +237,14 @@ class _ListeUsersState extends State<ListeUsers> {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
+                            const Padding(
+                              padding: EdgeInsets.all(8.0),
                               child: Row(
                                 children: [
                                   Icon(Icons.list_alt),
                                   SizedBox(width: 5),
                                   Text(
-                                    'Liste des ${widget.role == Roles.adherant ? "adhérents" : "admins"} disponibles',
+                                    'Liste des revues disponibles',
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 16,
@@ -291,10 +294,9 @@ class _ListeUsersState extends State<ListeUsers> {
                                                     child: Dialog(
                                                       // Contenu de la boîte de dialogue ici
                                                       child: Container(
-                                                        child: UserFormulaire(
-                                                          role: widget.role,
+                                                        child: RevueFormulaire(
                                                           afterSubmit: () =>
-                                                              fetchUsers(),
+                                                              fetchRevues(),
                                                         ),
                                                       ),
                                                     ),
@@ -302,10 +304,10 @@ class _ListeUsersState extends State<ListeUsers> {
                                                 },
                                               );
                                             },
-                                            icon: Icon(Icons
+                                            icon: const Icon(Icons
                                                 .library_add), // Icône à afficher
-                                            label: Text(
-                                              'Ajouter un ${widget.role == Roles.adherant ? "adhérent" : "admin"}',
+                                            label: const Text(
+                                              'Ajouter une revue',
                                               style: TextStyle(
                                                 fontSize: 18.0,
                                                 fontWeight: FontWeight.bold,
@@ -337,9 +339,9 @@ class _ListeUsersState extends State<ListeUsers> {
                                         DataColumn(
                                           label: SizedBox(
                                             width:
-                                                120, // Largeur de la première colonne (ISBN)
+                                                150, // Largeur de la première colonne (ISBN)
                                             child: Text(
-                                              'CIN',
+                                              'Titre',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -349,9 +351,9 @@ class _ListeUsersState extends State<ListeUsers> {
                                         DataColumn(
                                           label: SizedBox(
                                             width:
-                                                200, // Largeur de la deuxième colonne (Titre)
+                                                120, // Largeur de la deuxième colonne (Titre)
                                             child: Text(
-                                              'Nom',
+                                              'Éditeur',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -363,7 +365,7 @@ class _ListeUsersState extends State<ListeUsers> {
                                             width:
                                                 150, // Largeur de la troisième colonne (Auteur)
                                             child: Text(
-                                              'Prénom',
+                                              'les numéros de pages',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -375,7 +377,7 @@ class _ListeUsersState extends State<ListeUsers> {
                                             width:
                                                 110, // Largeur de la quatrième colonne (Année)
                                             child: Text(
-                                              'email',
+                                              'année d\'\édition',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -384,9 +386,9 @@ class _ListeUsersState extends State<ListeUsers> {
                                         ),
                                         DataColumn(
                                           label: SizedBox(
-                                            width: 100,
+                                            width: 120,
                                             child: Text(
-                                              'Telephone',
+                                              'Nbr d\'exemplaire',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -396,7 +398,7 @@ class _ListeUsersState extends State<ListeUsers> {
                                         DataColumn(
                                           label: SizedBox(
                                             width:
-                                                150, // Largeur de la sixième colonne (Actions)
+                                                170, // Largeur de la sixième colonne (Actions)
                                             child: Center(
                                               child: Text(
                                                 'Actions',
@@ -409,17 +411,32 @@ class _ListeUsersState extends State<ListeUsers> {
                                         ),
                                       ],
 
-                                      rows: users
-                                          .map((user) => DataRow(
+                                      rows: revues
+                                          .map((revue) => DataRow(
                                                 cells: [
-                                                  DataCell(Text(user.cin)),
-                                                  DataCell(Text(user.nom)),
-                                                  DataCell(Text(user.prenom)),
                                                   DataCell(Text(
-                                                      user.email.toString())),
-                                                  DataCell(Text(user.telephone
+                                                      revue.ouvrage.titre)),
+                                                  DataCell(Text(
+                                                      revue.ouvrage.editeur)),
+                                                  DataCell(
+                                                      Text(revue.numeroVolume)),
+                                                  DataCell(Text(DateFormat(
+                                                          'yyyy-MM-dd')
+                                                      .format(
+                                                          revue.ouvrage.date!)
+                                                      .toString())),
+                                                  DataCell(Text(revue
+                                                      .ouvrage.nombreExemplaire
                                                       .toString())),
                                                   DataCell(Row(
+                                                    mainAxisAlignment: userState
+                                                                .connectedUser
+                                                                ?.role ==
+                                                            Roles.admin
+                                                        ? MainAxisAlignment
+                                                            .start // Align icons to the start
+                                                        : MainAxisAlignment
+                                                            .center,
                                                     children: [
                                                       IconButton(
                                                         onPressed: () {
@@ -432,9 +449,9 @@ class _ListeUsersState extends State<ListeUsers> {
                                                                 child: Dialog(
                                                                   child:
                                                                       Container(
-                                                                    child: AffichierUser(
-                                                                        user:
-                                                                            user),
+                                                                    child: AffichierRevue(
+                                                                        revue:
+                                                                            revue),
                                                                   ),
                                                                 ),
                                                               );
@@ -447,101 +464,165 @@ class _ListeUsersState extends State<ListeUsers> {
                                                           color: Colors.green,
                                                         ),
                                                       ),
-                                                      IconButton(
-                                                        onPressed: () {
-                                                          showDialog(
-                                                            context: context,
-                                                            builder:
-                                                                (BuildContext
-                                                                    context) {
-                                                              return FractionallySizedBox(
-                                                                child: Dialog(
-                                                                  // Dialog content here
-                                                                  child:
-                                                                      Container(
-                                                                    child:
-                                                                        UserFormulaire(
-                                                                      role: user
-                                                                          .role,
-                                                                      user:
-                                                                          user,
-                                                                      afterSubmit:
-                                                                          fetchUsers,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            },
-                                                          );
-                                                        },
-                                                        icon: const Icon(
-                                                          Icons.edit,
-                                                          size:
-                                                              32, // Taille de l'icône
-                                                          color: Colors
-                                                              .blue, // Couleur de l'icône
-                                                        ),
-                                                      ),
-                                                      IconButton(
-                                                        onPressed: () {
-                                                          showDialog(
-                                                            context: context,
-                                                            builder:
-                                                                (BuildContext
-                                                                    context) {
-                                                              return AlertDialog(
-                                                                title: Text(
-                                                                    'Confirmation de suppression d"utilisateur ${user.nom} ${user.prenom}'),
-                                                                content:
-                                                                    const Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  mainAxisSize:
-                                                                      MainAxisSize
-                                                                          .min,
-                                                                  children: [
-                                                                    Text(
-                                                                        'Êtes-vous sûr de vouloir supprimer l"utilisateur suivant ?'),
-                                                                    SizedBox(
-                                                                        height:
-                                                                            16),
-                                                                  ],
-                                                                ),
-                                                                actions: <Widget>[
-                                                                  TextButton(
-                                                                    child: const Text(
-                                                                        'Annuler'),
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop();
+                                                      ...(userState
+                                                                  .connectedUser
+                                                                  ?.role ==
+                                                              Roles.admin
+                                                          ? [
+                                                              IconButton(
+                                                                onPressed: () {
+                                                                  showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (BuildContext
+                                                                            context) {
+                                                                      return FractionallySizedBox(
+                                                                        child:
+                                                                            Dialog(
+                                                                          // Dialog content here
+                                                                          child:
+                                                                              Container(
+                                                                            child:
+                                                                                RevueFormulaire(
+                                                                              revue: revue,
+                                                                              afterSubmit: () => fetchRevues(),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      );
                                                                     },
-                                                                  ),
-                                                                  TextButton(
-                                                                    child: const Text(
-                                                                        'Supprimer'),
-                                                                    onPressed:
-                                                                        () {
-                                                                      deleteRequest(
-                                                                          user);
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop();
+                                                                  );
+                                                                },
+                                                                icon:
+                                                                    const Icon(
+                                                                  Icons.edit,
+                                                                  size:
+                                                                      32, // Taille de l'icône
+                                                                  color: Colors
+                                                                      .blue, // Couleur de l'icône
+                                                                ),
+                                                              ),
+                                                              IconButton(
+                                                                onPressed: () {
+                                                                  showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (BuildContext
+                                                                            context) {
+                                                                      return AlertDialog(
+                                                                        title:
+                                                                            RichText(
+                                                                          text:
+                                                                              TextSpan(
+                                                                            style:
+                                                                                DefaultTextStyle.of(context).style,
+                                                                            children: [
+                                                                              const TextSpan(
+                                                                                text: 'Confirmation de suppression du livre ',
+                                                                                style: TextStyle(
+                                                                                  color: Colors.black,
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  fontSize: 18,
+                                                                                ),
+                                                                              ),
+                                                                              TextSpan(
+                                                                                text: '"${revue.ouvrage.titre}"',
+                                                                                style: const TextStyle(
+                                                                                  color: Colors.red,
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  fontSize: 20,
+                                                                                ),
+                                                                              ),
+                                                                              const TextSpan(
+                                                                                text: ' :',
+                                                                                style: TextStyle(
+                                                                                  color: Colors.black,
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  fontSize: 18,
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                        content:
+                                                                            Column(
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
+                                                                          mainAxisSize:
+                                                                              MainAxisSize.min,
+                                                                          children: [
+                                                                            Text('Êtes-vous sûr de vouloir supprimer la revue suivant ?'),
+                                                                            SizedBox(height: 16),
+                                                                            //Text('titre : ${livre.titre}'),
+                                                                            //Text('Auteur : ${livre.auteur}'),
+                                                                          ],
+                                                                        ),
+                                                                        actions: <Widget>[
+                                                                          TextButton(
+                                                                            child:
+                                                                                Text('Annuler'),
+                                                                            onPressed:
+                                                                                () {
+                                                                              Navigator.of(context).pop();
+                                                                            },
+                                                                          ),
+                                                                          TextButton(
+                                                                            child:
+                                                                                Text('Supprimer'),
+                                                                            onPressed:
+                                                                                () {
+                                                                              deleteRequest(revue);
+                                                                              Navigator.of(context).pop();
+                                                                            },
+                                                                          ),
+                                                                        ],
+                                                                      );
                                                                     },
-                                                                  ),
-                                                                ],
-                                                              );
-                                                            },
-                                                          );
-                                                        },
-                                                        icon: Icon(
-                                                          Icons.delete,
-                                                          size: 32,
-                                                          color: Colors.red,
-                                                        ),
-                                                      ),
+                                                                  );
+                                                                },
+                                                                icon: Icon(
+                                                                  Icons.delete,
+                                                                  size: 32,
+                                                                  color: Colors
+                                                                      .red,
+                                                                ),
+                                                              ),
+                                                              IconButton(
+                                                                onPressed: () {
+                                                                  showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (BuildContext
+                                                                            context) {
+                                                                      return FractionallySizedBox(
+                                                                        child:
+                                                                            Dialog(
+                                                                          // Dialog content here
+                                                                          child: Container(
+                                                                              child: CheckRevue(
+                                                                            revue:
+                                                                                revue,
+                                                                          )),
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                },
+                                                                icon:
+                                                                    const Icon(
+                                                                  Icons
+                                                                      .check_box,
+                                                                  size:
+                                                                      32, // Taille de l'icône
+                                                                  color: Colors
+                                                                      .green, // Couleur de l'icône
+                                                                ),
+                                                              )
+                                                            ]
+                                                          : []),
                                                     ],
                                                   )),
                                                 ],
