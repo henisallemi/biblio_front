@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:projetbiblio/livres/check_livre.dart';
 import 'package:projetbiblio/livres/affichier_livre.dart';
 import 'package:projetbiblio/livres/livres_formulaire.dart';
+import 'package:projetbiblio/livres/retour_livre.dart';
 import 'package:projetbiblio/model/model.dart';
 import 'package:http/http.dart' as http;
 import 'package:projetbiblio/roles.dart';
@@ -604,12 +605,12 @@ class _ListeLivresState extends State<ListeLivres> {
                                                                             Dialog(
                                                                           // Dialog content here
                                                                           child: Container(
+                                                                              height: 400,
+                                                                              width: 800,
                                                                               child: CheckLivre(
-                                                                            livre:
-                                                                                livre,
-                                                                            afterSubmit: () =>
-                                                                                fetchLivres(),
-                                                                          )),
+                                                                                livre: livre,
+                                                                                afterSubmit: () => fetchLivres(),
+                                                                              )),
                                                                         ),
                                                                       );
                                                                     },
@@ -624,7 +625,41 @@ class _ListeLivresState extends State<ListeLivres> {
                                                                   color: Colors
                                                                       .green, // Couleur de l'icône
                                                                 ),
-                                                              )
+                                                              ),
+                                                              IconButton(
+                                                                onPressed: () {
+                                                                  showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (BuildContext
+                                                                            context) {
+                                                                      return FractionallySizedBox(
+                                                                        child:
+                                                                            Dialog(
+                                                                          // Dialog content here
+                                                                          child: Container(
+                                                                              child: RetourLivre(
+                                                                            livre:
+                                                                                livre,
+                                                                            afterSubmit: () =>
+                                                                                fetchLivres(),
+                                                                          )),
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                },
+                                                                icon:
+                                                                    const Icon(
+                                                                  Icons
+                                                                      .add_alarm_outlined,
+                                                                  size:
+                                                                      32, // Taille de l'icône
+                                                                  color: Colors
+                                                                      .indigo, // Couleur de l'icône
+                                                                ),
+                                                              ),
                                                             ]
                                                           : []),
                                                     ],

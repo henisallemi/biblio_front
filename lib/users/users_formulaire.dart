@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -38,6 +37,25 @@ class _UserFormulaireState extends State<UserFormulaire> {
         email.text.isNotEmpty &&
         motDePasse.text.isNotEmpty &&
         telephone.text.isNotEmpty;
+  }
+
+  // Définition de l'ensemble de caractères autorisés pour le mot de passe
+  String _allowedChars =
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+// Génère un mot de passe aléatoire avec la longueur spécifiée
+  String generateRandomPassword(int length) {
+    final random = Random();
+    final passwordCharacters = List.generate(
+        length, (_) => _allowedChars[random.nextInt(_allowedChars.length)]);
+    return passwordCharacters.join();
+  }
+
+// Fonction appelée lorsque le bouton est cliqué
+  void generatePassword() {
+    final motDePasseAleatoire =
+        generateRandomPassword(8); // Génère un mot de passe de longueur 8
+    motDePasse.text = motDePasseAleatoire;
   }
 
   Future<void> sendRequest(bool updateMode, BuildContext context) async {
@@ -109,10 +127,10 @@ class _UserFormulaireState extends State<UserFormulaire> {
     }
 
     try {
-      var formData = http.MultipartRequest(
-          'POST',
-          Uri.parse(
-              "http://localhost:4000/api/users/${widget.user?.id ?? ''}"));
+      var url = updateMode
+          ? Uri.parse('http://localhost:4000/api/users/${widget.user?.id}')
+          : Uri.parse('http://localhost:4000/api/users');
+      var formData = http.MultipartRequest('POST', url);
 
       formData.fields.addAll({
         'cin': cin.text.trim(),
@@ -123,9 +141,10 @@ class _UserFormulaireState extends State<UserFormulaire> {
         'motDePasse': motDePasse.text.trim(),
         'role': widget.user?.role.toString() ?? widget.role.toString(),
       });
-
-      formData.files
-          .add(await http.MultipartFile.fromPath('image', image.text.trim()));
+      if (!updateMode) {
+        formData.files
+            .add(await http.MultipartFile.fromPath('image', image.text.trim()));
+      }
 
       var response = await formData.send();
 
@@ -164,37 +183,18 @@ class _UserFormulaireState extends State<UserFormulaire> {
 
         Navigator.pop(context);
       } else {
-        print('Request failed with status: ${response.statusCode}');
+        print(
+            '\x1B[31mRequest failed with status: ${response.statusCode}\x1B[0m');
       }
     } catch (e) {
       print('Error: $e');
     }
   }
 
-// Définition de l'ensemble de caractères autorisés pour le mot de passe
-  String _allowedChars =
-      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-
-// Génère un mot de passe aléatoire avec la longueur spécifiée
-  String generateRandomPassword(int length) {
-    final random = Random();
-    final passwordCharacters = List.generate(
-        length, (_) => _allowedChars[random.nextInt(_allowedChars.length)]);
-    return passwordCharacters.join();
-  }
-
-// Fonction appelée lorsque le bouton est cliqué
-  void generatePassword() {
-    final motDePasseAleatoire =
-        generateRandomPassword(8); // Génère un mot de passe de longueur 8
-    motDePasse.text = motDePasseAleatoire;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final userState = Provider.of<UserState>(context);
     var isUpdateMode = widget.user != null;
-
+    final userState = Provider.of<UserState>(context);
     void closeForm() {
       Navigator.pop(context); // Revenir en arrière
     }

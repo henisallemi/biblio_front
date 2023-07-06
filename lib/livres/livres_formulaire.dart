@@ -3,12 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:projetbiblio/model/model.dart';
-import 'package:projetbiblio/livres/liste_livres.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
 class LivreFormulaire extends StatefulWidget {
@@ -133,6 +129,7 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
               body: body)
           : await http.post(Uri.parse('http://localhost:4000/api/livres'),
               headers: headers, body: body);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         await widget.afterSubmit();
         final snackBar = SnackBar(

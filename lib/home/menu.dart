@@ -29,25 +29,54 @@ class _MenuState extends State<Menu> {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text(
-                "${userState.connectedUser?.prenom ?? ""} ${userState.connectedUser?.nom ?? ""}"),
-            accountEmail: Text(userState.connectedUser?.email ?? ""),
-            currentAccountPicture: CircleAvatar(
-              child: ClipOval(
+            accountName: Row(
+              children: [
+                Icon(Icons.person,
+                    size: 20,
+                    color: Colors.blue), // Ajouter une icône pour le nom
+                SizedBox(width: 8), // Espacement entre l'icône et le texte
+                Text(
+                  "${userState.connectedUser?.prenom ?? ""} ${userState.connectedUser?.nom ?? ""}",
+                ),
+              ],
+            ),
+            accountEmail: Row(
+              children: [
+                Icon(Icons.email,
+                    size: 20,
+                    color: Colors.blue), // Ajouter une icône pour l'email
+                SizedBox(width: 8), // Espacement entre l'icône et le texte
+                Text(userState.connectedUser?.email ?? ""),
+              ],
+            ),
+            currentAccountPicture: ClipOval(
+              child: Container(
+                width: 500, // Modifier la largeur de l'image selon vos besoins
+                height: 500, // Modifier la hauteur de l'image selon vos besoins
                 child: Image.network(
-                    "http://localhost:4000/${userState.connectedUser!.imagePath.isNotEmpty ? userState.connectedUser!.imagePath : 'uploads/avatar.jpg'}",
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                  return Image.asset('images/avatar.jpg');
-                }),
+                  "http://localhost:4000/${userState.connectedUser!.imagePath.isNotEmpty ? userState.connectedUser!.imagePath : 'uploads/avatar.jpg'}",
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      'images/avatar.jpg',
+                      fit: BoxFit.cover,
+                    );
+                  },
+                ),
               ),
             ),
-            decoration: const BoxDecoration(
-                color: Colors.indigo,
-                image: DecorationImage(
-                  image: AssetImage('images/back.jpg'),
-                  fit: BoxFit.cover,
-                )),
+            decoration: BoxDecoration(
+              color: Colors.indigo,
+              image: DecorationImage(
+                image: AssetImage('images/back.jpg'),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  Colors.indigo
+                      .withOpacity(0.5), // Modifier l'opacité selon vos besoins
+                  BlendMode.srcATop,
+                ),
+              ),
+            ),
           ),
           ListTile(
             leading: Icon(Icons.equalizer_outlined),

@@ -1,12 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:projetbiblio/livres/check_livre.dart';
-import 'package:projetbiblio/livres/affichier_livre.dart';
-import 'package:projetbiblio/livres/livres_formulaire.dart';
 import 'package:projetbiblio/model/model.dart';
 import 'package:http/http.dart' as http;
-import 'package:projetbiblio/roles.dart';
 import 'dart:async';
 import 'package:projetbiblio/user_state.dart';
 import 'package:provider/provider.dart';
@@ -107,7 +103,7 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                     color: Colors.white,
                     child: Column(
                       children: [
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Row(
                             children: [
@@ -124,6 +120,199 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                             ],
                           ),
                         ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 35,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 350,
+                                    height: 150,
+                                    color: Colors.lightBlue,
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          height: 35,
+                                          width: 400,
+                                          color: Colors.black,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '  Livre emprunter',
+                                                style: TextStyle(
+                                                  fontSize: 23,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Colors
+                                                      .white, // Titre en blanc
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 30,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.book,
+                                              color: Colors.white,
+                                              size:
+                                                  48, // Taille de l'icône ajustée
+                                            ),
+                                            SizedBox(width: 20),
+                                            Text(
+                                              '5',
+                                              style: TextStyle(
+                                                fontSize: 48,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              width: 70,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 350,
+                                    height: 150,
+                                    color: Colors.indigo,
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          height: 35,
+                                          width: 400,
+                                          color: Colors.black,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '  Article emprunter',
+                                                style: TextStyle(
+                                                  fontSize: 23,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Colors
+                                                      .white, // Titre en blanc
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 30,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.article,
+                                              color: Colors.white,
+                                              size:
+                                                  48, // Taille de l'icône ajustée
+                                            ),
+                                            SizedBox(width: 20),
+                                            Text(
+                                              '5',
+                                              style: TextStyle(
+                                                fontSize: 48,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              width: 70,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 350,
+                                    height: 150,
+                                    color: Colors.grey[800],
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          height: 35,
+                                          width: 400,
+                                          color: Colors.black,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '  Revue emprunter',
+                                                style: TextStyle(
+                                                  fontSize: 23,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Colors
+                                                      .white, // Titre en blanc
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 30,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.library_books,
+                                              color: Colors.white,
+                                              size:
+                                                  48, // Taille de l'icône ajustée
+                                            ),
+                                            SizedBox(width: 20),
+                                            Text(
+                                              '0',
+                                              style: TextStyle(
+                                                fontSize: 48,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -136,7 +325,7 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.all(8.0),
                               child: Row(
                                 children: [
@@ -151,7 +340,36 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                     ),
                                   ),
                                   SizedBox(
-                                    height: 20,
+                                      width:
+                                          260), // Ajout d'un espacement avant la partie de recherche
+                                  // Icône de recherche
+
+                                  Container(
+                                    width: 320,
+                                    child: Expanded(
+                                      child: TextField(
+                                        decoration: InputDecoration(
+                                          prefixIcon: Icon(Icons
+                                              .search), // Icône de recherche à gauche du champ
+                                          hintText: 'Titre de document',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Container(
+                                    width: 120,
+                                    height: 51,
+                                    child: ElevatedButton(
+                                      onPressed: () {},
+                                      child: Text('Chercher'),
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all(Colors
+                                                .red), // Couleur personnalisée
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -159,13 +377,13 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                             if (isDataLoaded)
                               Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(40),
                                   color: Colors.white,
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.grey.withOpacity(0.3),
                                       spreadRadius: 2,
-                                      blurRadius: 5,
+                                      blurRadius: 10,
                                       offset: Offset(0, 2),
                                     ),
                                   ],
@@ -177,20 +395,31 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                     ),
                                     DataTable(
                                       columnSpacing:
-                                          60, // Espacement horizontal entre les colonnes si nécessaire
+                                          140, // Espacement horizontal entre les colonnes si nécessaire
                                       headingRowColor: MaterialStateColor
                                           .resolveWith((states) => Colors
-                                              .indigoAccent), // Couleur de la ligne d'en-tête
+                                              .red), // Couleur de la ligne d'en-tête
                                       dataRowColor:
                                           MaterialStateColor.resolveWith(
                                               (states) => Colors.white),
+
                                       columns: const [
                                         DataColumn(
                                           label: SizedBox(
-                                            width:
-                                                120, // Largeur de la première colonne (ISBN)
+                                            width: 120,
                                             child: Text(
-                                              'ISBN',
+                                              'Titre',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: SizedBox(
+                                            width: 120,
+                                            child: Text(
+                                              'Éditeur',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -202,7 +431,7 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                             width:
                                                 180, // Largeur de la deuxième colonne (Titre)
                                             child: Text(
-                                              'Titre',
+                                              'Type de document',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -214,7 +443,7 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                             width:
                                                 150, // Largeur de la troisième colonne (Auteur)
                                             child: Text(
-                                              'Premier Auteur',
+                                              "Date d'emprunte",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -226,18 +455,7 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                             width:
                                                 110, // Largeur de la quatrième colonne (Année)
                                             child: Text(
-                                              'Année d\'\édition',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: SizedBox(
-                                            width: 117,
-                                            child: Text(
-                                              'Nbr d\'exemplaire',
+                                              'Date retour',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
@@ -248,8 +466,10 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                       rows: livres
                                           .map((livre) => DataRow(
                                                 cells: [
-                                                  DataCell(
-                                                      Text(livre.ouvrage.isbn)),
+                                                  DataCell(Text(
+                                                      livre.ouvrage.titre)),
+                                                  DataCell(Text(
+                                                      livre.ouvrage.titre)),
                                                   DataCell(Text(
                                                       livre.ouvrage.titre)),
                                                   DataCell(Text(
@@ -258,9 +478,6 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                                           'yyyy-MM-dd')
                                                       .format(
                                                           livre.ouvrage.date!)
-                                                      .toString())),
-                                                  DataCell(Text(livre
-                                                      .ouvrage.nombreExemplaire
                                                       .toString())),
                                                 ],
                                               ))
