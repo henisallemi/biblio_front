@@ -10,6 +10,7 @@ import '../article/ouvrage_article.dart';
 import '../connect/from_Screen.dart';
 import '../dashboard/dashboard1.dart';
 import '../dashboard/dashboard_adherent.dart';
+import '../parametres/tab_view_parametre.dart';
 import '../revue/ouvrage_revue.dart';
 
 class Menu extends StatefulWidget {
@@ -157,7 +158,12 @@ class _MenuState extends State<Menu> {
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Paramètres'),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TabViewParametre()),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.logout),
