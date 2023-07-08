@@ -172,8 +172,8 @@ class _ParametreState extends State<Parametre> {
         Expanded(
           child: SingleChildScrollView(
             child: Container(
+              height: 880,
               padding: const EdgeInsets.symmetric(horizontal: 5.0),
-              height: MediaQuery.of(context).size.height,
               color: Colors.grey,
               child: Column(
                 children: [
@@ -183,7 +183,7 @@ class _ParametreState extends State<Parametre> {
                     width: 1100,
                     child: Column(
                       children: [
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Row(
                             children: [
@@ -200,106 +200,173 @@ class _ParametreState extends State<Parametre> {
                             ],
                           ),
                         ),
-                        Row(
+                        Column(
                           children: [
-                            const SizedBox(width: 530),
-                            ImagePickerComponent(
-                              controller: image,
-                              imagePath: widget.user?.imagePath ?? null,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 15),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                controller: cin,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                  LengthLimitingTextInputFormatter(8),
-                                ],
-                                keyboardType: TextInputType.number,
-                                validator: (value) {
-                                  if (value?.length != 8) {
-                                    return 'Please enter exactly 8 digits';
-                                  }
-                                  return null; // Return null if the input is valid
-                                },
-                                decoration: InputDecoration(
-                                  labelText: 'CIN',
-                                  border: OutlineInputBorder(),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Expanded(
+                                          child: TextFormField(
+                                            controller: nom,
+                                            decoration: InputDecoration(
+                                              labelText: 'Nom',
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                              ),
+                                              contentPadding:
+                                                  EdgeInsets.symmetric(
+                                                vertical: 15.0,
+                                                horizontal: 10.0,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      // Espacement entre les deux TextFormField
+                                      Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: TextFormField(
+                                          controller: prenom,
+                                          decoration: InputDecoration(
+                                            labelText: 'Prénom',
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                              vertical: 15.0,
+                                              horizontal: 10.0,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: TextFormField(
-                                controller: email,
-                                decoration: InputDecoration(
-                                  labelText: 'Email',
-                                  border: OutlineInputBorder(),
+
+                                const SizedBox(
+                                    width:
+                                        100), // Espacement entre les TextFormField et l'image
+                                ImagePickerComponent(
+                                  controller: image,
+                                  imagePath: widget.user?.imagePath ?? null,
                                 ),
-                              ),
+                                const SizedBox(
+                                    width:
+                                        40), // Espacement entre l'image et les autres éléments
+                              ],
+                            ),
+                            SizedBox(height: 15),
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: email,
+                                    decoration: InputDecoration(
+                                      labelText: 'Email',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: cin,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                    ],
+                                    keyboardType: TextInputType.number,
+                                    validator: (value) {
+                                      if (value?.length != 8) {
+                                        return 'Veuillez entrer exactement 8 chiffres';
+                                      }
+                                      return null; // Renvoie null si l'entrée est valide
+                                    },
+                                    decoration: InputDecoration(
+                                      labelText: 'CIN',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Container(
+                                    height: 50,
+                                    child: TextFormField(
+                                      controller: telephone,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp(r'[0-9+-]')),
+                                      ],
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        labelText: 'Téléphone',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                              ],
                             ),
                           ],
                         ),
                         const SizedBox(height: 20),
                         Row(
                           children: [
-                            Expanded(
-                              child: TextFormField(
-                                controller: nom,
-                                decoration: InputDecoration(
-                                  labelText: 'Nom ',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
+                            const SizedBox(
+                              width: 870,
                             ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Container(
-                                height: 50,
-                                child: TextFormField(
-                                  controller: telephone,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'[0-9+-]')),
-                                  ],
-                                  keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
-                                    labelText: 'Téléphone ',
-                                    border: OutlineInputBorder(),
+                            Container(
+                              width: 180,
+                              height: 55,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  primary:
+                                      Colors.orange, // Couleur de fond orange
+                                  onPrimary:
+                                      Colors.white, // Couleur de texte blanche
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        8), // Bordure circulaire
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Modifer',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                controller: prenom,
-                                decoration: InputDecoration(
-                                  labelText: 'Prénom ',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                          ],
+                        SizedBox(
+                          height: 20,
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 35),
-                  Expanded(
-                    child: Container(
-                      color: Colors.white,
-                      width: 1100,
-                      height: 2000,
-                      child: SingleChildScrollView(
+                  Container(
+                    width: 1100,
+                    child: Expanded(
+                      child: Container(
+                        color: Colors.white,
                         child: Column(
                           children: [
                             Padding(
@@ -466,6 +533,41 @@ class _ParametreState extends State<Parametre> {
                                   ),
                                 ],
                               ),
+                            ),
+                            Row(
+                              children: [
+                                const SizedBox(
+                                  width: 870,
+                                ),
+                                Container(
+                                  width: 180,
+                                  height: 55,
+                                  child: ElevatedButton(
+                                    onPressed: () {},
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors
+                                          .orange, // Couleur de fond orange
+                                      onPrimary: Colors
+                                          .white, // Couleur de texte blanche
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            8), // Bordure circulaire
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Modifer',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 20,
                             ),
                             Container(
                               decoration: BoxDecoration(

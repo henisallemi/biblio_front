@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projetbiblio/dashboard/dashboard2.dart';
 import 'package:projetbiblio/dashboard/dashboard_admin.dart';
 import 'package:projetbiblio/users/adherants.dart';
 import 'package:projetbiblio/livres/ouvrage_livre.dart';
@@ -85,7 +86,7 @@ class _MenuState extends State<Menu> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const DashboardAdmin()),
+                MaterialPageRoute(builder: (context) => const Dashbord2()),
               );
             },
           ),
