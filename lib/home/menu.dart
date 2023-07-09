@@ -80,26 +80,36 @@ class _MenuState extends State<Menu> {
               ),
             ),
           ),
-          ListTile(
-            leading: Icon(Icons.equalizer_outlined),
-            title: Text('Tableau de bord'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Dashbord2()),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.dashboard),
-            title: const Text('Tableau de bord'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Dashbord1()),
-              );
-            },
-          ),
+          ...(userState.connectedUser?.role == Roles.admin
+              ? [
+                  ListTile(
+                    leading: Icon(Icons.equalizer_outlined),
+                    title: Text('Tableau de bord'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Dashbord2()),
+                      );
+                    },
+                  ),
+                ]
+              : []),
+          ...(userState.connectedUser?.role == Roles.adherant
+              ? [
+                  ListTile(
+                    leading: const Icon(Icons.dashboard),
+                    title: const Text('Tableau de bord'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Dashbord1()),
+                      );
+                    },
+                  ),
+                ]
+              : []),
           ListTile(
             leading: const Icon(Icons.book),
             title: const Text('Liste des Livres'),

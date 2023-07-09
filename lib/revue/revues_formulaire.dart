@@ -23,7 +23,7 @@ class _RevueFormulaireState extends State<RevueFormulaire> {
   TextEditingController auteur1 = TextEditingController();
   TextEditingController auteur2 = TextEditingController();
   TextEditingController numeroVolume = TextEditingController();
-
+  TextEditingController description = TextEditingController();
   bool checkFields() {
     return titre.text.isNotEmpty &&
         editeur.text.isNotEmpty &&
@@ -192,6 +192,7 @@ class _RevueFormulaireState extends State<RevueFormulaire> {
       auteur1.text = widget.revue?.ouvrage.auteur1 ?? "";
       auteur2.text = widget.revue?.auteur2 ?? "";
       numeroVolume.text = widget.revue?.numeroVolume ?? "";
+      description.text = widget.revue?.ouvrage.description ?? "";
       titre.text = widget.revue?.ouvrage.titre ?? "";
       date.text = widget.revue?.ouvrage?.date.toString() ?? "";
       nombreExemplaire.text =
@@ -234,7 +235,7 @@ class _RevueFormulaireState extends State<RevueFormulaire> {
                 Visibility(
                   // Afficher l'icône uniquement si isUpdateMode est true
                   child: IconButton(
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     iconSize: 32,
                     color: Colors.blueGrey,
                     onPressed: () {
@@ -252,7 +253,7 @@ class _RevueFormulaireState extends State<RevueFormulaire> {
                     controller: titre,
                     decoration: InputDecoration(
                       labelText: 'Titre',
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       suffixIcon: RichText(
                         text: const TextSpan(
                           text: '*', // Caractère "*" à mettre en rouge
@@ -265,15 +266,15 @@ class _RevueFormulaireState extends State<RevueFormulaire> {
                     ),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
                   child: TextFormField(
                     controller: auteur1,
                     decoration: InputDecoration(
                       labelText: 'Auteur 1 ',
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       suffixIcon: RichText(
-                        text: TextSpan(
+                        text: const TextSpan(
                           text: '*', // Caractère "*" à mettre en rouge
                           style: TextStyle(
                             color: Colors.red,
@@ -294,9 +295,9 @@ class _RevueFormulaireState extends State<RevueFormulaire> {
                     controller: editeur,
                     decoration: InputDecoration(
                       labelText: 'Editeur ',
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       suffixIcon: RichText(
-                        text: TextSpan(
+                        text: const TextSpan(
                           text: '*', // Caractère "*" à mettre en rouge
                           style: TextStyle(
                             color: Colors.red,
@@ -307,11 +308,11 @@ class _RevueFormulaireState extends State<RevueFormulaire> {
                     ),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
                   child: TextFormField(
                     controller: auteur2,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Auteur 2',
                       border: OutlineInputBorder(),
                     ),
@@ -335,9 +336,9 @@ class _RevueFormulaireState extends State<RevueFormulaire> {
                           context), // Ouvrir le DatePickerDialog lorsqu'il est cliqué
                       decoration: InputDecoration(
                         labelText: 'Date d\'édition ',
-                        border: OutlineInputBorder(),
+                        border: const OutlineInputBorder(),
                         suffixIcon: RichText(
-                          text: TextSpan(
+                          text: const TextSpan(
                             text: '*', // Caractère "*" à afficher en rouge
                             style: TextStyle(
                               color: Colors.red,
@@ -354,7 +355,21 @@ class _RevueFormulaireState extends State<RevueFormulaire> {
                     ),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextFormField(
+                    controller: numeroVolume,
+                    decoration: const InputDecoration(
+                      labelText: 'Les numéros de pages',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
                 Expanded(
                   child: Container(
                     height: 50, // Ajustez la hauteur selon vos besoins
@@ -366,9 +381,9 @@ class _RevueFormulaireState extends State<RevueFormulaire> {
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: 'Nombre d\'exemplaire ',
-                        border: OutlineInputBorder(),
+                        border: const OutlineInputBorder(),
                         suffixIcon: RichText(
-                          text: TextSpan(
+                          text: const TextSpan(
                             text: '*', // Caractère "*" à mettre en rouge
                             style: TextStyle(
                               color: Colors.red,
@@ -380,26 +395,19 @@ class _RevueFormulaireState extends State<RevueFormulaire> {
                     ),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
+                const SizedBox(width: 10),
                 Expanded(
                   child: TextFormField(
-                    controller: numeroVolume,
-                    decoration: InputDecoration(
-                      labelText: 'Les numéros de pages',
+                    controller: description,
+                    decoration: const InputDecoration(
+                      labelText: 'Description de cette revue',
                       border: OutlineInputBorder(),
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: 624,
-                )
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
             Center(
@@ -412,10 +420,10 @@ class _RevueFormulaireState extends State<RevueFormulaire> {
                     borderRadius: BorderRadius.circular(10),
                   ),
 
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   primary: Colors.green, // Changer la couleur en vert
                 ),
-                icon: Icon(Icons.add),
+                icon: const Icon(Icons.add),
                 label: Text(
                   isUpdateMode ? "Modifier" : 'Ajouter',
                   style: TextStyle(

@@ -28,7 +28,7 @@ class AffichierRevue extends StatelessWidget {
                   const Icon(Icons.visibility),
                   const SizedBox(width: 7),
                   const Text(
-                    "Les détails du revue",
+                    "Les détails de la revue",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -51,7 +51,7 @@ class AffichierRevue extends StatelessWidget {
                 children: [
                   const Icon(Icons.circle_sharp, color: Colors.green),
                   const Text(
-                    " Le numéro international normalisé du livre (ISBN) du livre ",
+                    " Le titre de cette revue est ",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -59,19 +59,11 @@ class AffichierRevue extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "${revue?.ouvrage.titre}",
+                    '"${revue?.ouvrage.titre}"',
                     style: const TextStyle(
                       color: Colors.red,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Text(
-                    " est ",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
                     ),
                   ),
                   const Text(
@@ -94,7 +86,7 @@ class AffichierRevue extends StatelessWidget {
                     color: Colors.green,
                   ),
                   const Text(
-                    " L'éditeur du livre est ",
+                    " L'éditeur de cette revue est ",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -145,7 +137,7 @@ class AffichierRevue extends StatelessWidget {
                     color: Colors.green,
                   ),
                   const Text(
-                    " Les auteurs du livre sont ",
+                    " Les auteurs de cette revue sont ",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -196,7 +188,7 @@ class AffichierRevue extends StatelessWidget {
                     color: Colors.green,
                   ),
                   const Text(
-                    " Le nombre d'exemplaires disponibles du livre ",
+                    " Le nombre d'exemplaires disponibles de cette revue ",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -204,7 +196,7 @@ class AffichierRevue extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "${revue?.ouvrage.titre} ",
+                    '"${revue?.ouvrage.titre}" ',
                     style: const TextStyle(
                       color: Colors.red,
                       fontSize: 16,
@@ -265,14 +257,12 @@ class AffichierRevue extends StatelessWidget {
                   ),
                   const SizedBox(
                       width: 5), // Espacement entre l'icône et le texte
-                  Expanded(
-                    child: Text(
-                      "${revue?.ouvrage.description}",
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                      ),
+                  Text(
+                    "${revue?.ouvrage.description}",
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
                     ),
                   ),
                 ],

@@ -28,7 +28,7 @@ class AffichierArticle extends StatelessWidget {
                   const Icon(Icons.visibility),
                   const SizedBox(width: 7),
                   const Text(
-                    "Les détails du livre",
+                    "Les détails de l'article",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -51,7 +51,7 @@ class AffichierArticle extends StatelessWidget {
                 children: [
                   const Icon(Icons.circle_sharp, color: Colors.green),
                   const Text(
-                    " Le numéro international normalisé du livre (ISBN) du livre ",
+                    " Le titre de cet article est ",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -59,19 +59,11 @@ class AffichierArticle extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "${article?.ouvrage.titre}",
+                    '"${article?.ouvrage.titre}"',
                     style: const TextStyle(
                       color: Colors.red,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Text(
-                    " est ",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
                     ),
                   ),
                   const Text(
@@ -94,7 +86,7 @@ class AffichierArticle extends StatelessWidget {
                     color: Colors.green,
                   ),
                   const Text(
-                    " L'éditeur du livre est ",
+                    " L'éditeur de l'article est ",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -145,7 +137,7 @@ class AffichierArticle extends StatelessWidget {
                     color: Colors.green,
                   ),
                   const Text(
-                    " Les auteurs du livre sont ",
+                    " Les auteurs de l'article sont ",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -196,7 +188,7 @@ class AffichierArticle extends StatelessWidget {
                     color: Colors.green,
                   ),
                   const Text(
-                    " Le nombre d'exemplaires disponibles du livre ",
+                    " Le nombre d'exemplaires disponibles de l'article ",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,

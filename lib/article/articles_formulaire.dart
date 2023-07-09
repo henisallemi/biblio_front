@@ -22,7 +22,7 @@ class _ArticleFormulaireState extends State<ArticleFormulaire> {
   TextEditingController date = TextEditingController();
   TextEditingController auteur1 = TextEditingController();
   TextEditingController auteur2 = TextEditingController();
-  TextEditingController conference = TextEditingController();
+  TextEditingController description = TextEditingController();
 
   bool checkFields() {
     return titre.text.isNotEmpty &&
@@ -108,7 +108,7 @@ class _ArticleFormulaireState extends State<ArticleFormulaire> {
       'date': date.text.trim(),
       "auteur1": auteur1.text.trim(),
       "auteur2": auteur2.text.trim(),
-      "conference": conference.text.trim(),
+      "description": description.text.trim(),
     });
 
     try {
@@ -192,7 +192,7 @@ class _ArticleFormulaireState extends State<ArticleFormulaire> {
     if (isUpdateMode) {
       auteur1.text = widget.artilce?.ouvrage.auteur1 ?? "";
       auteur2.text = widget.artilce?.auteur2 ?? "";
-      conference.text = widget.artilce?.conference ?? "";
+      description.text = widget.artilce?.ouvrage.description ?? "";
       titre.text = widget.artilce?.ouvrage.titre ?? "";
       date.text = widget.artilce?.ouvrage?.date.toString() ?? "";
       nombreExemplaire.text =
@@ -388,9 +388,9 @@ class _ArticleFormulaireState extends State<ArticleFormulaire> {
               children: [
                 Expanded(
                   child: TextFormField(
-                    controller: conference,
+                    controller: description,
                     decoration: InputDecoration(
-                      labelText: 'Conférence',
+                      labelText: "Description de l'article",
                       border: OutlineInputBorder(),
                     ),
                   ),
