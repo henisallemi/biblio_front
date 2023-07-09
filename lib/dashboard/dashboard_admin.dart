@@ -140,13 +140,13 @@ class _DashbordAdminState extends State<DashbordAdmin> {
                         child: Column(
                           children: [
                             Padding(
-                              padding: EdgeInsets.all(8.0),
+                              padding: EdgeInsets.all(5.0),
                               child: Row(
                                 children: [
                                   Icon(Icons.history),
                                   SizedBox(width: 5),
                                   Text(
-                                    'Historique des empruntes',
+                                    'Historique des retours de documents',
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 16,

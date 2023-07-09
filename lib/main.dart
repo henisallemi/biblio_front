@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projetbiblio/connect/from_Screen.dart';
+import 'package:projetbiblio/dashboard/dashboard1.dart';
+import 'package:projetbiblio/dashboard/dashboard2.dart';
 import 'package:projetbiblio/home/first_page.dart';
 import 'package:projetbiblio/user_state.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +27,6 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     var userState = Provider.of<UserState>(context);
-
     return MaterialApp(
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -39,7 +40,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: userState.connectedUser != null
+      home: userState.connectedUser?.id == null
           ? const FormScreen()
           : const FirstPage(),
     );

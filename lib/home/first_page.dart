@@ -52,7 +52,7 @@ class _FirstPageState extends State<FirstPage> {
           ],
         ),
       ),
-      drawer: Menu(),
+      drawer: const Menu(),
     );
   }
 }

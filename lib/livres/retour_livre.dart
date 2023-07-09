@@ -122,13 +122,13 @@ class _RetourLivreState extends State<RetourLivre> {
       return;
     }
 
-    var url = Uri.parse('http://localhost:4000/api/ouvrages/emprunt');
+    var url = Uri.parse('http://localhost:4000/api/ouvrages/return');
 
     var headers = {'Content-Type': 'application/json'};
     var body = json.encode({
       'adherant': int.parse(selectedAdherent ?? ""),
       "ouvrage": widget.livre?.ouvrage?.id,
-      "dateDeRetour": dateDeRetour2.text.trim(),
+      "returnedAt": dateDeRetour2.text.trim(),
     });
 
     try {

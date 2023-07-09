@@ -172,3 +172,75 @@ class Ouvrage {
     );
   }
 }
+
+class History {
+  int nombreLivres;
+  int nombreRevues;
+  int nombreArticles;
+  List<HistoryItem> items;
+
+  History(
+      {required this.nombreRevues,
+      required this.nombreArticles,
+      required this.items,
+      required this.nombreLivres});
+
+  factory History.fromJson(Map<String, dynamic> json) {
+    return History(
+        nombreLivres: json['nombreLivres'] ?? 0,
+        nombreRevues: json['nombreRevues'] ?? 0,
+        nombreArticles: json['nombreArticles'] ?? 0,
+        items: HistoryItem.fromJsonArray(json['items']));
+  }
+}
+
+class Emprunt {
+  DateTime? dateEmprunt;
+  DateTime? dateDeRetour;
+  DateTime? returnedAt;
+  bool isReturned;
+
+  Emprunt(
+      {required this.dateEmprunt,
+      required this.dateDeRetour,
+      required this.returnedAt,
+      required this.isReturned});
+
+  factory Emprunt.fromJson(Map<String, dynamic> json) {
+    return Emprunt(
+        dateEmprunt: json["dateEmprunt"] != null
+            ? DateTime.parse(json["dateEmprunt"])
+            : null,
+        dateDeRetour: json["dateDeRetour"] != null
+            ? DateTime.parse(json["dateDeRetour"])
+            : null,
+        returnedAt: json["returnedAt"] != null
+            ? DateTime.parse(json["returnedAt"])
+            : null,
+        isReturned: json['isReturned'] ?? false);
+  }
+
+  static List<Emprunt> fromJsonArray(List<dynamic> jsonList) {
+    return jsonList.map((json) => Emprunt.fromJson(json)).toList();
+  }
+}
+
+class HistoryItem {
+  Ouvrage ouvrage;
+  int type;
+  Emprunt emprunt;
+
+  HistoryItem(
+      {required this.ouvrage, required this.type, required this.emprunt});
+
+  factory HistoryItem.fromJson(Map<String, dynamic> json) {
+    return HistoryItem(
+        ouvrage: Ouvrage.fromJson(json["ouvrage"]),
+        type: json['type'],
+        emprunt: Emprunt.fromJson(json["emprunt"]));
+  }
+
+  static List<HistoryItem> fromJsonArray(List<dynamic> jsonList) {
+    return jsonList.map((json) => HistoryItem.fromJson(json)).toList();
+  }
+}

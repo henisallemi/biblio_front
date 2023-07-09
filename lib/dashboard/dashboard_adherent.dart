@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:projetbiblio/model/model.dart';
 import 'package:http/http.dart' as http;
+import 'package:projetbiblio/types.dart';
 import 'dart:async';
 import 'package:projetbiblio/user_state.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +16,7 @@ class DashbordAdherent extends StatefulWidget {
 }
 
 class _DashbordAdherentState extends State<DashbordAdherent> {
-  List<Livre> livres = [];
+  History? history;
   String selectedOption = "1";
   int page = 1;
   int limit = 15;
@@ -24,20 +25,21 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
   bool isDataLoaded = false;
 
   Future<void> fetchDashbordAdherent() async {
+    final userState = Provider.of<UserState>(context, listen: false);
+
     setState(() {
       isLoading = true;
     });
 
-    var url =
-        Uri.parse('http://localhost:4000/api/livres?page=$page&limit=$limit');
+    var url = Uri.parse(
+        'http://localhost:4000/api/users/history/${userState.connectedUser!.id}?page=$page&limit=$limit');
 
     try {
       var response = await http.get(url);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         setState(() {
-          livres =
-              List<Livre>.from(data['livres'].map((x) => Livre.fromJson(x)));
+          history = History.fromJson(data["history"]);
           totalCount = data['totalCount'];
           isDataLoaded = true;
         });
@@ -81,6 +83,12 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
   Widget build(BuildContext context) {
     final int totalPages = (totalCount / limit).ceil();
     final userState = Provider.of<UserState>(context);
+
+    if (history == null) {
+      return Row(
+        children: [],
+      );
+    }
 
     return Row(
       children: [
@@ -170,7 +178,7 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                             ),
                                             SizedBox(width: 20),
                                             Text(
-                                              '5',
+                                              history!.nombreLivres.toString(),
                                               style: TextStyle(
                                                 fontSize: 48,
                                                 fontWeight: FontWeight.bold,
@@ -233,7 +241,8 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                             ),
                                             SizedBox(width: 20),
                                             Text(
-                                              '5',
+                                              history!.nombreArticles
+                                                  .toString(),
                                               style: TextStyle(
                                                 fontSize: 48,
                                                 fontWeight: FontWeight.bold,
@@ -296,7 +305,7 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                             ),
                                             SizedBox(width: 20),
                                             Text(
-                                              '0',
+                                              history!.nombreRevues.toString(),
                                               style: TextStyle(
                                                 fontSize: 48,
                                                 fontWeight: FontWeight.bold,
@@ -319,229 +328,233 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                   const SizedBox(
                     height: 5,
                   ),
-                  Expanded(
-                    child: Container(
-                      color: Colors.white,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.history),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    'Historique des empruntes',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                  Container(
+                    color: Colors.white,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Icon(Icons.history),
+                                SizedBox(width: 5),
+                                Text(
+                                  'Historique des empruntes',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(
+                                    width:
+                                        260), // Ajout d'un espacement avant la partie de recherche
+                                // Icône de recherche
+
+                                Container(
+                                  width: 320,
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      prefixIcon: Icon(Icons
+                                          .search), // Icône de recherche à gauche du champ
+                                      hintText: 'Titre de document',
+                                      border: OutlineInputBorder(),
                                     ),
                                   ),
-                                  SizedBox(
-                                      width:
-                                          260), // Ajout d'un espacement avant la partie de recherche
-                                  // Icône de recherche
+                                ),
+                                const SizedBox(width: 5),
+                                Container(
+                                  width: 120,
+                                  height: 51,
+                                  child: ElevatedButton(
+                                    onPressed: () {},
+                                    child: Text('Chercher'),
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(Colors
+                                              .red), // Couleur personnalisée
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (isDataLoaded)
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(40),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    spreadRadius: 2,
+                                    blurRadius: 10,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 28,
+                                  ),
+                                  DataTable(
+                                    columnSpacing:
+                                        140, // Espacement horizontal entre les colonnes si nécessaire
+                                    headingRowColor: MaterialStateColor
+                                        .resolveWith((states) => Colors
+                                            .red), // Couleur de la ligne d'en-tête
+                                    dataRowColor:
+                                        MaterialStateColor.resolveWith(
+                                            (states) => Colors.white),
 
-                                  Container(
-                                    width: 320,
-                                    child: Expanded(
-                                      child: TextField(
-                                        decoration: InputDecoration(
-                                          prefixIcon: Icon(Icons
-                                              .search), // Icône de recherche à gauche du champ
-                                          hintText: 'Titre de document',
-                                          border: OutlineInputBorder(),
+                                    columns: const [
+                                      DataColumn(
+                                        label: SizedBox(
+                                          width: 120,
+                                          child: Text(
+                                            'Titre',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Container(
-                                    width: 120,
-                                    height: 51,
-                                    child: ElevatedButton(
-                                      onPressed: () {},
-                                      child: Text('Chercher'),
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all(Colors
-                                                .red), // Couleur personnalisée
+                                      DataColumn(
+                                        label: SizedBox(
+                                          width: 120,
+                                          child: Text(
+                                            'Éditeur',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white),
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                      DataColumn(
+                                        label: SizedBox(
+                                          width:
+                                              180, // Largeur de la deuxième colonne (Titre)
+                                          child: Text(
+                                            'Type de document',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                      DataColumn(
+                                        label: SizedBox(
+                                          width:
+                                              150, // Largeur de la troisième colonne (Auteur)
+                                          child: Text(
+                                            "Date d'emprunte",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                      DataColumn(
+                                        label: SizedBox(
+                                          width:
+                                              110, // Largeur de la quatrième colonne (Année)
+                                          child: Text(
+                                            'Date retour',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    rows: history!.items
+                                        .map((item) => DataRow(
+                                              cells: [
+                                                DataCell(
+                                                    Text(item.ouvrage.titre)),
+                                                DataCell(
+                                                    Text(item.ouvrage.editeur)),
+                                                DataCell(Text(item.type ==
+                                                        Types.livre
+                                                    ? "Livre"
+                                                    : item.type == Types.article
+                                                        ? "Article"
+                                                        : "Revue")),
+                                                DataCell(Text(
+                                                    DateFormat('yyyy-MM-dd')
+                                                        .format(item.emprunt
+                                                            .dateEmprunt!)
+                                                        .toString())),
+                                                DataCell(Text(
+                                                    DateFormat('yyyy-MM-dd')
+                                                        .format(item.emprunt
+                                                                .returnedAt ??
+                                                            item.emprunt
+                                                                .dateDeRetour!)
+                                                        .toString())),
+                                              ],
+                                            ))
+                                        .toList(),
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        onPressed: (page > 1)
+                                            ? previousPage as void Function()?
+                                            : null,
+                                        icon: Icon(Icons.arrow_back),
+                                        color: Colors.blue,
+                                        disabledColor: Colors.grey,
+                                      ),
+                                      SizedBox(width: 16),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                          color: Colors.blue,
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        child: Text(
+                                          'Page $page/$totalPages',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 16),
+                                      IconButton(
+                                        onPressed: (page < totalPages)
+                                            ? nextPage as void Function()?
+                                            : null,
+                                        icon: Icon(Icons.arrow_forward),
+                                        color: Colors.blue,
+                                        disabledColor: Colors.grey,
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 15,
                                   ),
                                 ],
                               ),
                             ),
-                            if (isDataLoaded)
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(40),
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.3),
-                                      spreadRadius: 2,
-                                      blurRadius: 10,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 28,
-                                    ),
-                                    DataTable(
-                                      columnSpacing:
-                                          140, // Espacement horizontal entre les colonnes si nécessaire
-                                      headingRowColor: MaterialStateColor
-                                          .resolveWith((states) => Colors
-                                              .red), // Couleur de la ligne d'en-tête
-                                      dataRowColor:
-                                          MaterialStateColor.resolveWith(
-                                              (states) => Colors.white),
-
-                                      columns: const [
-                                        DataColumn(
-                                          label: SizedBox(
-                                            width: 120,
-                                            child: Text(
-                                              'Titre',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: SizedBox(
-                                            width: 120,
-                                            child: Text(
-                                              'Éditeur',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: SizedBox(
-                                            width:
-                                                180, // Largeur de la deuxième colonne (Titre)
-                                            child: Text(
-                                              'Type de document',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: SizedBox(
-                                            width:
-                                                150, // Largeur de la troisième colonne (Auteur)
-                                            child: Text(
-                                              "Date d'emprunte",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: SizedBox(
-                                            width:
-                                                110, // Largeur de la quatrième colonne (Année)
-                                            child: Text(
-                                              'Date retour',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                      rows: livres
-                                          .map((livre) => DataRow(
-                                                cells: [
-                                                  DataCell(Text(
-                                                      livre.ouvrage.titre)),
-                                                  DataCell(Text(
-                                                      livre.ouvrage.titre)),
-                                                  DataCell(Text(
-                                                      livre.ouvrage.titre)),
-                                                  DataCell(Text(
-                                                      livre.ouvrage.auteur1)),
-                                                  DataCell(Text(DateFormat(
-                                                          'yyyy-MM-dd')
-                                                      .format(
-                                                          livre.ouvrage.date!)
-                                                      .toString())),
-                                                ],
-                                              ))
-                                          .toList(),
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                          onPressed: (page > 1)
-                                              ? previousPage as void Function()?
-                                              : null,
-                                          icon: Icon(Icons.arrow_back),
-                                          color: Colors.blue,
-                                          disabledColor: Colors.grey,
-                                        ),
-                                        SizedBox(width: 16),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                            color: Colors.blue,
-                                          ),
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 4),
-                                          child: Text(
-                                            'Page $page/$totalPages',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(width: 16),
-                                        IconButton(
-                                          onPressed: (page < totalPages)
-                                              ? nextPage as void Function()?
-                                              : null,
-                                          icon: Icon(Icons.arrow_forward),
-                                          color: Colors.blue,
-                                          disabledColor: Colors.grey,
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 15,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            if (isLoading && !isDataLoaded)
-                              Container(
-                                height: 200,
-                                alignment: Alignment.center,
-                                child: CircularProgressIndicator(),
-                              ),
-                            const SizedBox(height: 30),
-                          ],
-                        ),
+                          if (isLoading && !isDataLoaded)
+                            Container(
+                              height: 200,
+                              alignment: Alignment.center,
+                              child: CircularProgressIndicator(),
+                            ),
+                          const SizedBox(height: 30),
+                        ],
                       ),
                     ),
                   ),

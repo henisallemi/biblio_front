@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import '../components/image_picker_component.dart';
 import '../model/model.dart';
@@ -8,15 +10,7 @@ import 'package:provider/provider.dart';
 import '../user_state.dart';
 
 class Parametre extends StatefulWidget {
-  final User? user;
-  final int role = Roles.adherant;
-  final Function afterSubmit;
-
-  Parametre({
-    Key? key,
-    required this.afterSubmit,
-    this.user,
-  }) : super(key: key);
+  Parametre({Key? key}) : super(key: key);
 
   @override
   _ParametreState createState() => _ParametreState();
@@ -30,6 +24,7 @@ class _ParametreState extends State<Parametre> {
   TextEditingController telephone = TextEditingController();
   TextEditingController motDePasse = TextEditingController();
   TextEditingController image = TextEditingController();
+  bool imageChanged = false;
 
   bool checkFields() {
     return cin.text.isNotEmpty &&
@@ -40,7 +35,9 @@ class _ParametreState extends State<Parametre> {
         telephone.text.isNotEmpty;
   }
 
-  Future<void> sendRequest(bool updateMode, BuildContext context) async {
+  Future<void> sendRequest(BuildContext context) async {
+    var userState = Provider.of<UserState>(context, listen: false);
+
     if (!checkFields()) {
       // Afficher un message d'erreur pour les champs obligatoires manquants
       showDialog(
@@ -82,7 +79,8 @@ class _ParametreState extends State<Parametre> {
     }
 
     try {
-      var url = Uri.parse('http://localhost:4000/api/users/${widget.user?.id}');
+      var url = Uri.parse(
+          'http://localhost:4000/api/users/${userState.connectedUser?.id}');
 
       var formData = http.MultipartRequest('POST', url);
 
@@ -93,23 +91,27 @@ class _ParametreState extends State<Parametre> {
         'telephone': telephone.text.trim(),
         'email': email.text.trim(),
         'motDePasse': motDePasse.text.trim(),
-        'role': widget.user?.role.toString() ?? widget.role.toString(),
+        'role': userState.connectedUser!.role.toString(),
       });
 
-      formData.files.add(await http.MultipartFile.fromPath(
-        'image',
-        image.text.trim(),
-      ));
+      if (imageChanged) {
+        formData.files.add(await http.MultipartFile.fromPath(
+          'image',
+          image.text.trim(),
+        ));
+      }
 
       var response = await formData.send();
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        await widget.afterSubmit();
+        final body = await response.stream.bytesToString();
+        var data = json.decode(body);
+        userState.setUser("jwt", User.fromJson(data["user"]));
         final snackBar = SnackBar(
           content: Row(
             children: [
               Icon(
-                updateMode ? Icons.check : Icons.add,
+                Icons.check,
                 color: Colors.white,
               ),
               SizedBox(width: 8.0),
@@ -133,8 +135,6 @@ class _ParametreState extends State<Parametre> {
         );
 
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-        Navigator.pop(context);
       } else {
         print(
             '\x1B[31mRequest failed with status: ${response.statusCode}\x1B[0m');
@@ -146,25 +146,22 @@ class _ParametreState extends State<Parametre> {
 
   @override
   void initState() {
+    final userState = Provider.of<UserState>(context, listen: false);
     super.initState();
-    if (widget.user != null) {
-      cin.text = widget.user!.cin ?? '';
-      nom.text = widget.user!.nom ?? '';
-      prenom.text = widget.user!.prenom ?? '';
-      telephone.text = widget.user!.telephone ?? '';
-      email.text = widget.user!.email ?? '';
-      motDePasse.text = widget.user!.motDePasse ?? '';
-      image.text = widget.user!.imagePath ?? '';
+    if (userState.connectedUser != null) {
+      cin.text = userState.connectedUser!.cin;
+      nom.text = userState.connectedUser!.nom;
+      prenom.text = userState.connectedUser!.prenom;
+      telephone.text = userState.connectedUser!.telephone;
+      email.text = userState.connectedUser!.email;
+      motDePasse.text = userState.connectedUser!.motDePasse;
+      image.text = userState.connectedUser!.imagePath;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var isUpdateMode = widget.user != null;
     final userState = Provider.of<UserState>(context);
-    void closeForm() {
-      Navigator.pop(context); // Revenir en arrière
-    }
 
     return Row(
       children: [
@@ -201,149 +198,131 @@ class _ParametreState extends State<Parametre> {
                         ),
                         Column(
                           children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(20.0),
-                                        child: Expanded(
-                                          child: TextFormField(
-                                            controller: nom,
-                                            decoration: InputDecoration(
-                                              labelText: 'Nom',
-                                              border: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                              ),
-                                              contentPadding:
-                                                  EdgeInsets.symmetric(
-                                                vertical: 15.0,
-                                                horizontal: 10.0,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      // Espacement entre les deux TextFormField
-                                      Padding(
-                                        padding: const EdgeInsets.all(20.0),
-                                        child: TextFormField(
-                                          controller: prenom,
-                                          decoration: InputDecoration(
-                                            labelText: 'Prénom',
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0),
-                                            ),
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                              vertical: 15.0,
-                                              horizontal: 10.0,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                            Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: TextFormField(
+                                controller: nom,
+                                decoration: InputDecoration(
+                                  labelText: 'Nom',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 15.0,
+                                    horizontal: 10.0,
                                   ),
                                 ),
-
-                                const SizedBox(
-                                    width:
-                                        100), // Espacement entre les TextFormField et l'image
-                                ImagePickerComponent(
-                                  controller: image,
-                                  imagePath: widget.user?.imagePath ?? null,
-                                ),
-                                const SizedBox(
-                                    width:
-                                        40), // Espacement entre l'image et les autres éléments
-                              ],
+                              ),
                             ),
-                            SizedBox(height: 15),
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: 20,
-                                ),
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: email,
-                                    decoration: InputDecoration(
-                                      labelText: 'Email',
-                                      border: OutlineInputBorder(),
-                                    ),
+                            Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: TextFormField(
+                                controller: prenom,
+                                decoration: InputDecoration(
+                                  labelText: 'Prénom',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 15.0,
+                                    horizontal: 10.0,
                                   ),
                                 ),
-                                SizedBox(width: 10),
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: cin,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                    ],
-                                    keyboardType: TextInputType.number,
-                                    validator: (value) {
-                                      if (value?.length != 8) {
-                                        return 'Veuillez entrer exactement 8 chiffres';
-                                      }
-                                      return null; // Renvoie null si l'entrée est valide
-                                    },
-                                    decoration: InputDecoration(
-                                      labelText: 'CIN',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Expanded(
-                                  child: Container(
-                                    height: 50,
-                                    child: TextFormField(
-                                      controller: telephone,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.allow(
-                                            RegExp(r'[0-9+-]')),
-                                      ],
-                                      keyboardType: TextInputType.number,
-                                      decoration: InputDecoration(
-                                        labelText: 'Téléphone',
-                                        border: OutlineInputBorder(),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 20,
-                                ),
-                              ],
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(width: 100), // Adjust the width as needed
+                        ImagePickerComponent(
+                          controller: image,
+                          imagePath: userState.connectedUser!.imagePath ?? null,
+                          onImageChange: () {
+                            setState(() {
+                              imageChanged = true;
+                            });
+                          },
+                        ),
+                        SizedBox(width: 40), // Adjust the width as needed
+                        SizedBox(height: 15),
                         Row(
                           children: [
-                            const SizedBox(
+                            SizedBox(
+                              width: 20,
+                            ),
+                            Expanded(
+                              child: TextFormField(
+                                controller: email,
+                                decoration: InputDecoration(
+                                  labelText: 'Email',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: TextFormField(
+                                controller: cin,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                keyboardType: TextInputType.number,
+                                validator: (value) {
+                                  if (value?.length != 8) {
+                                    return 'Veuillez entrer exactement 8 chiffres';
+                                  }
+                                  return null; // Renvoie null si l'entrée est valide
+                                },
+                                decoration: InputDecoration(
+                                  labelText: 'CIN',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Container(
+                                height: 50,
+                                child: TextFormField(
+                                  controller: telephone,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp(r'[0-9+-]')),
+                                  ],
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    labelText: 'Téléphone',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          children: [
+                            SizedBox(
                               width: 870,
                             ),
                             Container(
                               width: 180,
                               height: 55,
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  sendRequest(context);
+                                },
                                 style: ElevatedButton.styleFrom(
-                                  primary:
-                                      Colors.orange, // Couleur de fond orange
-                                  onPrimary:
-                                      Colors.white, // Couleur de texte blanche
+                                  primary: Colors.orange,
+                                  onPrimary: Colors.white,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        8), // Bordure circulaire
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
                                 child: const Text(
-                                  'Modifer',
+                                  'Modifier',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 16,
@@ -542,7 +521,9 @@ class _ParametreState extends State<Parametre> {
                                   width: 180,
                                   height: 55,
                                   child: ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      sendRequest(context);
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       primary: Colors
                                           .orange, // Couleur de fond orange

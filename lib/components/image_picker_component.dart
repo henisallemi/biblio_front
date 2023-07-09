@@ -6,8 +6,12 @@ import 'package:image_picker/image_picker.dart';
 class ImagePickerComponent extends StatefulWidget {
   String? imagePath;
   final TextEditingController _controller;
+  Function? onImageChange;
   ImagePickerComponent(
-      {Key? key, required TextEditingController controller, this.imagePath})
+      {Key? key,
+      required TextEditingController controller,
+      this.imagePath,
+      this.onImageChange})
       : _controller = controller,
         super(key: key);
 
@@ -21,7 +25,6 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
 
   @override
   Widget build(BuildContext context) {
-    print("ImagePath is : ${widget.imagePath ?? 'no'}");
     return GestureDetector(
       onTap: () async {
         XFile? image = await imagePicker.pickImage(source: ImageSource.gallery);
@@ -30,6 +33,9 @@ class _ImagePickerComponentState extends State<ImagePickerComponent> {
           if (_image != null) {
             widget._controller.text = _image!
                 .path; // Update the TextEditingController with the selected image path
+            if (widget.onImageChange != null) {
+              widget.onImageChange!();
+            }
           }
         });
       },
