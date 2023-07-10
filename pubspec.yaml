@@ -34,8 +34,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   image_picker: ^0.8.2
-  
-
+  bcrypt: 
   
   http: ^0.13.4
   provider: ^6.0.1

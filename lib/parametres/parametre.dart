@@ -1,16 +1,16 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import '../components/image_picker_component.dart';
 import '../model/model.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:projetbiblio/roles.dart';
 import 'package:provider/provider.dart';
 import '../user_state.dart';
+import 'package:bcrypt/bcrypt.dart';
 
 class Parametre extends StatefulWidget {
-  Parametre({Key? key}) : super(key: key);
+  Function afterSubmit;
+  Parametre({super.key, required this.afterSubmit});
 
   @override
   _ParametreState createState() => _ParametreState();
@@ -22,8 +22,12 @@ class _ParametreState extends State<Parametre> {
   TextEditingController prenom = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController telephone = TextEditingController();
-  TextEditingController motDePasse = TextEditingController();
   TextEditingController image = TextEditingController();
+  TextEditingController motDePasse = TextEditingController();
+  TextEditingController nouveauMotDePasse = TextEditingController();
+  TextEditingController confirmerMotDePasse = TextEditingController();
+  TextEditingController motDePasseNouveau = TextEditingController();
+
   bool imageChanged = false;
 
   bool checkFields() {
@@ -37,7 +41,6 @@ class _ParametreState extends State<Parametre> {
 
   Future<void> sendRequest(BuildContext context) async {
     var userState = Provider.of<UserState>(context, listen: false);
-
     if (!checkFields()) {
       // Afficher un message d'erreur pour les champs obligatoires manquants
       showDialog(
@@ -77,13 +80,10 @@ class _ParametreState extends State<Parametre> {
       );
       return;
     }
-
     try {
       var url = Uri.parse(
           'http://localhost:4000/api/users/${userState.connectedUser?.id}');
-
       var formData = http.MultipartRequest('POST', url);
-
       formData.fields.addAll({
         'cin': cin.text.trim(),
         'nom': nom.text.trim(),
@@ -104,6 +104,7 @@ class _ParametreState extends State<Parametre> {
       var response = await formData.send();
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        await widget.afterSubmit();
         final body = await response.stream.bytesToString();
         var data = json.decode(body);
         userState.setUser("jwt", User.fromJson(data["user"]));
@@ -162,13 +163,15 @@ class _ParametreState extends State<Parametre> {
   @override
   Widget build(BuildContext context) {
     final userState = Provider.of<UserState>(context);
+    bool isMotDePasseIncorrect =
+        false; // Variable pour vérifier si le mot de passe est incorrect
 
     return Row(
       children: [
         Expanded(
           child: SingleChildScrollView(
             child: Container(
-              height: 880,
+              height: 1050,
               padding: const EdgeInsets.symmetric(horizontal: 5.0),
               color: Colors.grey,
               child: Column(
@@ -196,43 +199,9 @@ class _ParametreState extends State<Parametre> {
                             ],
                           ),
                         ),
-                        Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(20.0),
-                              child: TextFormField(
-                                controller: nom,
-                                decoration: InputDecoration(
-                                  labelText: 'Nom',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  contentPadding: EdgeInsets.symmetric(
-                                    vertical: 15.0,
-                                    horizontal: 10.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(20.0),
-                              child: TextFormField(
-                                controller: prenom,
-                                decoration: InputDecoration(
-                                  labelText: 'Prénom',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  contentPadding: EdgeInsets.symmetric(
-                                    vertical: 15.0,
-                                    horizontal: 10.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(width: 100), // Adjust the width as needed
+
+                        const SizedBox(
+                            width: 100), // Adjust the width as needed
                         ImagePickerComponent(
                           controller: image,
                           imagePath: userState.connectedUser!.imagePath ?? null,
@@ -242,14 +211,61 @@ class _ParametreState extends State<Parametre> {
                             });
                           },
                         ),
-                        SizedBox(width: 40), // Adjust the width as needed
-                        SizedBox(height: 15),
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 220,
+                              ),
+                              Container(
+                                width: 300,
+                                child: TextFormField(
+                                  controller: nom,
+                                  decoration: InputDecoration(
+                                    labelText: 'Nom',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    contentPadding: EdgeInsets.symmetric(
+                                      vertical: 15.0,
+                                      horizontal: 10.0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 20),
+                              Container(
+                                width: 300,
+                                child: TextFormField(
+                                  controller: prenom,
+                                  decoration: InputDecoration(
+                                    labelText: 'Prénom',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 15.0,
+                                      horizontal: 10.0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                            width: 100), // Adjust the width as needed
+                        const SizedBox(width: 40), // Adjust the width as needed
+                        const SizedBox(height: 15),
+
                         Row(
                           children: [
                             SizedBox(
-                              width: 20,
+                              width: 50,
                             ),
-                            Expanded(
+                            SizedBox(
+                              width: 320,
                               child: TextFormField(
                                 controller: email,
                                 decoration: InputDecoration(
@@ -259,7 +275,8 @@ class _ParametreState extends State<Parametre> {
                               ),
                             ),
                             SizedBox(width: 10),
-                            Expanded(
+                            SizedBox(
+                              width: 320,
                               child: TextFormField(
                                 controller: cin,
                                 inputFormatters: [
@@ -279,20 +296,18 @@ class _ParametreState extends State<Parametre> {
                               ),
                             ),
                             SizedBox(width: 10),
-                            Expanded(
-                              child: Container(
-                                height: 50,
-                                child: TextFormField(
-                                  controller: telephone,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'[0-9+-]')),
-                                  ],
-                                  keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
-                                    labelText: 'Téléphone',
-                                    border: OutlineInputBorder(),
-                                  ),
+                            SizedBox(
+                              width: 320,
+                              child: TextFormField(
+                                controller: telephone,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9+-]')),
+                                ],
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText: 'Téléphone',
+                                  border: OutlineInputBorder(),
                                 ),
                               ),
                             ),
@@ -301,10 +316,11 @@ class _ParametreState extends State<Parametre> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 20),
+
+                        const SizedBox(height: 20),
                         Row(
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               width: 870,
                             ),
                             Container(
@@ -333,7 +349,8 @@ class _ParametreState extends State<Parametre> {
                             ),
                           ],
                         ),
-                        SizedBox(
+
+                        const SizedBox(
                           height: 20,
                         ),
                       ],
@@ -342,233 +359,312 @@ class _ParametreState extends State<Parametre> {
                   const SizedBox(height: 35),
                   Container(
                     width: 1100,
-                    child: Expanded(
-                      child: Container(
-                        color: Colors.white,
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.vpn_key),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    'Mot de passe',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "  mot de passe ",
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 95,
-                                  ),
-                                  Container(
-                                    width: 300,
-                                    child: Expanded(
-                                      child: TextField(
-                                        decoration: InputDecoration(
-                                          hintText: "Entrez votre mot de passe",
-                                          border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Colors.blue,
-                                              width: 2.0,
-                                            ),
-                                          ),
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                        ),
-                                        style: TextStyle(
-                                          fontSize: 16.0,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "  nouveau mot de passe ",
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 17,
-                                  ),
-                                  Container(
-                                    width: 300,
-                                    child: Expanded(
-                                      child: TextField(
-                                        decoration: InputDecoration(
-                                          hintText: "Entrez votre mot de passe",
-                                          border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Colors.blue,
-                                              width: 2.0,
-                                            ),
-                                          ),
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                        ),
-                                        style: TextStyle(
-                                          fontSize: 16.0,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "  Confirmer ",
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 120,
-                                  ),
-                                  Container(
-                                    width: 300,
-                                    child: Expanded(
-                                      child: TextField(
-                                        decoration: InputDecoration(
-                                          hintText:
-                                              "Confirmer votre mot de passe",
-                                          border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Colors.blue,
-                                              width: 2.0,
-                                            ),
-                                          ),
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                        ),
-                                        style: TextStyle(
-                                          fontSize: 16.0,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Row(
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Row(
                               children: [
+                                Icon(Icons.vpn_key),
+                                SizedBox(width: 5),
+                                Text(
+                                  'Mot de passe',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                const Text(
+                                  "  mot de passe ",
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
                                 const SizedBox(
-                                  width: 870,
+                                  width: 95,
                                 ),
                                 Container(
-                                  width: 180,
-                                  height: 55,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      sendRequest(context);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors
-                                          .orange, // Couleur de fond orange
-                                      onPrimary: Colors
-                                          .white, // Couleur de texte blanche
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            8), // Bordure circulaire
+                                  width: 300,
+                                  child: TextField(
+                                    controller: motDePasseNouveau,
+                                    decoration: const InputDecoration(
+                                      hintText: "Entrez votre mot de passe",
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.grey,
+                                        ),
                                       ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.blue,
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.white,
                                     ),
-                                    child: const Text(
-                                      'Modifer',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                    style: const TextStyle(
+                                      fontSize: 16.0,
+                                      color: Colors.black,
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(40),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.3),
-                                    spreadRadius: 2,
-                                    blurRadius: 10,
-                                    offset: Offset(0, 2),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                const Text(
+                                  "  nouveau mot de passe ",
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
                                   ),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(
+                                  width: 17,
+                                ),
+                                Container(
+                                  width: 300,
+                                  child: TextField(
+                                    controller: nouveauMotDePasse,
+                                    decoration: const InputDecoration(
+                                      hintText: "Entrez votre mot de passe",
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.blue,
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.white,
+                                    ),
+                                    style: const TextStyle(
+                                      fontSize: 16.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                const Text(
+                                  "  Confirmer ",
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 120,
+                                ),
+                                Container(
+                                  width: 300,
+                                  child: TextField(
+                                    controller: confirmerMotDePasse,
+                                    decoration: const InputDecoration(
+                                      hintText: "Confirmer votre mot de passe",
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.blue,
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.white,
+                                    ),
+                                    style: const TextStyle(
+                                      fontSize: 16.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              const SizedBox(
+                                width: 870,
+                              ),
+                              Container(
+                                width: 180,
+                                height: 55,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    if (await verify(motDePasseNouveau.text,
+                                        motDePasse.text)) {
+                                      setState(() {
+                                        isMotDePasseIncorrect = true;
+                                      });
+                                    } else if (confirmerMotDePasse.text !=
+                                        nouveauMotDePasse.text) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text(
+                                              'Erreur de mot de passe',
+                                              style: TextStyle(
+                                                fontSize: 18.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                            content: Text(
+                                              'Le mot de passe de confirmation ne correspond pas au nouveau mot de passe.',
+                                              style: TextStyle(
+                                                fontSize: 16.0,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                child: Text(
+                                                  'OK',
+                                                  style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.blue,
+                                                  ),
+                                                ),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    } else {
+                                      sendRequest(context);
+                                    }
+
+                                    if (isMotDePasseIncorrect) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text(
+                                              'Erreur de mot de passe',
+                                              style: TextStyle(
+                                                fontSize: 18.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                            content: const Text(
+                                              'Le mot de passe saisi est incorrect.',
+                                              style: TextStyle(
+                                                fontSize: 16.0,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                child: const Text(
+                                                  'OK',
+                                                  style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.blue,
+                                                  ),
+                                                ),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary:
+                                        Colors.orange, // Couleur de fond orange
+                                    onPrimary: Colors
+                                        .white, // Couleur de texte blanche
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          8), // Bordure circulaire
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Modifier',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(40),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.3),
+                                  spreadRadius: 2,
+                                  blurRadius: 10,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 35),
                 ],
               ),
             ),
@@ -577,4 +673,8 @@ class _ParametreState extends State<Parametre> {
       ],
     );
   }
+}
+
+bool verify(String newPassword, String currentPassword) {
+  return true;
 }
