@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
       ),
       home: userState.connectedUser?.id == null
           ? const FormScreen()
-          : const FirstPage(),
+          : FirstPage(),
     );
   }
 }

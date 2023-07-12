@@ -9,8 +9,9 @@ import '../user_state.dart';
 import 'package:bcrypt/bcrypt.dart';
 
 class Parametre extends StatefulWidget {
-  Function afterSubmit;
-  Parametre({super.key, required this.afterSubmit});
+  Parametre({
+    super.key,
+  });
 
   @override
   _ParametreState createState() => _ParametreState();
@@ -104,7 +105,7 @@ class _ParametreState extends State<Parametre> {
       var response = await formData.send();
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        await widget.afterSubmit();
+        // await widget.afterSubmit();
         final body = await response.stream.bytesToString();
         var data = json.decode(body);
         userState.setUser("jwt", User.fromJson(data["user"]));

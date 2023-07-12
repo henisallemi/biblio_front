@@ -100,7 +100,6 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 5.0),
               width: 200,
-              height: MediaQuery.of(context).size.height,
               color: Colors.grey,
               child: Column(
                 children: [
@@ -147,7 +146,7 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                           height: 35,
                                           width: 400,
                                           color: Colors.black,
-                                          child: Column(
+                                          child: const Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
@@ -163,23 +162,23 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                             ],
                                           ),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 30,
                                         ),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            Icon(
+                                            const Icon(
                                               Icons.book,
                                               color: Colors.white,
                                               size:
                                                   48, // Taille de l'icône ajustée
                                             ),
-                                            SizedBox(width: 20),
+                                            const SizedBox(width: 20),
                                             Text(
                                               history!.nombreLivres.toString(),
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontSize: 48,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.white,
@@ -193,11 +192,11 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                 ],
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 70,
                             ),
                             Padding(
-                              padding: EdgeInsets.all(12.0),
+                              padding: const EdgeInsets.all(12.0),
                               child: Row(
                                 children: [
                                   Container(
@@ -210,7 +209,7 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                           height: 35,
                                           width: 400,
                                           color: Colors.black,
-                                          child: Column(
+                                          child: const Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
@@ -226,24 +225,24 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                             ],
                                           ),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 30,
                                         ),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            Icon(
+                                            const Icon(
                                               Icons.article,
                                               color: Colors.white,
                                               size:
                                                   48, // Taille de l'icône ajustée
                                             ),
-                                            SizedBox(width: 20),
+                                            const SizedBox(width: 20),
                                             Text(
                                               history!.nombreArticles
                                                   .toString(),
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontSize: 48,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.white,
@@ -257,11 +256,11 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                 ],
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 70,
                             ),
                             Padding(
-                              padding: EdgeInsets.all(12.0),
+                              padding: const EdgeInsets.all(12.0),
                               child: Row(
                                 children: [
                                   Container(
@@ -274,7 +273,7 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                           height: 35,
                                           width: 400,
                                           color: Colors.black,
-                                          child: Column(
+                                          child: const Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
@@ -290,23 +289,23 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                             ],
                                           ),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 30,
                                         ),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            Icon(
+                                            const Icon(
                                               Icons.library_books,
                                               color: Colors.white,
                                               size:
                                                   48, // Taille de l'icône ajustée
                                             ),
-                                            SizedBox(width: 20),
+                                            const SizedBox(width: 20),
                                             Text(
                                               history!.nombreRevues.toString(),
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontSize: 48,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.white,
@@ -334,12 +333,12 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                       child: Column(
                         children: [
                           Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Row(
                               children: [
-                                Icon(Icons.history),
-                                SizedBox(width: 5),
-                                Text(
+                                const Icon(Icons.history),
+                                const SizedBox(width: 5),
+                                const Text(
                                   'Historique des empruntes',
                                   style: TextStyle(
                                     color: Colors.black,
@@ -347,14 +346,14 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                     width:
                                         260), // Ajout d'un espacement avant la partie de recherche
                                 // Icône de recherche
 
                                 Container(
                                   width: 320,
-                                  child: TextField(
+                                  child: const TextField(
                                     decoration: InputDecoration(
                                       prefixIcon: Icon(Icons
                                           .search), // Icône de recherche à gauche du champ
@@ -390,7 +389,7 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                     color: Colors.grey.withOpacity(0.3),
                                     spreadRadius: 2,
                                     blurRadius: 10,
-                                    offset: Offset(0, 2),
+                                    offset: const Offset(0, 2),
                                   ),
                                 ],
                               ),
@@ -519,18 +518,18 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                               BorderRadius.circular(4),
                                           color: Colors.blue,
                                         ),
-                                        padding: EdgeInsets.symmetric(
+                                        padding: const EdgeInsets.symmetric(
                                             horizontal: 8, vertical: 4),
                                         child: Text(
                                           'Page $page/$totalPages',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.white,
                                           ),
                                         ),
                                       ),
-                                      SizedBox(width: 16),
+                                      const SizedBox(width: 16),
                                       IconButton(
                                         onPressed: (page < totalPages)
                                             ? nextPage as void Function()?
@@ -541,7 +540,7 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 15,
                                   ),
                                 ],
@@ -551,15 +550,12 @@ class _DashbordAdherentState extends State<DashbordAdherent> {
                             Container(
                               height: 200,
                               alignment: Alignment.center,
-                              child: CircularProgressIndicator(),
+                              child: const CircularProgressIndicator(),
                             ),
                           const SizedBox(height: 30),
                         ],
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 5,
                   ),
                 ],
               ),

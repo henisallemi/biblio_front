@@ -7,12 +7,12 @@ import 'package:projetbiblio/users/admins.dart';
 import 'package:projetbiblio/roles.dart';
 import 'package:projetbiblio/user_state.dart';
 import 'package:provider/provider.dart';
-import '../article/ouvrage_article.dart';
+import '../articles/ouvrage_article.dart';
 import '../connect/from_Screen.dart';
 import '../dashboard/dashboard1.dart';
 import '../dashboard/dashboard_adherent.dart';
 import '../parametres/tab_view_parametre.dart';
-import '../revue/ouvrage_revue.dart';
+import '../revues/ouvrage_revue.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});

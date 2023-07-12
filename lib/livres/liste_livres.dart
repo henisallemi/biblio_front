@@ -278,53 +278,63 @@ class _ListeLivresState extends State<ListeLivres> {
                                     SizedBox(
                                       height: 28,
                                     ),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child:
-                                              Container(), // Cet espace vide occupera tout l'espace disponible dans le Row
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(right: 80.0),
-                                          child: ElevatedButton.icon(
-                                            onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return FractionallySizedBox(
-                                                    child: Dialog(
-                                                      // Contenu de la boîte de dialogue ici
-                                                      child: Container(
-                                                        child: LivreFormulaire(
-                                                          afterSubmit: () =>
-                                                              fetchLivres(),
-                                                        ),
+                                    ...(userState.connectedUser?.role ==
+                                            Roles.admin
+                                        ? [
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child:
+                                                      Container(), // Cet espace vide occupera tout l'espace disponible dans le Row
+                                                ),
+                                                Container(
+                                                  margin: EdgeInsets.only(
+                                                      right: 80.0),
+                                                  child: ElevatedButton.icon(
+                                                    onPressed: () {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return FractionallySizedBox(
+                                                            child: Dialog(
+                                                              // Contenu de la boîte de dialogue ici
+                                                              child: Container(
+                                                                child:
+                                                                    LivreFormulaire(
+                                                                  afterSubmit: () =>
+                                                                      fetchLivres(),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    icon: const Icon(Icons
+                                                        .library_add), // Icône à afficher
+                                                    label: const Text(
+                                                      'Ajouter un livre',
+                                                      style: TextStyle(
+                                                        fontSize: 18.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily: 'Roboto',
                                                       ),
                                                     ),
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            icon: const Icon(Icons
-                                                .library_add), // Icône à afficher
-                                            label: const Text(
-                                              'Ajouter un livre',
-                                              style: TextStyle(
-                                                fontSize: 18.0,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'Roboto',
-                                              ),
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      primary: Colors.green,
+                                                      padding:
+                                                          EdgeInsets.all(16.0),
+                                                      minimumSize: Size(0, 70),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            style: ElevatedButton.styleFrom(
-                                              primary: Colors.green,
-                                              padding: EdgeInsets.all(16.0),
-                                              minimumSize: Size(0, 70),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                          ]
+                                        : []),
                                     const SizedBox(
                                       height: 28,
                                     ),
@@ -522,7 +532,7 @@ class _ListeLivresState extends State<ListeLivres> {
                                                                             style:
                                                                                 DefaultTextStyle.of(context).style,
                                                                             children: [
-                                                                              TextSpan(
+                                                                              const TextSpan(
                                                                                 text: 'Confirmation de suppression du livre ',
                                                                                 style: TextStyle(
                                                                                   color: Colors.black,
@@ -532,13 +542,13 @@ class _ListeLivresState extends State<ListeLivres> {
                                                                               ),
                                                                               TextSpan(
                                                                                 text: '"${livre.ouvrage.titre}"',
-                                                                                style: TextStyle(
+                                                                                style: const TextStyle(
                                                                                   color: Colors.red,
                                                                                   fontWeight: FontWeight.bold,
                                                                                   fontSize: 20,
                                                                                 ),
                                                                               ),
-                                                                              TextSpan(
+                                                                              const TextSpan(
                                                                                 text: ':',
                                                                                 style: TextStyle(
                                                                                   color: Colors.black,
@@ -550,7 +560,7 @@ class _ListeLivresState extends State<ListeLivres> {
                                                                           ),
                                                                         ),
                                                                         content:
-                                                                            Column(
+                                                                            const Column(
                                                                           crossAxisAlignment:
                                                                               CrossAxisAlignment.start,
                                                                           mainAxisSize:
@@ -558,14 +568,12 @@ class _ListeLivresState extends State<ListeLivres> {
                                                                           children: [
                                                                             Text('Êtes-vous sûr de vouloir supprimer le livre suivant ?'),
                                                                             SizedBox(height: 16),
-                                                                            //Text('titre : ${livre.titre}'),
-                                                                            //Text('Auteur : ${livre.auteur}'),
                                                                           ],
                                                                         ),
                                                                         actions: <Widget>[
                                                                           TextButton(
                                                                             child:
-                                                                                Text('Annuler'),
+                                                                                const Text('Annuler'),
                                                                             onPressed:
                                                                                 () {
                                                                               Navigator.of(context).pop();
@@ -573,7 +581,7 @@ class _ListeLivresState extends State<ListeLivres> {
                                                                           ),
                                                                           TextButton(
                                                                             child:
-                                                                                Text('Supprimer'),
+                                                                                const Text('Supprimer'),
                                                                             onPressed:
                                                                                 () {
                                                                               deleteRequest(livre);
@@ -585,7 +593,8 @@ class _ListeLivresState extends State<ListeLivres> {
                                                                     },
                                                                   );
                                                                 },
-                                                                icon: Icon(
+                                                                icon:
+                                                                    const Icon(
                                                                   Icons.delete,
                                                                   size: 32,
                                                                   color: Colors
@@ -679,29 +688,29 @@ class _ListeLivresState extends State<ListeLivres> {
                                           onPressed: (page > 1)
                                               ? previousPage as void Function()?
                                               : null,
-                                          icon: Icon(Icons.arrow_back),
+                                          icon: const Icon(Icons.arrow_back),
                                           color: Colors.blue,
                                           disabledColor: Colors.grey,
                                         ),
-                                        SizedBox(width: 16),
+                                        const SizedBox(width: 16),
                                         Container(
                                           decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(4),
                                             color: Colors.blue,
                                           ),
-                                          padding: EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                               horizontal: 8, vertical: 4),
                                           child: Text(
                                             'Page $page/$totalPages',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.white,
                                             ),
                                           ),
                                         ),
-                                        SizedBox(width: 16),
+                                        const SizedBox(width: 16),
                                         IconButton(
                                           onPressed: (page < totalPages)
                                               ? nextPage as void Function()?
@@ -712,7 +721,7 @@ class _ListeLivresState extends State<ListeLivres> {
                                         ),
                                       ],
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 15,
                                     ),
                                   ],
@@ -722,7 +731,7 @@ class _ListeLivresState extends State<ListeLivres> {
                               Container(
                                 height: 200,
                                 alignment: Alignment.center,
-                                child: CircularProgressIndicator(),
+                                child: const CircularProgressIndicator(),
                               ),
                             const SizedBox(height: 30),
                           ],

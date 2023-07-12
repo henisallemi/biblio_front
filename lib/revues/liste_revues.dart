@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:projetbiblio/model/model.dart';
 import 'package:http/http.dart' as http;
+import 'package:projetbiblio/revues/retour_revue.dart';
 import 'package:projetbiblio/roles.dart';
 import 'dart:async';
 import 'package:projetbiblio/user_state.dart';
@@ -282,45 +283,55 @@ class _ListeRevuesState extends State<ListeRevues> {
                                           child:
                                               Container(), // Cet espace vide occupera tout l'espace disponible dans le Row
                                         ),
-                                        Container(
-                                          margin: EdgeInsets.only(right: 80.0),
-                                          child: ElevatedButton.icon(
-                                            onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return FractionallySizedBox(
-                                                    child: Dialog(
-                                                      // Contenu de la boîte de dialogue ici
-                                                      child: Container(
-                                                        child: RevueFormulaire(
-                                                          afterSubmit: () =>
-                                                              fetchRevues(),
-                                                        ),
+                                        ...(userState.connectedUser?.role ==
+                                                Roles.admin
+                                            ? [
+                                                Container(
+                                                  margin: EdgeInsets.only(
+                                                      right: 80.0),
+                                                  child: ElevatedButton.icon(
+                                                    onPressed: () {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return FractionallySizedBox(
+                                                            child: Dialog(
+                                                              // Contenu de la boîte de dialogue ici
+                                                              child: Container(
+                                                                child:
+                                                                    RevueFormulaire(
+                                                                  afterSubmit: () =>
+                                                                      fetchRevues(),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    icon: const Icon(Icons
+                                                        .library_add), // Icône à afficher
+                                                    label: const Text(
+                                                      'Ajouter une revue',
+                                                      style: TextStyle(
+                                                        fontSize: 18.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily: 'Roboto',
                                                       ),
                                                     ),
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            icon: const Icon(Icons
-                                                .library_add), // Icône à afficher
-                                            label: const Text(
-                                              'Ajouter une revue',
-                                              style: TextStyle(
-                                                fontSize: 18.0,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'Roboto',
-                                              ),
-                                            ),
-                                            style: ElevatedButton.styleFrom(
-                                              primary: Colors.green,
-                                              padding: EdgeInsets.all(16.0),
-                                              minimumSize: Size(0, 70),
-                                            ),
-                                          ),
-                                        ),
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      primary: Colors.green,
+                                                      padding:
+                                                          EdgeInsets.all(16.0),
+                                                      minimumSize: Size(0, 70),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ]
+                                            : []),
                                       ],
                                     ),
                                     const SizedBox(
@@ -605,6 +616,8 @@ class _ListeRevuesState extends State<ListeRevues> {
                                                                               child: CheckRevue(
                                                                             revue:
                                                                                 revue,
+                                                                            afterSubmit: () =>
+                                                                                fetchRevues(),
                                                                           )),
                                                                         ),
                                                                       );
@@ -620,7 +633,41 @@ class _ListeRevuesState extends State<ListeRevues> {
                                                                   color: Colors
                                                                       .green, // Couleur de l'icône
                                                                 ),
-                                                              )
+                                                              ),
+                                                              IconButton(
+                                                                onPressed: () {
+                                                                  showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (BuildContext
+                                                                            context) {
+                                                                      return FractionallySizedBox(
+                                                                        child:
+                                                                            Dialog(
+                                                                          // Dialog content here
+                                                                          child: Container(
+                                                                              child: RetourRevue(
+                                                                            revue:
+                                                                                revue,
+                                                                            afterSubmit: () =>
+                                                                                fetchRevues(),
+                                                                          )),
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                },
+                                                                icon:
+                                                                    const Icon(
+                                                                  Icons
+                                                                      .add_alarm_outlined,
+                                                                  size:
+                                                                      32, // Taille de l'icône
+                                                                  color: Colors
+                                                                      .indigo, // Couleur de l'icône
+                                                                ),
+                                                              ),
                                                             ]
                                                           : []),
                                                     ],

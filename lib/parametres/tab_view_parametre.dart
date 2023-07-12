@@ -13,7 +13,7 @@ class TabViewParametre extends StatelessWidget {
           title: "Paramètres",
           content: Parametre(
             key: key,
-            afterSubmit: () => (),
+            // afterSubmit: () => (),
           ),
         ),
       ],

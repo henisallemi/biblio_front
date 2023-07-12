@@ -11,7 +11,7 @@ import 'package:projetbiblio/users/affichier_user.dart';
 // ignore: must_be_immutable
 class ListeUsers extends StatefulWidget {
   int role = Roles.adherant;
-  ListeUsers({Key? key, required this.role}) : super(key: key);
+  ListeUsers({super.key, required this.role});
 
   @override
   State<ListeUsers> createState() => _ListeUsersState();
@@ -430,12 +430,9 @@ class _ListeUsersState extends State<ListeUsers> {
                                                                     context) {
                                                               return FractionallySizedBox(
                                                                 child: Dialog(
-                                                                  child:
-                                                                      Container(
-                                                                    child: AffichierUser(
-                                                                        user:
-                                                                            user),
-                                                                  ),
+                                                                  child: AffichierUser(
+                                                                      //  key: super .key,
+                                                                      ),
                                                                 ),
                                                               );
                                                             },

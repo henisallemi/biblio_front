@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:projetbiblio/articles/retour_article.dart';
 import 'package:projetbiblio/model/model.dart';
 import 'package:http/http.dart' as http;
 import 'package:projetbiblio/roles.dart';
@@ -282,46 +283,55 @@ class _ListeArticlesState extends State<ListeArticles> {
                                           child:
                                               Container(), // Cet espace vide occupera tout l'espace disponible dans le Row
                                         ),
-                                        Container(
-                                          margin: EdgeInsets.only(right: 80.0),
-                                          child: ElevatedButton.icon(
-                                            onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return FractionallySizedBox(
-                                                    child: Dialog(
-                                                      // Contenu de la boîte de dialogue ici
-                                                      child: Container(
-                                                        child:
-                                                            ArticleFormulaire(
-                                                          afterSubmit: () =>
-                                                              fetchArticles(),
-                                                        ),
+                                        ...(userState.connectedUser?.role ==
+                                                Roles.admin
+                                            ? [
+                                                Container(
+                                                  margin: EdgeInsets.only(
+                                                      right: 80.0),
+                                                  child: ElevatedButton.icon(
+                                                    onPressed: () {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return FractionallySizedBox(
+                                                            child: Dialog(
+                                                              // Contenu de la boîte de dialogue ici
+                                                              child: Container(
+                                                                child:
+                                                                    ArticleFormulaire(
+                                                                  afterSubmit: () =>
+                                                                      fetchArticles(),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    icon: const Icon(Icons
+                                                        .library_add), // Icône à afficher
+                                                    label: const Text(
+                                                      'Ajouter un article',
+                                                      style: TextStyle(
+                                                        fontSize: 18.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily: 'Roboto',
                                                       ),
                                                     ),
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            icon: const Icon(Icons
-                                                .library_add), // Icône à afficher
-                                            label: const Text(
-                                              'Ajouter un article',
-                                              style: TextStyle(
-                                                fontSize: 18.0,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'Roboto',
-                                              ),
-                                            ),
-                                            style: ElevatedButton.styleFrom(
-                                              primary: Colors.green,
-                                              padding: EdgeInsets.all(16.0),
-                                              minimumSize: Size(0, 70),
-                                            ),
-                                          ),
-                                        ),
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      primary: Colors.green,
+                                                      padding:
+                                                          EdgeInsets.all(16.0),
+                                                      minimumSize: Size(0, 70),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ]
+                                            : []),
                                       ],
                                     ),
                                     const SizedBox(
@@ -429,203 +439,236 @@ class _ListeArticlesState extends State<ListeArticles> {
                                                   DataCell(Text(article
                                                       .ouvrage.nombreExemplaire
                                                       .toString())),
-                                                  DataCell(Row(
-                                                    mainAxisAlignment: userState
-                                                                .connectedUser
-                                                                ?.role ==
-                                                            Roles.admin
-                                                        ? MainAxisAlignment
-                                                            .start // Align icons to the start
-                                                        : MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      IconButton(
-                                                        onPressed: () {
-                                                          showDialog(
-                                                            context: context,
-                                                            builder:
-                                                                (BuildContext
-                                                                    context) {
-                                                              return FractionallySizedBox(
-                                                                child: Dialog(
-                                                                  child:
-                                                                      Container(
-                                                                    child: AffichierArticle(
-                                                                        article:
-                                                                            article),
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            },
-                                                          );
-                                                        },
-                                                        icon: const Icon(
-                                                          Icons.visibility,
-                                                          size: 32,
-                                                          color: Colors.green,
-                                                        ),
-                                                      ),
-                                                      ...(userState
+                                                  DataCell(
+                                                    Row(
+                                                      mainAxisAlignment: userState
                                                                   .connectedUser
                                                                   ?.role ==
                                                               Roles.admin
-                                                          ? [
-                                                              IconButton(
-                                                                onPressed: () {
-                                                                  showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder:
-                                                                        (BuildContext
-                                                                            context) {
-                                                                      return FractionallySizedBox(
-                                                                        child:
-                                                                            Dialog(
-                                                                          // Dialog content here
+                                                          ? MainAxisAlignment
+                                                              .start // Align icons to the start
+                                                          : MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        IconButton(
+                                                          onPressed: () {
+                                                            showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return FractionallySizedBox(
+                                                                  child: Dialog(
+                                                                    child:
+                                                                        Container(
+                                                                      child: AffichierArticle(
+                                                                          article:
+                                                                              article),
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              },
+                                                            );
+                                                          },
+                                                          icon: const Icon(
+                                                            Icons.visibility,
+                                                            size: 32,
+                                                            color: Colors.green,
+                                                          ),
+                                                        ),
+                                                        ...(userState
+                                                                    .connectedUser
+                                                                    ?.role ==
+                                                                Roles.admin
+                                                            ? [
+                                                                IconButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder:
+                                                                          (BuildContext
+                                                                              context) {
+                                                                        return FractionallySizedBox(
                                                                           child:
-                                                                              Container(
+                                                                              Dialog(
+                                                                            // Dialog content here
                                                                             child:
-                                                                                ArticleFormulaire(
-                                                                              artilce: article,
-                                                                              afterSubmit: () => fetchArticles(),
+                                                                                Container(
+                                                                              child: ArticleFormulaire(
+                                                                                artilce: article,
+                                                                                afterSubmit: () => fetchArticles(),
+                                                                              ),
                                                                             ),
                                                                           ),
-                                                                        ),
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                },
-                                                                icon:
-                                                                    const Icon(
-                                                                  Icons.edit,
-                                                                  size:
-                                                                      32, // Taille de l'icône
-                                                                  color: Colors
-                                                                      .blue, // Couleur de l'icône
+                                                                        );
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                  icon:
+                                                                      const Icon(
+                                                                    Icons.edit,
+                                                                    size:
+                                                                        32, // Taille de l'icône
+                                                                    color: Colors
+                                                                        .blue, // Couleur de l'icône
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              IconButton(
-                                                                onPressed: () {
-                                                                  showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder:
-                                                                        (BuildContext
-                                                                            context) {
-                                                                      return AlertDialog(
-                                                                        title:
-                                                                            RichText(
-                                                                          text:
-                                                                              TextSpan(
-                                                                            style:
-                                                                                DefaultTextStyle.of(context).style,
+                                                                IconButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder:
+                                                                          (BuildContext
+                                                                              context) {
+                                                                        return AlertDialog(
+                                                                          title:
+                                                                              RichText(
+                                                                            text:
+                                                                                TextSpan(
+                                                                              style: DefaultTextStyle.of(context).style,
+                                                                              children: [
+                                                                                const TextSpan(
+                                                                                  text: 'Confirmation de suppression du livre ',
+                                                                                  style: TextStyle(
+                                                                                    color: Colors.black,
+                                                                                    fontWeight: FontWeight.bold,
+                                                                                    fontSize: 18,
+                                                                                  ),
+                                                                                ),
+                                                                                TextSpan(
+                                                                                  text: '"${article.ouvrage.titre}"',
+                                                                                  style: const TextStyle(
+                                                                                    color: Colors.red,
+                                                                                    fontWeight: FontWeight.bold,
+                                                                                    fontSize: 20,
+                                                                                  ),
+                                                                                ),
+                                                                                const TextSpan(
+                                                                                  text: ' :',
+                                                                                  style: TextStyle(
+                                                                                    color: Colors.black,
+                                                                                    fontWeight: FontWeight.bold,
+                                                                                    fontSize: 18,
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                          content:
+                                                                              Column(
+                                                                            crossAxisAlignment:
+                                                                                CrossAxisAlignment.start,
+                                                                            mainAxisSize:
+                                                                                MainAxisSize.min,
                                                                             children: [
-                                                                              const TextSpan(
-                                                                                text: 'Confirmation de suppression du livre ',
-                                                                                style: TextStyle(
-                                                                                  color: Colors.black,
-                                                                                  fontWeight: FontWeight.bold,
-                                                                                  fontSize: 18,
-                                                                                ),
-                                                                              ),
-                                                                              TextSpan(
-                                                                                text: '"${article.ouvrage.titre}"',
-                                                                                style: const TextStyle(
-                                                                                  color: Colors.red,
-                                                                                  fontWeight: FontWeight.bold,
-                                                                                  fontSize: 20,
-                                                                                ),
-                                                                              ),
-                                                                              const TextSpan(
-                                                                                text: ' :',
-                                                                                style: TextStyle(
-                                                                                  color: Colors.black,
-                                                                                  fontWeight: FontWeight.bold,
-                                                                                  fontSize: 18,
-                                                                                ),
-                                                                              ),
+                                                                              Text('Êtes-vous sûr de vouloir supprimer l\'article suivant ?'),
+                                                                              SizedBox(height: 16),
+                                                                              //Text('titre : ${livre.titre}'),
+                                                                              //Text('Auteur : ${livre.auteur}'),
                                                                             ],
                                                                           ),
-                                                                        ),
-                                                                        content:
-                                                                            Column(
-                                                                          crossAxisAlignment:
-                                                                              CrossAxisAlignment.start,
-                                                                          mainAxisSize:
-                                                                              MainAxisSize.min,
-                                                                          children: [
-                                                                            Text('Êtes-vous sûr de vouloir supprimer l\'article suivant ?'),
-                                                                            SizedBox(height: 16),
-                                                                            //Text('titre : ${livre.titre}'),
-                                                                            //Text('Auteur : ${livre.auteur}'),
+                                                                          actions: <Widget>[
+                                                                            TextButton(
+                                                                              child: Text('Annuler'),
+                                                                              onPressed: () {
+                                                                                Navigator.of(context).pop();
+                                                                              },
+                                                                            ),
+                                                                            TextButton(
+                                                                              child: Text('Supprimer'),
+                                                                              onPressed: () {
+                                                                                deleteRequest(article);
+                                                                                Navigator.of(context).pop();
+                                                                              },
+                                                                            ),
                                                                           ],
-                                                                        ),
-                                                                        actions: <Widget>[
-                                                                          TextButton(
-                                                                            child:
-                                                                                Text('Annuler'),
-                                                                            onPressed:
-                                                                                () {
-                                                                              Navigator.of(context).pop();
-                                                                            },
-                                                                          ),
-                                                                          TextButton(
-                                                                            child:
-                                                                                Text('Supprimer'),
-                                                                            onPressed:
-                                                                                () {
-                                                                              deleteRequest(article);
-                                                                              Navigator.of(context).pop();
-                                                                            },
-                                                                          ),
-                                                                        ],
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                },
-                                                                icon: Icon(
-                                                                  Icons.delete,
-                                                                  size: 32,
-                                                                  color: Colors
-                                                                      .red,
+                                                                        );
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                  icon: Icon(
+                                                                    Icons
+                                                                        .delete,
+                                                                    size: 32,
+                                                                    color: Colors
+                                                                        .red,
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              IconButton(
-                                                                onPressed: () {
-                                                                  showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder:
-                                                                        (BuildContext
-                                                                            context) {
-                                                                      return FractionallySizedBox(
-                                                                        child:
-                                                                            Dialog(
-                                                                          // Dialog content here
-                                                                          child: Container(
-                                                                              child: CheckArticle(
-                                                                            artilce:
-                                                                                article,
-                                                                          )),
-                                                                        ),
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                },
-                                                                icon:
-                                                                    const Icon(
-                                                                  Icons
-                                                                      .check_box,
-                                                                  size:
-                                                                      32, // Taille de l'icône
-                                                                  color: Colors
-                                                                      .green, // Couleur de l'icône
+                                                                IconButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder:
+                                                                          (BuildContext
+                                                                              context) {
+                                                                        return FractionallySizedBox(
+                                                                          child:
+                                                                              Dialog(
+                                                                            // Dialog content here
+                                                                            child: Container(
+                                                                                child: CheckArticle(
+                                                                              artilce: article,
+                                                                              afterSubmit: () => fetchArticles(),
+                                                                            )),
+                                                                          ),
+                                                                        );
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                  icon:
+                                                                      const Icon(
+                                                                    Icons
+                                                                        .check_box,
+                                                                    size:
+                                                                        32, // Taille de l'icône
+                                                                    color: Colors
+                                                                        .green, // Couleur de l'icône
+                                                                  ),
                                                                 ),
-                                                              )
-                                                            ]
-                                                          : []),
-                                                    ],
-                                                  )),
+                                                                IconButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder:
+                                                                          (BuildContext
+                                                                              context) {
+                                                                        return FractionallySizedBox(
+                                                                          child:
+                                                                              Dialog(
+                                                                            // Dialog content here
+                                                                            child: Container(
+                                                                                child: RetourArticle(
+                                                                              article: article,
+                                                                              afterSubmit: () => fetchArticles(),
+                                                                            )),
+                                                                          ),
+                                                                        );
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                  icon:
+                                                                      const Icon(
+                                                                    Icons
+                                                                        .add_alarm_outlined,
+                                                                    size:
+                                                                        32, // Taille de l'icône
+                                                                    color: Colors
+                                                                        .indigo, // Couleur de l'icône
+                                                                  ),
+                                                                ),
+                                                              ]
+                                                            : []),
+                                                      ],
+                                                    ),
+                                                  ),
                                                 ],
                                               ))
                                           .toList(),

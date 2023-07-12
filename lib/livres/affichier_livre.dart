@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:projetbiblio/model/model.dart';
-import 'package:projetbiblio/livres/liste_livres.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 // ignore: must_be_immutable
 class AffichierLivre extends StatelessWidget {
