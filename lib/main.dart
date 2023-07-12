@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:projetbiblio/connect/from_Screen.dart';
 import 'package:projetbiblio/dashboard/dashboard1.dart';
 import 'package:projetbiblio/dashboard/dashboard2.dart';
+import 'package:projetbiblio/dashboard/dashboard_admin.dart';
 import 'package:projetbiblio/home/first_page.dart';
+import 'package:projetbiblio/roles.dart';
 import 'package:projetbiblio/user_state.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -31,18 +33,20 @@ class _MyAppState extends State<MyApp> {
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate, // Add this line
+        GlobalCupertinoLocalizations.delegate, // Ajoutez cette ligne
       ],
-      supportedLocales: const [
-        Locale('fr', ''), // French
+      supportedLocales: [
+        const Locale('fr', ''), // Français
       ],
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: userState.connectedUser?.id == null
+      home: userState.connectedUser?.id != null
           ? const FormScreen()
-          : FirstPage(),
+          : (userState.connectedUser?.role == Roles.admin)
+              ? Dashbord2()
+              : FirstPage(),
     );
   }
 }
