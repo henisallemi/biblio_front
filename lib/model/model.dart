@@ -13,6 +13,10 @@ class User {
   String motDePasse;
   int role;
 
+  getFullName() {
+    return "$nom $prenom";
+  }
+
   User({
     required this.id,
     required this.imagePath,
@@ -199,12 +203,14 @@ class Emprunt {
   DateTime? dateDeRetour;
   DateTime? returnedAt;
   bool isReturned;
+  User? user;
 
   Emprunt(
       {required this.dateEmprunt,
       required this.dateDeRetour,
       required this.returnedAt,
-      required this.isReturned});
+      required this.isReturned,
+      this.user});
 
   factory Emprunt.fromJson(Map<String, dynamic> json) {
     return Emprunt(
@@ -217,7 +223,8 @@ class Emprunt {
         returnedAt: json["returnedAt"] != null
             ? DateTime.parse(json["returnedAt"])
             : null,
-        isReturned: json['isReturned'] ?? false);
+        isReturned: json['isReturned'] ?? false,
+        user: json['user'] != null ? User.fromJson(json["user"]) : null);
   }
 
   static List<Emprunt> fromJsonArray(List<dynamic> jsonList) {
@@ -242,5 +249,26 @@ class HistoryItem {
 
   static List<HistoryItem> fromJsonArray(List<dynamic> jsonList) {
     return jsonList.map((json) => HistoryItem.fromJson(json)).toList();
+  }
+}
+
+class Stats {
+  double livresStats;
+  double articlesStats;
+  double revuesStats;
+  List<HistoryItem> items;
+
+  Stats(
+      {required this.articlesStats,
+      required this.revuesStats,
+      required this.items,
+      required this.livresStats});
+
+  factory Stats.fromJson(Map<String, dynamic> json) {
+    return Stats(
+        livresStats: double.tryParse(json['livresStats'].toString()) ?? 0.0,
+        articlesStats: double.tryParse(json['articlesStats'].toString()) ?? 0.0,
+        revuesStats: double.tryParse(json['revuesStats'].toString()) ?? 0.0,
+        items: HistoryItem.fromJsonArray(json['items']));
   }
 }

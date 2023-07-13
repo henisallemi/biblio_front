@@ -9,7 +9,8 @@ import 'package:provider/provider.dart';
 import '../types.dart';
 
 class AffichierUser extends StatefulWidget {
-  const AffichierUser({Key? key}) : super(key: key);
+  User? user;
+  AffichierUser({Key? key, required this.user}) : super(key: key);
 
   @override
   State<AffichierUser> createState() => _AffichierUserState();
@@ -24,14 +25,12 @@ class _AffichierUserState extends State<AffichierUser> {
   bool isDataLoaded = false;
 
   Future<void> fetchAffichierUser() async {
-    final userState = Provider.of<UserState>(context, listen: false);
-
     setState(() {
       isLoading = true;
     });
 
     var url = Uri.parse(
-        'http://localhost:4000/api/users/history/${userState.connectedUser!.id}?page=$page&limit=$limit');
+        'http://localhost:4000/api/users/history/${widget.user!.id}?page=$page&limit=$limit');
 
     try {
       var response = await http.get(url);

@@ -123,7 +123,6 @@ class _CheckRevueState extends State<CheckRevue> {
       return;
     }
     if (widget.revue?.ouvrage?.nombreDisponible == 0) {
-      print(widget.revue?.ouvrage?.nombreDisponible);
       showDialog(
         context: context,
         builder: (BuildContext context) {

@@ -421,29 +421,43 @@ class _ListeUsersState extends State<ListeUsers> {
                                                       .toString())),
                                                   DataCell(Row(
                                                     children: [
-                                                      IconButton(
-                                                        onPressed: () {
-                                                          showDialog(
-                                                            context: context,
-                                                            builder:
-                                                                (BuildContext
-                                                                    context) {
-                                                              return FractionallySizedBox(
-                                                                child: Dialog(
-                                                                  child: AffichierUser(
-                                                                      //  key: super .key,
-                                                                      ),
+                                                      ...(user.role ==
+                                                              Roles.adherant
+                                                          ? [
+                                                              IconButton(
+                                                                onPressed: () {
+                                                                  showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (BuildContext
+                                                                            context) {
+                                                                      return FractionallySizedBox(
+                                                                        child:
+                                                                            Dialog(
+                                                                          child:
+                                                                              AffichierUser(
+                                                                            user:
+                                                                                user,
+                                                                            key:
+                                                                                widget.key,
+                                                                          ),
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                },
+                                                                icon:
+                                                                    const Icon(
+                                                                  Icons
+                                                                      .visibility,
+                                                                  size: 32,
+                                                                  color: Colors
+                                                                      .green,
                                                                 ),
-                                                              );
-                                                            },
-                                                          );
-                                                        },
-                                                        icon: const Icon(
-                                                          Icons.visibility,
-                                                          size: 32,
-                                                          color: Colors.green,
-                                                        ),
-                                                      ),
+                                                              )
+                                                            ]
+                                                          : []),
                                                       IconButton(
                                                         onPressed: () {
                                                           showDialog(

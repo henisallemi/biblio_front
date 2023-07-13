@@ -24,6 +24,12 @@ class _MenuState extends State<Menu> {
   Widget build(BuildContext context) {
     var userState = Provider.of<UserState>(context);
 
+    if (userState?.connectedUser == null) {
+      return Row(
+        children: [],
+      );
+    }
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -84,10 +90,7 @@ class _MenuState extends State<Menu> {
                     leading: Icon(Icons.equalizer_outlined),
                     title: Text('Tableau de bord'),
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Dashbord2()),
-                      );
+                      Navigator.pop(context);
                     },
                   ),
                 ]

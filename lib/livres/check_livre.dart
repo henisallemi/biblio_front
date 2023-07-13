@@ -124,7 +124,6 @@ class _CheckLivreState extends State<CheckLivre> {
       return;
     }
     if (widget.livre?.ouvrage?.nombreDisponible == 0) {
-      print(widget.livre?.ouvrage?.nombreDisponible);
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -171,6 +170,7 @@ class _CheckLivreState extends State<CheckLivre> {
           );
         },
       );
+      return;
     }
 
     var url = Uri.parse('http://localhost:4000/api/ouvrages/emprunt');
@@ -184,6 +184,71 @@ class _CheckLivreState extends State<CheckLivre> {
 
     try {
       var response = await http.post(url, headers: headers, body: body);
+      if (response.statusCode == 203) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Container(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 48.0,
+                    ),
+                    const SizedBox(height: 16.0),
+                    const Text(
+                      'Erreur',
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    const Text(
+                      'Cet adherant a déjà pris ce livre veulliez choisir un autre adherant',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        'OK',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        primary: Colors.red,
+                        padding: EdgeInsets.symmetric(
+                          vertical: 12.0,
+                          horizontal: 24.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+        return;
+      }
       if (response.statusCode == 200) {
         closeForm();
         await widget.afterSubmit();

@@ -40,7 +40,69 @@ class _FormScreenState extends State<FormScreen> {
           MaterialPageRoute(builder: (context) => FirstPage()),
         );
       } else {
-        print('Request failed with status: ${response.statusCode}');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Container(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 48.0,
+                    ),
+                    const SizedBox(height: 16.0),
+                    const Text(
+                      'Erreur',
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    const Text(
+                      "Votre email ou mot de passe est incorrect",
+                      style: TextStyle(
+                        fontSize: 16.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        'OK',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        primary: Colors.red,
+                        padding: EdgeInsets.symmetric(
+                          vertical: 12.0,
+                          horizontal: 24.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+        return;
       }
     } catch (e) {
       print('Error: $e');
@@ -51,6 +113,7 @@ class _FormScreenState extends State<FormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text("Connecter à cette bibliothèque"),
         centerTitle: true,
       ),

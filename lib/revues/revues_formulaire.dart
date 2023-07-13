@@ -108,7 +108,8 @@ class _RevueFormulaireState extends State<RevueFormulaire> {
       'date': date.text.trim(),
       "auteur1": auteur1.text.trim(),
       "auteur2": auteur2.text.trim(),
-      "numeroVolume ": numeroVolume.text.trim(),
+      "numeroVolume": numeroVolume.text.trim(),
+      "description": description.text.trim(),
     });
 
     try {

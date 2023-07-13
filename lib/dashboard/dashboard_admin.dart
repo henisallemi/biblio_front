@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:projetbiblio/model/model.dart';
 import 'package:http/http.dart' as http;
+import 'package:projetbiblio/types.dart';
 import 'dart:async';
 import 'package:projetbiblio/user_state.dart';
 import 'package:provider/provider.dart';
@@ -17,27 +18,15 @@ class DashbordAdmin extends StatefulWidget {
 
 class StatisticData {
   final String category;
-  final double percentage;
+  final double? percentage;
   final Color color;
 
   StatisticData(this.category, this.percentage, this.color);
 }
 
 class _DashbordAdminState extends State<DashbordAdmin> {
-  final Map<String, IconData> categoryIcons = {
-    'Livres': Icons.book,
-    'Articles': Icons.article,
-    'Revues': Icons.library_books,
-  };
+  Stats? stats;
 
-  final List<StatisticData> data = [
-    StatisticData('Livres', 0.6, Colors.blue),
-    StatisticData('Articles', 0.3, Colors.green),
-    StatisticData('Revues', 0.1, Colors.orange),
-  ];
-
-  List<Livre> livres = [];
-  String selectedOption = "1";
   int page = 1;
   int limit = 15;
   int totalCount = 0;
@@ -49,16 +38,16 @@ class _DashbordAdminState extends State<DashbordAdmin> {
       isLoading = true;
     });
 
-    var url =
-        Uri.parse('http://localhost:4000/api/livres?page=$page&limit=$limit');
+    print("fetching from api");
+
+    var url = Uri.parse('http://localhost:4000/api/dashboard/stats');
 
     try {
       var response = await http.get(url);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         setState(() {
-          livres =
-              List<Livre>.from(data['livres'].map((x) => Livre.fromJson(x)));
+          stats = Stats.fromJson(data["stats"]);
           totalCount = data['totalCount'];
           isDataLoaded = true;
         });
@@ -102,6 +91,26 @@ class _DashbordAdminState extends State<DashbordAdmin> {
   Widget build(BuildContext context) {
     final int totalPages = (totalCount / limit).ceil();
     final userState = Provider.of<UserState>(context);
+
+    Map<String, IconData> categoryIcons = {
+      'Livres': Icons.book,
+      'Articles': Icons.article,
+      'Revues': Icons.library_books,
+    };
+
+    List<StatisticData> data = [
+      StatisticData('Livres', (stats?.livresStats ?? 0), Colors.blue),
+      StatisticData('Articles', (stats?.articlesStats ?? 0), Colors.green),
+      StatisticData('Revues', (stats?.revuesStats ?? 0), Colors.orange),
+    ];
+
+    print("rerender");
+
+    if (stats == null) {
+      return Row(
+        children: [],
+      );
+    }
 
     return Row(
       children: [
@@ -160,7 +169,7 @@ class _DashbordAdminState extends State<DashbordAdmin> {
                                   CircularPercentIndicator(
                                     radius: 200.0,
                                     lineWidth: 20.0,
-                                    percent: data[i].percentage,
+                                    percent: data[i].percentage!,
                                     center: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -172,7 +181,7 @@ class _DashbordAdminState extends State<DashbordAdmin> {
                                         ),
                                         SizedBox(height: 10),
                                         Text(
-                                          '${(data[i].percentage * 100).toStringAsFixed(0)}%',
+                                          '${(data[i].percentage! * 100).toStringAsFixed(0)}%',
                                           style: TextStyle(fontSize: 40),
                                         ),
                                       ],
@@ -311,24 +320,32 @@ class _DashbordAdminState extends State<DashbordAdmin> {
                                         ),
                                       ),
                                     ],
-                                    rows: livres
-                                        .map((livre) => DataRow(
-                                              cells: [
-                                                DataCell(
-                                                    Text(livre.ouvrage.titre)),
-                                                DataCell(
-                                                    Text(livre.ouvrage.titre)),
-                                                DataCell(Text(DateFormat(
-                                                        'yyyy-MM-dd')
-                                                    .format(livre.ouvrage.date!)
-                                                    .toString())),
-                                                DataCell(
-                                                    Text(livre.ouvrage.titre)),
-                                                DataCell(Text(
-                                                    livre.ouvrage.auteur1)),
-                                              ],
-                                            ))
-                                        .toList(),
+                                    rows: stats?.items
+                                            .map((item) => DataRow(
+                                                  cells: [
+                                                    DataCell(Text(item.type ==
+                                                            Types.livre
+                                                        ? "Livre"
+                                                        : item.type ==
+                                                                Types.article
+                                                            ? "Article"
+                                                            : "Revue")),
+                                                    DataCell(Text(
+                                                        item.ouvrage.titre)),
+                                                    DataCell(Text(
+                                                        DateFormat('yyyy-MM-dd')
+                                                            .format(item.emprunt
+                                                                .dateDeRetour!)
+                                                            .toString())),
+                                                    DataCell(Text(item
+                                                        .emprunt.user
+                                                        ?.getFullName())),
+                                                    DataCell(Text(
+                                                        "${item.emprunt.user?.telephone}")),
+                                                  ],
+                                                ))
+                                            .toList() ??
+                                        [],
                                   ),
                                   const SizedBox(
                                     height: 15,

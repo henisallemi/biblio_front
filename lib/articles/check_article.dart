@@ -124,7 +124,6 @@ class _CheckArticleState extends State<CheckArticle> {
       return;
     }
     if (widget.artilce?.ouvrage?.nombreDisponible == 0) {
-      print(widget.artilce?.ouvrage?.nombreDisponible);
       showDialog(
         context: context,
         builder: (BuildContext context) {
