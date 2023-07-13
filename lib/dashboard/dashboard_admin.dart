@@ -142,7 +142,7 @@ class _DashbordAdminState extends State<DashbordAdmin> {
                     ),
                     child: Column(
                       children: [
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Row(
                             children: [
@@ -155,6 +155,12 @@ class _DashbordAdminState extends State<DashbordAdmin> {
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.refresh),
+                                onPressed: () {
+                                  fetchDashbordAdmin();
+                                },
                               ),
                             ],
                           ),
