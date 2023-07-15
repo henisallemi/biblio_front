@@ -6,7 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../user_state.dart';
-import 'package:bcrypt/bcrypt.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 class Parametre extends StatefulWidget {
   Parametre({
@@ -27,7 +28,7 @@ class _ParametreState extends State<Parametre> {
   TextEditingController motDePasse = TextEditingController();
   TextEditingController nouveauMotDePasse = TextEditingController();
   TextEditingController confirmerMotDePasse = TextEditingController();
-  TextEditingController motDePasseNouveau = TextEditingController();
+  TextEditingController ecrireMotDePasse = TextEditingController();
 
   bool imageChanged = false;
 
@@ -38,6 +39,11 @@ class _ParametreState extends State<Parametre> {
         email.text.isNotEmpty &&
         motDePasse.text.isNotEmpty &&
         telephone.text.isNotEmpty;
+  }
+
+  bool isEmailValid(String email) {
+    final regex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$');
+    return regex.hasMatch(email);
   }
 
   Future<void> sendRequest(BuildContext context) async {
@@ -178,186 +184,9 @@ class _ParametreState extends State<Parametre> {
               child: Column(
                 children: [
                   const SizedBox(height: 35),
-                  Container(
-                    color: Colors.white,
-                    width: 1100,
-                    child: Column(
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Icon(Icons.person),
-                              SizedBox(width: 5),
-                              Text(
-                                'Nom utilisateur ',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
 
-                        const SizedBox(
-                            width: 100), // Adjust the width as needed
-                        ImagePickerComponent(
-                          controller: image,
-                          imagePath: userState.connectedUser!.imagePath ?? null,
-                          onImageChange: () {
-                            setState(() {
-                              imageChanged = true;
-                            });
-                          },
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 220,
-                              ),
-                              Container(
-                                width: 300,
-                                child: TextFormField(
-                                  controller: nom,
-                                  decoration: InputDecoration(
-                                    labelText: 'Nom',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    contentPadding: EdgeInsets.symmetric(
-                                      vertical: 15.0,
-                                      horizontal: 10.0,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 20),
-                              Container(
-                                width: 300,
-                                child: TextFormField(
-                                  controller: prenom,
-                                  decoration: InputDecoration(
-                                    labelText: 'Prénom',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 15.0,
-                                      horizontal: 10.0,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                            width: 100), // Adjust the width as needed
-                        const SizedBox(width: 40), // Adjust the width as needed
-                        const SizedBox(height: 15),
+                  //////////////////////deuxiéme partie
 
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 50,
-                            ),
-                            SizedBox(
-                              width: 320,
-                              child: TextFormField(
-                                controller: email,
-                                decoration: InputDecoration(
-                                  labelText: 'Email',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            SizedBox(
-                              width: 320,
-                              child: TextFormField(
-                                controller: cin,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
-                                keyboardType: TextInputType.number,
-                                validator: (value) {
-                                  if (value?.length != 8) {
-                                    return 'Veuillez entrer exactement 8 chiffres';
-                                  }
-                                  return null; // Renvoie null si l'entrée est valide
-                                },
-                                decoration: InputDecoration(
-                                  labelText: 'CIN',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            SizedBox(
-                              width: 320,
-                              child: TextFormField(
-                                controller: telephone,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.allow(
-                                      RegExp(r'[0-9+-]')),
-                                ],
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                  labelText: 'Téléphone',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 20,
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            const SizedBox(
-                              width: 870,
-                            ),
-                            Container(
-                              width: 180,
-                              height: 55,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  sendRequest(context);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors.orange,
-                                  onPrimary: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Modifier',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 35),
                   Container(
                     width: 1100,
                     child: Container(
@@ -402,7 +231,7 @@ class _ParametreState extends State<Parametre> {
                                 Container(
                                   width: 300,
                                   child: TextField(
-                                    controller: motDePasseNouveau,
+                                    controller: ecrireMotDePasse,
                                     decoration: const InputDecoration(
                                       hintText: "Entrez votre mot de passe",
                                       border: OutlineInputBorder(
@@ -423,6 +252,8 @@ class _ParametreState extends State<Parametre> {
                                       fontSize: 16.0,
                                       color: Colors.black,
                                     ),
+                                    obscureText:
+                                        true, // Hide the entered password
                                   ),
                                 ),
                               ],
@@ -470,6 +301,8 @@ class _ParametreState extends State<Parametre> {
                                       fontSize: 16.0,
                                       color: Colors.black,
                                     ),
+                                    obscureText:
+                                        true, // Hide the entered password
                                   ),
                                 ),
                               ],
@@ -517,6 +350,8 @@ class _ParametreState extends State<Parametre> {
                                       fontSize: 16.0,
                                       color: Colors.black,
                                     ),
+                                    obscureText:
+                                        true, // Hide the entered password
                                   ),
                                 ),
                                 const SizedBox(
@@ -535,8 +370,11 @@ class _ParametreState extends State<Parametre> {
                                 height: 55,
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    if (await verify(motDePasseNouveau.text,
-                                        motDePasse.text)) {
+                                    String hashedCurrentPassword =
+                                        await hashPassword(
+                                            ecrireMotDePasse.text);
+                                    if (hashedCurrentPassword !=
+                                        motDePasse.text) {
                                       setState(() {
                                         isMotDePasseIncorrect = true;
                                       });
@@ -621,6 +459,116 @@ class _ParametreState extends State<Parametre> {
                                           );
                                         },
                                       );
+                                      return;
+                                    }
+                                    if (motDePasse.text.length < 8 ||
+                                        !RegExp(r'[A-Z]')
+                                            .hasMatch(motDePasse.text) ||
+                                        !RegExp(r'[a-z]')
+                                            .hasMatch(motDePasse.text) ||
+                                        !RegExp(r'[0-9]')
+                                            .hasMatch(motDePasse.text) ||
+                                        !RegExp(r'[!@#$%^&*(),.?":{}|<>]')
+                                            .hasMatch(motDePasse.text)) {
+                                      String errorMessage =
+                                          'Le mot de passe doit respecter les critères suivants :\n\n';
+                                      if (motDePasse.text.length < 8) {
+                                        errorMessage +=
+                                            '- Au moins 8 caractères\n';
+                                      }
+                                      if (!RegExp(r'[A-Z]')
+                                          .hasMatch(motDePasse.text)) {
+                                        errorMessage +=
+                                            '- Au moins une lettre majuscule\n';
+                                      }
+                                      if (!RegExp(r'[a-z]')
+                                          .hasMatch(motDePasse.text)) {
+                                        errorMessage +=
+                                            '- Au moins une lettre minuscule\n';
+                                      }
+                                      if (!RegExp(r'[0-9]')
+                                          .hasMatch(motDePasse.text)) {
+                                        errorMessage +=
+                                            '- Au moins un chiffre\n';
+                                      }
+                                      if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]')
+                                          .hasMatch(motDePasse.text)) {
+                                        errorMessage +=
+                                            '- Au moins un caractère spécial (comme !@#\$%^&*(),.?":{}|<>)\n';
+                                      }
+
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return Dialog(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
+                                            child: Container(
+                                              padding: EdgeInsets.all(16.0),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    Icons.error_outline,
+                                                    color: Colors.red,
+                                                    size: 48.0,
+                                                  ),
+                                                  SizedBox(height: 16.0),
+                                                  Text(
+                                                    'Erreur',
+                                                    style: TextStyle(
+                                                      fontSize: 20.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 16.0),
+                                                  Text(
+                                                    errorMessage,
+                                                    style: TextStyle(
+                                                      fontSize: 16.0,
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                  SizedBox(height: 16.0),
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: Text(
+                                                      'OK',
+                                                      style: TextStyle(
+                                                        fontSize: 16.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10.0),
+                                                      ),
+                                                      primary: Colors.red,
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                        vertical: 12.0,
+                                                        horizontal: 24.0,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                      return;
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -676,6 +624,559 @@ class _ParametreState extends State<Parametre> {
   }
 }
 
-bool verify(String newPassword, String currentPassword) {
-  return true;
+// ...
+
+Future<String> hashPassword(String password) async {
+  final bytes = utf8.encode(password); // Convert password to bytes
+  final hashedBytes = sha256.convert(bytes); // Hash the bytes using SHA-256
+  final hashedPassword =
+      hashedBytes.toString(); // Convert the hashed bytes to a string
+  return hashedPassword;
 }
+
+
+
+// Container(
+//                     color: Colors.white,
+//                     width: 1100,
+//                     child: Column(
+//                       children: [
+//                         const Padding(
+//                           padding: EdgeInsets.all(8.0),
+//                           child: Row(
+//                             children: [
+//                               Icon(Icons.person),
+//                               SizedBox(width: 5),
+//                               Text(
+//                                 'Nom utilisateur ',
+//                                 style: TextStyle(
+//                                   color: Colors.black,
+//                                   fontSize: 16,
+//                                   fontWeight: FontWeight.bold,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+
+//                         const SizedBox(
+//                             width: 100), // Adjust the width as needed
+//                         ImagePickerComponent(
+//                           controller: image,
+//                           imagePath: userState.connectedUser!.imagePath ?? null,
+//                           onImageChange: () {
+//                             setState(() {
+//                               imageChanged = true;
+//                             });
+//                           },
+//                         ),
+//                         Padding(
+//                           padding: const EdgeInsets.all(20.0),
+//                           child: Row(
+//                             children: [
+//                               SizedBox(
+//                                 width: 220,
+//                               ),
+//                               Container(
+//                                 width: 300,
+//                                 child: TextFormField(
+//                                   controller: nom,
+//                                   decoration: InputDecoration(
+//                                     labelText: 'Nom',
+//                                     border: OutlineInputBorder(
+//                                       borderRadius: BorderRadius.circular(10.0),
+//                                     ),
+//                                     contentPadding: EdgeInsets.symmetric(
+//                                       vertical: 15.0,
+//                                       horizontal: 10.0,
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ),
+//                               SizedBox(width: 20),
+//                               Container(
+//                                 width: 300,
+//                                 child: TextFormField(
+//                                   controller: prenom,
+//                                   decoration: InputDecoration(
+//                                     labelText: 'Prénom',
+//                                     border: OutlineInputBorder(
+//                                       borderRadius: BorderRadius.circular(10.0),
+//                                     ),
+//                                     contentPadding: const EdgeInsets.symmetric(
+//                                       vertical: 15.0,
+//                                       horizontal: 10.0,
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                         const SizedBox(
+//                             width: 100), // Adjust the width as needed
+//                         const SizedBox(width: 40), // Adjust the width as needed
+//                         const SizedBox(height: 15),
+
+//                         Row(
+//                           children: [
+//                             SizedBox(
+//                               width: 50,
+//                             ),
+//                             SizedBox(
+//                               width: 320,
+//                               child: TextFormField(
+//                                 controller: email,
+//                                 decoration: InputDecoration(
+//                                   labelText: 'Email',
+//                                   border: OutlineInputBorder(),
+//                                 ),
+//                               ),
+//                             ),
+//                             SizedBox(width: 10),
+//                             SizedBox(
+//                               width: 320,
+//                               child: TextFormField(
+//                                 controller: cin,
+//                                 inputFormatters: [
+//                                   FilteringTextInputFormatter.digitsOnly,
+//                                 ],
+//                                 keyboardType: TextInputType.number,
+//                                 validator: (value) {
+//                                   if (value?.length != 8) {
+//                                     return 'Veuillez entrer exactement 8 chiffres';
+//                                   }
+//                                   return null; // Renvoie null si l'entrée est valide
+//                                 },
+//                                 decoration: InputDecoration(
+//                                   labelText: 'CIN',
+//                                   border: OutlineInputBorder(),
+//                                 ),
+//                               ),
+//                             ),
+//                             SizedBox(width: 10),
+//                             SizedBox(
+//                               width: 320,
+//                               child: TextFormField(
+//                                 controller: telephone,
+//                                 inputFormatters: [
+//                                   FilteringTextInputFormatter.allow(
+//                                       RegExp(r'[0-9+-]')),
+//                                 ],
+//                                 keyboardType: TextInputType.number,
+//                                 decoration: InputDecoration(
+//                                   labelText: 'Téléphone',
+//                                   border: OutlineInputBorder(),
+//                                 ),
+//                               ),
+//                             ),
+//                             SizedBox(
+//                               width: 20,
+//                             ),
+//                           ],
+//                         ),
+
+//                         const SizedBox(height: 20),
+//                         Row(
+//                           children: [
+//                             const SizedBox(
+//                               width: 870,
+//                             ),
+//                             Container(
+//                               width: 180,
+//                               height: 55,
+//                               child: ElevatedButton(
+//                                 onPressed: () {
+//                                   if (!checkFields()) {
+//                                     showDialog(
+//                                       context: context,
+//                                       builder: (BuildContext context) {
+//                                         return Dialog(
+//                                           shape: RoundedRectangleBorder(
+//                                             borderRadius:
+//                                                 BorderRadius.circular(10.0),
+//                                           ),
+//                                           child: Container(
+//                                             padding: EdgeInsets.all(16.0),
+//                                             child: Column(
+//                                               mainAxisSize: MainAxisSize.min,
+//                                               children: [
+//                                                 Icon(
+//                                                   Icons.error_outline,
+//                                                   color: Colors.red,
+//                                                   size: 48.0,
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 Text(
+//                                                   'Erreur',
+//                                                   style: TextStyle(
+//                                                     fontSize: 20.0,
+//                                                     fontWeight: FontWeight.bold,
+//                                                   ),
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 Text(
+//                                                   'Veuillez remplir tous les champs obligatoires.',
+//                                                   style: TextStyle(
+//                                                     fontSize: 16.0,
+//                                                   ),
+//                                                   textAlign: TextAlign.center,
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 ElevatedButton(
+//                                                   onPressed: () {
+//                                                     Navigator.pop(context);
+//                                                   },
+//                                                   child: Text(
+//                                                     'OK',
+//                                                     style: TextStyle(
+//                                                       fontSize: 16.0,
+//                                                       fontWeight:
+//                                                           FontWeight.bold,
+//                                                     ),
+//                                                   ),
+//                                                   style:
+//                                                       ElevatedButton.styleFrom(
+//                                                     shape:
+//                                                         RoundedRectangleBorder(
+//                                                       borderRadius:
+//                                                           BorderRadius.circular(
+//                                                               10.0),
+//                                                     ),
+//                                                     primary: Colors.red,
+//                                                     padding:
+//                                                         EdgeInsets.symmetric(
+//                                                       vertical: 12.0,
+//                                                       horizontal: 24.0,
+//                                                     ),
+//                                                   ),
+//                                                 ),
+//                                               ],
+//                                             ),
+//                                           ),
+//                                         );
+//                                       },
+//                                     );
+//                                     return;
+//                                   }
+
+//                                   if (cin.text.length != 8) {
+//                                     showDialog(
+//                                       context: context,
+//                                       builder: (BuildContext context) {
+//                                         return Dialog(
+//                                           shape: RoundedRectangleBorder(
+//                                             borderRadius:
+//                                                 BorderRadius.circular(10.0),
+//                                           ),
+//                                           child: Container(
+//                                             padding: EdgeInsets.all(16.0),
+//                                             child: Column(
+//                                               mainAxisSize: MainAxisSize.min,
+//                                               children: [
+//                                                 Icon(
+//                                                   Icons.error_outline,
+//                                                   color: Colors.red,
+//                                                   size: 48.0,
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 Text(
+//                                                   'Erreur',
+//                                                   style: TextStyle(
+//                                                     fontSize: 20.0,
+//                                                     fontWeight: FontWeight.bold,
+//                                                   ),
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 Text(
+//                                                   'Le CIN doit être composé de 8 chiffres.',
+//                                                   style: TextStyle(
+//                                                     fontSize: 16.0,
+//                                                   ),
+//                                                   textAlign: TextAlign.center,
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 ElevatedButton(
+//                                                   onPressed: () {
+//                                                     Navigator.pop(context);
+//                                                   },
+//                                                   child: Text(
+//                                                     'OK',
+//                                                     style: TextStyle(
+//                                                       fontSize: 16.0,
+//                                                       fontWeight:
+//                                                           FontWeight.bold,
+//                                                     ),
+//                                                   ),
+//                                                   style:
+//                                                       ElevatedButton.styleFrom(
+//                                                     shape:
+//                                                         RoundedRectangleBorder(
+//                                                       borderRadius:
+//                                                           BorderRadius.circular(
+//                                                               10.0),
+//                                                     ),
+//                                                     primary: Colors.red,
+//                                                     padding:
+//                                                         EdgeInsets.symmetric(
+//                                                       vertical: 12.0,
+//                                                       horizontal: 24.0,
+//                                                     ),
+//                                                   ),
+//                                                 ),
+//                                               ],
+//                                             ),
+//                                           ),
+//                                         );
+//                                       },
+//                                     );
+//                                     return;
+//                                   }
+
+//                                   if (nom.text.length < 2 ||
+//                                       prenom.text.length < 2) {
+//                                     showDialog(
+//                                       context: context,
+//                                       builder: (BuildContext context) {
+//                                         return Dialog(
+//                                           shape: RoundedRectangleBorder(
+//                                             borderRadius:
+//                                                 BorderRadius.circular(10.0),
+//                                           ),
+//                                           child: Container(
+//                                             padding: EdgeInsets.all(16.0),
+//                                             child: Column(
+//                                               mainAxisSize: MainAxisSize.min,
+//                                               children: [
+//                                                 Icon(
+//                                                   Icons.error_outline,
+//                                                   color: Colors.red,
+//                                                   size: 48.0,
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 Text(
+//                                                   'Erreur',
+//                                                   style: TextStyle(
+//                                                     fontSize: 20.0,
+//                                                     fontWeight: FontWeight.bold,
+//                                                   ),
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 Text(
+//                                                   'Le nom et le prénom doivent contenir au moins 2 caractères.',
+//                                                   style: TextStyle(
+//                                                     fontSize: 16.0,
+//                                                   ),
+//                                                   textAlign: TextAlign.center,
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 ElevatedButton(
+//                                                   onPressed: () {
+//                                                     Navigator.pop(context);
+//                                                   },
+//                                                   child: Text(
+//                                                     'OK',
+//                                                     style: TextStyle(
+//                                                       fontSize: 16.0,
+//                                                       fontWeight:
+//                                                           FontWeight.bold,
+//                                                     ),
+//                                                   ),
+//                                                   style:
+//                                                       ElevatedButton.styleFrom(
+//                                                     shape:
+//                                                         RoundedRectangleBorder(
+//                                                       borderRadius:
+//                                                           BorderRadius.circular(
+//                                                               10.0),
+//                                                     ),
+//                                                     primary: Colors.red,
+//                                                     padding:
+//                                                         EdgeInsets.symmetric(
+//                                                       vertical: 12.0,
+//                                                       horizontal: 24.0,
+//                                                     ),
+//                                                   ),
+//                                                 ),
+//                                               ],
+//                                             ),
+//                                           ),
+//                                         );
+//                                       },
+//                                     );
+//                                     return;
+//                                   }
+//                                   if (!isEmailValid(email.text.trim())) {
+//                                     showDialog(
+//                                       context: context,
+//                                       builder: (BuildContext context) {
+//                                         return Dialog(
+//                                           shape: RoundedRectangleBorder(
+//                                             borderRadius:
+//                                                 BorderRadius.circular(10.0),
+//                                           ),
+//                                           child: Container(
+//                                             padding: EdgeInsets.all(16.0),
+//                                             child: Column(
+//                                               mainAxisSize: MainAxisSize.min,
+//                                               children: [
+//                                                 Icon(
+//                                                   Icons.error_outline,
+//                                                   color: Colors.red,
+//                                                   size: 48.0,
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 Text(
+//                                                   'Erreur',
+//                                                   style: TextStyle(
+//                                                     fontSize: 20.0,
+//                                                     fontWeight: FontWeight.bold,
+//                                                   ),
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 Text(
+//                                                   'Veuillez entrer un email valide.',
+//                                                   style: TextStyle(
+//                                                     fontSize: 16.0,
+//                                                   ),
+//                                                   textAlign: TextAlign.center,
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 ElevatedButton(
+//                                                   onPressed: () {
+//                                                     Navigator.pop(context);
+//                                                   },
+//                                                   child: Text(
+//                                                     'OK',
+//                                                     style: TextStyle(
+//                                                       fontSize: 16.0,
+//                                                       fontWeight:
+//                                                           FontWeight.bold,
+//                                                     ),
+//                                                   ),
+//                                                   style:
+//                                                       ElevatedButton.styleFrom(
+//                                                     shape:
+//                                                         RoundedRectangleBorder(
+//                                                       borderRadius:
+//                                                           BorderRadius.circular(
+//                                                               10.0),
+//                                                     ),
+//                                                     primary: Colors.red,
+//                                                     padding:
+//                                                         EdgeInsets.symmetric(
+//                                                       vertical: 12.0,
+//                                                       horizontal: 24.0,
+//                                                     ),
+//                                                   ),
+//                                                 ),
+//                                               ],
+//                                             ),
+//                                           ),
+//                                         );
+//                                       },
+//                                     );
+//                                     return;
+//                                   }
+
+//                                   if (telephone.text.length < 8) {
+//                                     showDialog(
+//                                       context: context,
+//                                       builder: (BuildContext context) {
+//                                         return Dialog(
+//                                           shape: RoundedRectangleBorder(
+//                                             borderRadius:
+//                                                 BorderRadius.circular(10.0),
+//                                           ),
+//                                           child: Container(
+//                                             padding: EdgeInsets.all(16.0),
+//                                             child: Column(
+//                                               mainAxisSize: MainAxisSize.min,
+//                                               children: [
+//                                                 Icon(
+//                                                   Icons.error_outline,
+//                                                   color: Colors.red,
+//                                                   size: 48.0,
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 Text(
+//                                                   'Erreur',
+//                                                   style: TextStyle(
+//                                                     fontSize: 20.0,
+//                                                     fontWeight: FontWeight.bold,
+//                                                   ),
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 Text(
+//                                                   "Le numéro de téléphone n'est pas valide.",
+//                                                   style: TextStyle(
+//                                                     fontSize: 16.0,
+//                                                   ),
+//                                                   textAlign: TextAlign.center,
+//                                                 ),
+//                                                 SizedBox(height: 16.0),
+//                                                 ElevatedButton(
+//                                                   onPressed: () {
+//                                                     Navigator.pop(context);
+//                                                   },
+//                                                   child: Text(
+//                                                     'OK',
+//                                                     style: TextStyle(
+//                                                       fontSize: 16.0,
+//                                                       fontWeight:
+//                                                           FontWeight.bold,
+//                                                     ),
+//                                                   ),
+//                                                   style:
+//                                                       ElevatedButton.styleFrom(
+//                                                     shape:
+//                                                         RoundedRectangleBorder(
+//                                                       borderRadius:
+//                                                           BorderRadius.circular(
+//                                                               10.0),
+//                                                     ),
+//                                                     primary: Colors.red,
+//                                                     padding:
+//                                                         EdgeInsets.symmetric(
+//                                                       vertical: 12.0,
+//                                                       horizontal: 24.0,
+//                                                     ),
+//                                                   ),
+//                                                 ),
+//                                               ],
+//                                             ),
+//                                           ),
+//                                         );
+//                                       },
+//                                     );
+//                                     return;
+//                                   }
+//                                   sendRequest(context);
+//                                 },
+//                                 style: ElevatedButton.styleFrom(
+//                                   primary: Colors.orange,
+//                                   onPrimary: Colors.white,
+//                                   shape: RoundedRectangleBorder(
+//                                     borderRadius: BorderRadius.circular(8),
+//                                   ),
+//                                 ),
+//                                 child: const Text(
+//                                   'Modifier',
+//                                   textAlign: TextAlign.center,
+//                                   style: TextStyle(
+//                                     fontSize: 16,
+//                                     fontWeight: FontWeight.bold,
+//                                   ),
+//                                 ),
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+
+//                         const SizedBox(
+//                           height: 20,
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                   const SizedBox(height: 35),

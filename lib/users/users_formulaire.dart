@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:projetbiblio/model/model.dart';
 import 'package:provider/provider.dart';
 import 'dart:math';
-
 import '../components/image_picker_component.dart';
 import '../roles.dart';
 import '../user_state.dart';
@@ -43,12 +42,28 @@ class _UserFormulaireState extends State<UserFormulaire> {
   }
 
   String _allowedChars =
-      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#\$%^&*(),.?":{}|<>';
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#\$%^&*(),.?\":{}|<>";
 
   String generateRandomPassword(int length) {
     final random = Random();
-    final passwordCharacters = List.generate(
-        length, (_) => _allowedChars[random.nextInt(_allowedChars.length)]);
+
+    // Choisissez au hasard au moins un chiffre, une lettre minuscule, une lettre majuscule et un caractère spécial
+    final requiredChars = [
+      _allowedChars[random.nextInt(26)], // Une lettre minuscule
+      _allowedChars[26 + random.nextInt(26)], // Une lettre majuscule
+      _allowedChars[52 + random.nextInt(10)], // Un chiffre
+      _allowedChars[62 + random.nextInt(22)] // Un caractère spécial
+    ];
+
+    // Générez les caractères restants aléatoirement
+    final remainingLength = length - requiredChars.length;
+    final remainingChars = List.generate(remainingLength,
+        (_) => _allowedChars[random.nextInt(_allowedChars.length)]);
+
+    // Mélangez les caractères requis et les caractères restants
+    final passwordCharacters = requiredChars + remainingChars;
+    passwordCharacters.shuffle();
+
     return passwordCharacters.join();
   }
 
@@ -248,8 +263,8 @@ class _UserFormulaireState extends State<UserFormulaire> {
     }
 
     var form = Container(
+      height: 605,
       color: Colors.white,
-      height: 700,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -310,7 +325,7 @@ class _UserFormulaireState extends State<UserFormulaire> {
                   ),
               ],
             ),
-            const SizedBox(height: 35),
+            const SizedBox(height: 30),
             Row(
               children: [
                 Expanded(
@@ -590,28 +605,6 @@ class _UserFormulaireState extends State<UserFormulaire> {
                               ],
                             ),
                           ),
-                        );
-                      },
-                    );
-                    return;
-                  }
-
-                  if (!checkFields()) {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Erreur'),
-                          content: Text(
-                              'Veuillez remplir tous les champs obligatoires.'),
-                          actions: <Widget>[
-                            TextButton(
-                              child: Text('OK'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
                         );
                       },
                     );

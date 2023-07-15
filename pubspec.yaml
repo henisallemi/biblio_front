@@ -30,20 +30,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.18.0         
+  intl: ^0.18.0
   flutter_localizations:
     sdk: flutter
   image_picker: ^0.8.2
-  bcrypt: 
-   
-
-  
   http: ^0.13.4
   provider: ^6.0.1
-  percent_indicator: ^3.0.1 
+  percent_indicator: ^3.0.1
   google_maps_flutter: ^2.0.10
-
-
+  crypto: ^3.0.1
+  
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
