@@ -169,6 +169,7 @@ class _CheckRevueState extends State<CheckRevue> {
           );
         },
       );
+      return;
     }
 
     var url = Uri.parse('http://localhost:4000/api/ouvrages/emprunt');

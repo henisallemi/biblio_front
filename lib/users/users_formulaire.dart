@@ -1,24 +1,27 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:projetbiblio/components/image_picker_component.dart';
 import 'package:projetbiblio/model/model.dart';
-import 'package:projetbiblio/roles.dart';
 import 'package:provider/provider.dart';
 import 'dart:math';
 
+import '../components/image_picker_component.dart';
+import '../roles.dart';
 import '../user_state.dart';
 
-// ignore: must_be_immutable
 class UserFormulaire extends StatefulWidget {
   User? user;
   int role = Roles.adherant;
   Function afterSubmit;
-  UserFormulaire(
-      {super.key, this.user, required this.role, required this.afterSubmit});
+  UserFormulaire({
+    Key? key,
+    this.user,
+    required this.role,
+    required this.afterSubmit,
+  });
 
   @override
-  State<UserFormulaire> createState() => _UserFormulaireState();
+  _UserFormulaireState createState() => _UserFormulaireState();
 }
 
 class _UserFormulaireState extends State<UserFormulaire> {
@@ -39,11 +42,9 @@ class _UserFormulaireState extends State<UserFormulaire> {
         telephone.text.isNotEmpty;
   }
 
-  // Définition de l'ensemble de caractères autorisés pour le mot de passe
   String _allowedChars =
-      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#\$%^&*(),.?":{}|<>';
 
-// Génère un mot de passe aléatoire avec la longueur spécifiée
   String generateRandomPassword(int length) {
     final random = Random();
     final passwordCharacters = List.generate(
@@ -51,81 +52,17 @@ class _UserFormulaireState extends State<UserFormulaire> {
     return passwordCharacters.join();
   }
 
-// Fonction appelée lorsque le bouton est cliqué
   void generatePassword() {
-    final motDePasseAleatoire =
-        generateRandomPassword(8); // Génère un mot de passe de longueur 8
+    final motDePasseAleatoire = generateRandomPassword(8);
     motDePasse.text = motDePasseAleatoire;
   }
 
-  Future<void> sendRequest(bool updateMode, BuildContext context) async {
-    if (!checkFields()) {
-      // Show error message for missing mandatory fields
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Container(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Colors.red,
-                    size: 48.0,
-                  ),
-                  SizedBox(height: 16.0),
-                  Text(
-                    'Erreur',
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 16.0),
-                  Text(
-                    'Veuillez remplir tous les champs obligatoires.',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 16.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'OK',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      primary: Colors.red,
-                      padding: EdgeInsets.symmetric(
-                        vertical: 12.0,
-                        horizontal: 24.0,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
-      return;
-    }
+  bool isEmailValid(String email) {
+    final regex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$');
+    return regex.hasMatch(email);
+  }
 
+  Future<void> sendRequest(bool updateMode, BuildContext context) async {
     try {
       var url = updateMode
           ? Uri.parse('http://localhost:4000/api/users/${widget.user?.id}')
@@ -141,9 +78,12 @@ class _UserFormulaireState extends State<UserFormulaire> {
         'motDePasse': motDePasse.text.trim(),
         'role': widget.user?.role.toString() ?? widget.role.toString(),
       });
-      if (!updateMode) {
-        formData.files
-            .add(await http.MultipartFile.fromPath('image', image.text.trim()));
+
+      if (image.text.trim().isNotEmpty) {
+        formData.files.add(await http.MultipartFile.fromPath(
+          'image',
+          image.text.trim(),
+        ));
       }
 
       var response = await formData.send();
@@ -191,12 +131,110 @@ class _UserFormulaireState extends State<UserFormulaire> {
     }
   }
 
+  Future<bool> showConfirmationDialog(BuildContext context, String role) async {
+    bool? result = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Container(
+            width: 500,
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.warning,
+                  color: Colors.red,
+                  size: 48.0,
+                ),
+                SizedBox(height: 16.0),
+                Text(
+                  "Confirmation",
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                Text(
+                  "Voulez-vous ajouter ce $role sans inclure d'image ?",
+                  style: TextStyle(
+                    fontSize: 16.0,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      child: Text(
+                        "Oui",
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context, true);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        primary: Colors.green,
+                        padding: EdgeInsets.symmetric(
+                          vertical: 12.0,
+                          horizontal: 24.0,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16.0),
+                    ElevatedButton(
+                      child: Text(
+                        "Non",
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context, false);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        primary: Colors.red,
+                        padding: EdgeInsets.symmetric(
+                          vertical: 12.0,
+                          horizontal: 24.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    return result ?? false; // Si result est null, retourne false par défaut
+  }
+
   @override
   Widget build(BuildContext context) {
     var isUpdateMode = widget.user != null;
+
     final userState = Provider.of<UserState>(context);
+
     void closeForm() {
-      Navigator.pop(context); // Revenir en arrière
+      Navigator.pop(context);
     }
 
     if (isUpdateMode) {
@@ -211,6 +249,7 @@ class _UserFormulaireState extends State<UserFormulaire> {
 
     var form = Container(
       color: Colors.white,
+      height: 700,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -221,14 +260,13 @@ class _UserFormulaireState extends State<UserFormulaire> {
                 SizedBox(width: 10),
                 Text(
                   isUpdateMode
-                      ? 'Modofier ${widget.role == Roles.adherant ? "Adhérent" : "Admin"}'
+                      ? 'Modifier ${widget.role == Roles.adherant ? "Adhérent" : "Admin"}'
                       : 'Ajouter ${widget.role == Roles.adherant ? "Adhérent" : "Admin"}',
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    fontFamily:
-                        'Roboto', // Remplacez 'Roboto' par la police souhaitée
+                    fontFamily: 'Roboto',
                   ),
                 ),
                 const Text(
@@ -237,13 +275,11 @@ class _UserFormulaireState extends State<UserFormulaire> {
                     color: Colors.red,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    fontFamily:
-                        'Roboto', // Remplacez 'Roboto' par la police souhaitée
+                    fontFamily: 'Roboto',
                   ),
                 ),
                 Spacer(),
                 Visibility(
-                  // Afficher l'icône uniquement si isUpdateMode est true
                   child: IconButton(
                     icon: Icon(Icons.close),
                     iconSize: 32,
@@ -261,13 +297,20 @@ class _UserFormulaireState extends State<UserFormulaire> {
                 const SizedBox(
                   width: 530,
                 ),
-                ImagePickerComponent(
-                  controller: image,
-                  imagePath: widget.user?.imagePath ?? null,
-                ),
+                if (isUpdateMode)
+                  Image.network(
+                    widget.user?.imagePath ?? '',
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                  ),
+                if (!isUpdateMode)
+                  ImagePickerComponent(
+                    controller: image,
+                  ),
               ],
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 35),
             Row(
               children: [
                 Expanded(
@@ -278,22 +321,14 @@ class _UserFormulaireState extends State<UserFormulaire> {
                       LengthLimitingTextInputFormatter(8),
                     ],
                     keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value?.length != 8) {
-                        return 'Please enter exactly 8 digits';
-                      }
-                      return null; // Return null if the input is valid
-                    },
                     decoration: InputDecoration(
                       labelText: 'CIN',
                       border: OutlineInputBorder(),
-                      suffixIcon: RichText(
-                        text: TextSpan(
-                          text: '*',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 23,
-                          ),
+                      suffixIcon: const Text(
+                        '*',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 23,
                         ),
                       ),
                     ),
@@ -306,13 +341,11 @@ class _UserFormulaireState extends State<UserFormulaire> {
                     decoration: InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(),
-                      suffixIcon: RichText(
-                        text: TextSpan(
-                          text: '*', // Caractère "*" à mettre en rouge
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 23, // Couleur rouge pour le "*"
-                          ),
+                      suffixIcon: const Text(
+                        '*',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 23,
                         ),
                       ),
                     ),
@@ -327,15 +360,13 @@ class _UserFormulaireState extends State<UserFormulaire> {
                   child: TextFormField(
                     controller: nom,
                     decoration: InputDecoration(
-                      labelText: 'Nom ',
+                      labelText: 'Nom',
                       border: OutlineInputBorder(),
-                      suffixIcon: RichText(
-                        text: TextSpan(
-                          text: '*', // Caractère "*" à mettre en rouge
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 23, // Couleur rouge pour le "*"
-                          ),
+                      suffixIcon: const Text(
+                        '*',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 23,
                         ),
                       ),
                     ),
@@ -344,7 +375,7 @@ class _UserFormulaireState extends State<UserFormulaire> {
                 SizedBox(width: 10),
                 Expanded(
                   child: Container(
-                    height: 50, // Ajustez la hauteur selon vos besoins
+                    height: 50,
                     child: TextFormField(
                       controller: telephone,
                       inputFormatters: [
@@ -352,15 +383,13 @@ class _UserFormulaireState extends State<UserFormulaire> {
                       ],
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: 'Téléphone ',
+                        labelText: 'Téléphone',
                         border: OutlineInputBorder(),
-                        suffixIcon: RichText(
-                          text: TextSpan(
-                            text: '*', // Caractère "*" à mettre en rouge
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontSize: 23, // Couleur rouge pour le "*"
-                            ),
+                        suffixIcon: const Text(
+                          '*',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 23,
                           ),
                         ),
                       ),
@@ -376,90 +405,528 @@ class _UserFormulaireState extends State<UserFormulaire> {
                   child: TextFormField(
                     controller: prenom,
                     decoration: InputDecoration(
-                      labelText: 'Prénom ',
+                      labelText: 'Prénom',
                       border: OutlineInputBorder(),
-                      suffixIcon: RichText(
-                        text: TextSpan(
-                          text: '*', // Caractère "*" à mettre en rouge
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 23, // Couleur rouge pour le "*"
-                          ),
+                      suffixIcon: const Text(
+                        '*',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 23,
                         ),
                       ),
                     ),
                   ),
                 ),
                 SizedBox(width: 10),
-                ...(widget.user == null
-                    ? [
+                if (!isUpdateMode)
+                  Expanded(
+                    child: Row(
+                      children: [
                         Expanded(
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextFormField(
-                                  controller: motDePasse,
-                                  decoration: InputDecoration(
-                                    labelText: 'Mot de passe',
-                                    border: OutlineInputBorder(),
-                                    suffixIcon: RichText(
-                                      text: TextSpan(
-                                        text:
-                                            '*', // Caractère "*" à mettre en rouge
-                                        style: TextStyle(
-                                          color: Colors.red,
-                                          fontSize:
-                                              23, // Couleur rouge pour le "*"
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                          child: TextFormField(
+                            controller: motDePasse,
+                            decoration: InputDecoration(
+                              labelText: 'Mot de passe',
+                              border: OutlineInputBorder(),
+                              suffixIcon: const Text(
+                                '*',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 23,
                                 ),
                               ),
-                              const SizedBox(
-                                  width:
-                                      10), // Espacement entre le champ de texte et le bouton
-                              Container(
-                                height: 52, // Hauteur du bouton
-                                child: ElevatedButton.icon(
-                                  onPressed: generatePassword,
-                                  icon: Icon(Icons
-                                      .lock), // Icône du cadenas représentant un mot de passe
-                                  label: Text(
-                                    'Générer un mot de passe',
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Container(
+                          height: 52,
+                          child: ElevatedButton.icon(
+                            onPressed: generatePassword,
+                            icon: Icon(Icons.lock),
+                            label: Text(
+                              'Générer un mot de passe',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.green,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+            SizedBox(height: 35),
+            Center(
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  if (!checkFields()) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red,
+                                  size: 48.0,
+                                ),
+                                SizedBox(height: 16.0),
+                                Text(
+                                  'Erreur',
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 16.0),
+                                Text(
+                                  'Veuillez remplir tous les champs obligatoires.',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 16.0),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    'OK',
                                     style: TextStyle(
-                                      fontWeight: FontWeight
-                                          .bold, // Style en gras (bold)
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors
-                                        .green, // Couleur verte pour le bouton
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    primary: Colors.red,
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 12.0,
+                                      horizontal: 24.0,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ]
-                    : [])
-              ],
-            ),
-            SizedBox(
-              height: 35,
-            ),
-            Center(
-              child: ElevatedButton.icon(
-                onPressed: () {
+                        );
+                      },
+                    );
+                    return;
+                  }
+
+                  if (cin.text.length != 8) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red,
+                                  size: 48.0,
+                                ),
+                                SizedBox(height: 16.0),
+                                Text(
+                                  'Erreur',
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 16.0),
+                                Text(
+                                  'Le CIN doit être composé de 8 chiffres.',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 16.0),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    'OK',
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    primary: Colors.red,
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 12.0,
+                                      horizontal: 24.0,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                    return;
+                  }
+
+                  if (!checkFields()) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Erreur'),
+                          content: Text(
+                              'Veuillez remplir tous les champs obligatoires.'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('OK'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                    return;
+                  }
+
+                  if (nom.text.length < 2 || prenom.text.length < 2) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red,
+                                  size: 48.0,
+                                ),
+                                SizedBox(height: 16.0),
+                                Text(
+                                  'Erreur',
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 16.0),
+                                Text(
+                                  'Le nom et le prénom doivent contenir au moins 2 caractères.',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 16.0),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    'OK',
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    primary: Colors.red,
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 12.0,
+                                      horizontal: 24.0,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                    return;
+                  }
+                  if (!isEmailValid(email.text.trim())) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red,
+                                  size: 48.0,
+                                ),
+                                SizedBox(height: 16.0),
+                                Text(
+                                  'Erreur',
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 16.0),
+                                Text(
+                                  'Veuillez entrer un email valide.',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 16.0),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    'OK',
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    primary: Colors.red,
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 12.0,
+                                      horizontal: 24.0,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                    return;
+                  }
+
+                  if (telephone.text.length < 8) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red,
+                                  size: 48.0,
+                                ),
+                                SizedBox(height: 16.0),
+                                Text(
+                                  'Erreur',
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 16.0),
+                                Text(
+                                  "Le numéro de téléphone n'est pas valide.",
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 16.0),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    'OK',
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    primary: Colors.red,
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 12.0,
+                                      horizontal: 24.0,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                    return;
+                  }
+
+                  if (motDePasse.text.length < 8 ||
+                      !RegExp(r'[A-Z]').hasMatch(motDePasse.text) ||
+                      !RegExp(r'[a-z]').hasMatch(motDePasse.text) ||
+                      !RegExp(r'[0-9]').hasMatch(motDePasse.text) ||
+                      !RegExp(r'[!@#$%^&*(),.?":{}|<>]')
+                          .hasMatch(motDePasse.text)) {
+                    String errorMessage =
+                        'Le mot de passe doit respecter les critères suivants :\n\n';
+                    if (motDePasse.text.length < 8) {
+                      errorMessage += '- Au moins 8 caractères\n';
+                    }
+                    if (!RegExp(r'[A-Z]').hasMatch(motDePasse.text)) {
+                      errorMessage += '- Au moins une lettre majuscule\n';
+                    }
+                    if (!RegExp(r'[a-z]').hasMatch(motDePasse.text)) {
+                      errorMessage += '- Au moins une lettre minuscule\n';
+                    }
+                    if (!RegExp(r'[0-9]').hasMatch(motDePasse.text)) {
+                      errorMessage += '- Au moins un chiffre\n';
+                    }
+                    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]')
+                        .hasMatch(motDePasse.text)) {
+                      errorMessage +=
+                          '- Au moins un caractère spécial (comme !@#\$%^&*(),.?":{}|<>)\n';
+                    }
+
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red,
+                                  size: 48.0,
+                                ),
+                                SizedBox(height: 16.0),
+                                Text(
+                                  'Erreur',
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 16.0),
+                                Text(
+                                  errorMessage,
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 16.0),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    'OK',
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    primary: Colors.red,
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 12.0,
+                                      horizontal: 24.0,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                    return;
+                  }
+
+                  if (image.text.isEmpty) {
+                    String roleText =
+                        widget.role == Roles.adherant ? "adhérent" : "admin";
+                    bool proceed =
+                        await showConfirmationDialog(context, roleText);
+                    if (proceed == null) {
+                      return; // La boîte de dialogue a été fermée sans réponse
+                    } else if (proceed) {
+                      image.text = ''; // Effacer le champ de l'image
+                    } else {
+                      return; // Annuler l'action
+                    }
+                  }
                   sendRequest(isUpdateMode, context);
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-
                   padding: EdgeInsets.all(16),
-                  primary: Colors.green, // Changer la couleur en vert
+                  primary: Colors.green,
                 ),
                 icon: Icon(Icons.add),
                 label: Text(
