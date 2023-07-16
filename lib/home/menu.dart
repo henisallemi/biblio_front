@@ -179,11 +179,41 @@ class _MenuState extends State<Menu> {
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Déconnecter'),
-            onTap: () async {
-              await userState.logout();
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const FormScreen()),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Déconnexion'),
+                    content: Row(
+                      children: const [
+                        Text('Voulez-vous vous déconnecter de votre compte ?'),
+                      ],
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Annuler'),
+                        onPressed: () {
+                          Navigator.of(context)
+                              .pop(); // Fermer la boîte de dialogue
+                        },
+                      ),
+                      TextButton(
+                        child: const Text('Se déconnecter'),
+                        onPressed: () {
+                          userState
+                              .logout(); // Effectuer l'opération de déconnexion
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const FormScreen()),
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
               );
             },
           ),

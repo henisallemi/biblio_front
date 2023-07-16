@@ -26,12 +26,14 @@ class _ParametreState extends State<Parametre> {
   TextEditingController telephone = TextEditingController();
   TextEditingController image = TextEditingController();
   TextEditingController motDePasse = TextEditingController();
+  TextEditingController ecrireMotDePasse = TextEditingController();
   TextEditingController nouveauMotDePasse = TextEditingController();
   TextEditingController confirmerMotDePasse = TextEditingController();
-  TextEditingController ecrireMotDePasse = TextEditingController();
 
   bool imageChanged = false;
-
+  bool isMotDePasseVisible1 = false;
+  bool isMotDePasseVisible2 = false;
+  bool isMotDePasseVisible3 = false;
   bool checkFields() {
     return cin.text.isNotEmpty &&
         nom.text.isNotEmpty &&
@@ -232,7 +234,7 @@ class _ParametreState extends State<Parametre> {
                                   width: 300,
                                   child: TextField(
                                     controller: ecrireMotDePasse,
-                                    decoration: const InputDecoration(
+                                    decoration: InputDecoration(
                                       hintText: "Entrez votre mot de passe",
                                       border: OutlineInputBorder(
                                         borderSide: BorderSide(
@@ -247,13 +249,26 @@ class _ParametreState extends State<Parametre> {
                                       ),
                                       filled: true,
                                       fillColor: Colors.white,
+                                      suffixIcon: InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            isMotDePasseVisible1 =
+                                                !isMotDePasseVisible1;
+                                          });
+                                        },
+                                        child: Icon(
+                                          isMotDePasseVisible1
+                                              ? Icons.visibility_off
+                                              : Icons.visibility,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
                                     ),
                                     style: const TextStyle(
                                       fontSize: 16.0,
                                       color: Colors.black,
                                     ),
-                                    obscureText:
-                                        true, // Hide the entered password
+                                    obscureText: !isMotDePasseVisible1,
                                   ),
                                 ),
                               ],
@@ -281,7 +296,7 @@ class _ParametreState extends State<Parametre> {
                                   width: 300,
                                   child: TextField(
                                     controller: nouveauMotDePasse,
-                                    decoration: const InputDecoration(
+                                    decoration: InputDecoration(
                                       hintText: "Entrez votre mot de passe",
                                       border: OutlineInputBorder(
                                         borderSide: BorderSide(
@@ -296,13 +311,26 @@ class _ParametreState extends State<Parametre> {
                                       ),
                                       filled: true,
                                       fillColor: Colors.white,
+                                      suffixIcon: InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            isMotDePasseVisible2 =
+                                                !isMotDePasseVisible2;
+                                          });
+                                        },
+                                        child: Icon(
+                                          isMotDePasseVisible2
+                                              ? Icons.visibility_off
+                                              : Icons.visibility,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
                                     ),
                                     style: const TextStyle(
                                       fontSize: 16.0,
                                       color: Colors.black,
                                     ),
-                                    obscureText:
-                                        true, // Hide the entered password
+                                    obscureText: !isMotDePasseVisible2,
                                   ),
                                 ),
                               ],
@@ -330,7 +358,7 @@ class _ParametreState extends State<Parametre> {
                                   width: 300,
                                   child: TextField(
                                     controller: confirmerMotDePasse,
-                                    decoration: const InputDecoration(
+                                    decoration: InputDecoration(
                                       hintText: "Confirmer votre mot de passe",
                                       border: OutlineInputBorder(
                                         borderSide: BorderSide(
@@ -345,13 +373,26 @@ class _ParametreState extends State<Parametre> {
                                       ),
                                       filled: true,
                                       fillColor: Colors.white,
+                                      suffixIcon: InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            isMotDePasseVisible3 =
+                                                !isMotDePasseVisible3;
+                                          });
+                                        },
+                                        child: Icon(
+                                          isMotDePasseVisible3
+                                              ? Icons.visibility_off
+                                              : Icons.visibility,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
                                     ),
                                     style: const TextStyle(
                                       fontSize: 16.0,
                                       color: Colors.black,
                                     ),
-                                    obscureText:
-                                        true, // Hide the entered password
+                                    obscureText: !isMotDePasseVisible3,
                                   ),
                                 ),
                                 const SizedBox(
@@ -370,10 +411,15 @@ class _ParametreState extends State<Parametre> {
                                 height: 55,
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    String hashedCurrentPassword =
-                                        await hashPassword(
-                                            ecrireMotDePasse.text);
-                                    if (hashedCurrentPassword !=
+                                    String hashedEcrireMotDePasse = sha256
+                                        .convert(
+                                            utf8.encode(ecrireMotDePasse.text))
+                                        .toString();
+                                    print(
+                                        'hashedEcrireMotDePasse: $hashedEcrireMotDePasse');
+                                    print(
+                                        'motDePasse.text: ${motDePasse.text}');
+                                    if (hashedEcrireMotDePasse !=
                                         motDePasse.text) {
                                       setState(() {
                                         isMotDePasseIncorrect = true;
@@ -417,6 +463,7 @@ class _ParametreState extends State<Parametre> {
                                           );
                                         },
                                       );
+                                      return;
                                     } else {
                                       sendRequest(context);
                                     }
@@ -461,38 +508,38 @@ class _ParametreState extends State<Parametre> {
                                       );
                                       return;
                                     }
-                                    if (motDePasse.text.length < 8 ||
+                                    if (nouveauMotDePasse.text.length < 8 ||
                                         !RegExp(r'[A-Z]')
-                                            .hasMatch(motDePasse.text) ||
+                                            .hasMatch(nouveauMotDePasse.text) ||
                                         !RegExp(r'[a-z]')
-                                            .hasMatch(motDePasse.text) ||
+                                            .hasMatch(nouveauMotDePasse.text) ||
                                         !RegExp(r'[0-9]')
-                                            .hasMatch(motDePasse.text) ||
+                                            .hasMatch(nouveauMotDePasse.text) ||
                                         !RegExp(r'[!@#$%^&*(),.?":{}|<>]')
-                                            .hasMatch(motDePasse.text)) {
+                                            .hasMatch(nouveauMotDePasse.text)) {
                                       String errorMessage =
                                           'Le mot de passe doit respecter les critères suivants :\n\n';
-                                      if (motDePasse.text.length < 8) {
+                                      if (nouveauMotDePasse.text.length < 8) {
                                         errorMessage +=
                                             '- Au moins 8 caractères\n';
                                       }
                                       if (!RegExp(r'[A-Z]')
-                                          .hasMatch(motDePasse.text)) {
+                                          .hasMatch(nouveauMotDePasse.text)) {
                                         errorMessage +=
                                             '- Au moins une lettre majuscule\n';
                                       }
                                       if (!RegExp(r'[a-z]')
-                                          .hasMatch(motDePasse.text)) {
+                                          .hasMatch(nouveauMotDePasse.text)) {
                                         errorMessage +=
                                             '- Au moins une lettre minuscule\n';
                                       }
                                       if (!RegExp(r'[0-9]')
-                                          .hasMatch(motDePasse.text)) {
+                                          .hasMatch(nouveauMotDePasse.text)) {
                                         errorMessage +=
                                             '- Au moins un chiffre\n';
                                       }
                                       if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]')
-                                          .hasMatch(motDePasse.text)) {
+                                          .hasMatch(nouveauMotDePasse.text)) {
                                         errorMessage +=
                                             '- Au moins un caractère spécial (comme !@#\$%^&*(),.?":{}|<>)\n';
                                       }
@@ -624,15 +671,6 @@ class _ParametreState extends State<Parametre> {
   }
 }
 
-// ...
-
-Future<String> hashPassword(String password) async {
-  final bytes = utf8.encode(password); // Convert password to bytes
-  final hashedBytes = sha256.convert(bytes); // Hash the bytes using SHA-256
-  final hashedPassword =
-      hashedBytes.toString(); // Convert the hashed bytes to a string
-  return hashedPassword;
-}
 
 
 
