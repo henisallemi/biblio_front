@@ -91,7 +91,66 @@ class _ListeRevuesState extends State<ListeRevues> {
       if (response.statusCode == 200) {
         await fetchRevues();
       } else {
-        print('Request failed with status: ${response.statusCode}');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              title: Text(
+                'Erreur ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                  color: Colors.red,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      style: DefaultTextStyle.of(context).style,
+                      children: [
+                        TextSpan(
+                          text: 'Titre de la revue :',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '"${revue.ouvrage.titre}"',
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text('Vous ne pouvez pas supprimer cette revue.'),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.grey[300],
+                    onPrimary: Colors.black,
+                  ),
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
       }
     } catch (e) {
       print('Error: $e');
@@ -523,77 +582,90 @@ class _ListeRevuesState extends State<ListeRevues> {
                                                                         (BuildContext
                                                                             context) {
                                                                       return AlertDialog(
+                                                                        shape:
+                                                                            RoundedRectangleBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(5.0),
+                                                                        ),
                                                                         title:
-                                                                            RichText(
-                                                                          text:
-                                                                              TextSpan(
-                                                                            style:
-                                                                                DefaultTextStyle.of(context).style,
-                                                                            children: [
-                                                                              const TextSpan(
-                                                                                text: 'Confirmation de suppression du livre ',
-                                                                                style: TextStyle(
-                                                                                  color: Colors.black,
-                                                                                  fontWeight: FontWeight.bold,
-                                                                                  fontSize: 18,
-                                                                                ),
-                                                                              ),
-                                                                              TextSpan(
-                                                                                text: '"${revue.ouvrage.titre}"',
-                                                                                style: const TextStyle(
-                                                                                  color: Colors.red,
-                                                                                  fontWeight: FontWeight.bold,
-                                                                                  fontSize: 20,
-                                                                                ),
-                                                                              ),
-                                                                              const TextSpan(
-                                                                                text: ' :',
-                                                                                style: TextStyle(
-                                                                                  color: Colors.black,
-                                                                                  fontWeight: FontWeight.bold,
-                                                                                  fontSize: 18,
-                                                                                ),
-                                                                              ),
-                                                                            ],
+                                                                            Text(
+                                                                          'Confirmation de suppression de la revue',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            fontSize:
+                                                                                18,
                                                                           ),
                                                                         ),
                                                                         content:
                                                                             Column(
-                                                                          crossAxisAlignment:
-                                                                              CrossAxisAlignment.start,
                                                                           mainAxisSize:
                                                                               MainAxisSize.min,
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
                                                                           children: [
-                                                                            Text('Êtes-vous sûr de vouloir supprimer la revue suivant ?'),
-                                                                            SizedBox(height: 16),
-                                                                            //Text('titre : ${livre.titre}'),
-                                                                            //Text('Auteur : ${livre.auteur}'),
+                                                                            RichText(
+                                                                              text: TextSpan(
+                                                                                style: DefaultTextStyle.of(context).style,
+                                                                                children: [
+                                                                                  TextSpan(
+                                                                                    text: 'Titre de la revue : ',
+                                                                                    style: TextStyle(
+                                                                                      fontWeight: FontWeight.bold,
+                                                                                      fontSize: 16,
+                                                                                    ),
+                                                                                  ),
+                                                                                  TextSpan(
+                                                                                    text: '"${revue.ouvrage.titre}"',
+                                                                                    style: const TextStyle(
+                                                                                      color: Colors.red,
+                                                                                      fontWeight: FontWeight.bold,
+                                                                                      fontSize: 18,
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                            const SizedBox(height: 20),
+                                                                            const Text('Êtes-vous sûr de vouloir supprimer cette revue ?'),
                                                                           ],
                                                                         ),
-                                                                        actions: <Widget>[
-                                                                          TextButton(
-                                                                            child:
-                                                                                Text('Annuler'),
+                                                                        actions: [
+                                                                          ElevatedButton(
                                                                             onPressed:
                                                                                 () {
                                                                               Navigator.of(context).pop();
                                                                             },
-                                                                          ),
-                                                                          TextButton(
+                                                                            style:
+                                                                                ElevatedButton.styleFrom(
+                                                                              primary: Colors.grey[300],
+                                                                              onPrimary: Colors.black,
+                                                                            ),
                                                                             child:
-                                                                                Text('Supprimer'),
+                                                                                const Text('Annuler'),
+                                                                          ),
+                                                                          ElevatedButton(
                                                                             onPressed:
                                                                                 () {
                                                                               deleteRequest(revue);
                                                                               Navigator.of(context).pop();
                                                                             },
+                                                                            style:
+                                                                                ElevatedButton.styleFrom(
+                                                                              primary: Colors.red,
+                                                                              onPrimary: Colors.white,
+                                                                            ),
+                                                                            child:
+                                                                                const Text('Supprimer'),
                                                                           ),
                                                                         ],
                                                                       );
                                                                     },
                                                                   );
                                                                 },
-                                                                icon: Icon(
+                                                                icon:
+                                                                    const Icon(
                                                                   Icons.delete,
                                                                   size: 32,
                                                                   color: Colors

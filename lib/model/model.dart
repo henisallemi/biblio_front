@@ -4,7 +4,7 @@ import 'package:projetbiblio/roles.dart';
 
 class User {
   int id;
-  String imagePath;
+  String? imagePath;
   String cin;
   String nom;
   String prenom;
@@ -32,7 +32,7 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'] as int,
-      imagePath: json['imagePath'] ?? "",
+      imagePath: json['imagePath'] ?? null,
       cin: json['cin'] ?? "",
       nom: json['nom'] ?? "",
       prenom: json['prenom'] ?? "",

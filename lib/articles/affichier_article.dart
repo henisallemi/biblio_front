@@ -196,7 +196,7 @@ class AffichierArticle extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "${article?.ouvrage.titre} ",
+                    '"${article?.ouvrage.titre}"',
                     style: const TextStyle(
                       color: Colors.red,
                       fontSize: 16,

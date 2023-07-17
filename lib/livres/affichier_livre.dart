@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:projetbiblio/model/model.dart';
 
 // ignore: must_be_immutable
@@ -124,7 +125,10 @@ class AffichierLivre extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "${livre?.ouvrage.date}",
+                    livre?.ouvrage.date != null
+                        ? DateFormat('yyyy-MM-dd')
+                            .format(livre?.ouvrage!.date as DateTime)
+                        : "",
                     style: const TextStyle(
                       color: Colors.red,
                       fontSize: 16,

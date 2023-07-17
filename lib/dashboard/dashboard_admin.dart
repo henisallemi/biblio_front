@@ -24,7 +24,8 @@ class StatisticData {
   StatisticData(this.category, this.percentage, this.color);
 }
 
-class _DashbordAdminState extends State<DashbordAdmin> {
+class _DashbordAdminState extends State<DashbordAdmin>
+    with SingleTickerProviderStateMixin {
   Stats? stats;
 
   int page = 1;
@@ -32,10 +33,14 @@ class _DashbordAdminState extends State<DashbordAdmin> {
   int totalCount = 0;
   bool isLoading = true;
   bool isDataLoaded = false;
+  bool isRefreshing = false;
+  AnimationController? animationController;
+  Timer? timer;
 
   Future<void> fetchDashbordAdmin() async {
     setState(() {
       isLoading = true;
+      isRefreshing = true;
     });
 
     print("fetching from api");
@@ -59,6 +64,7 @@ class _DashbordAdminState extends State<DashbordAdmin> {
     } finally {
       setState(() {
         isLoading = false;
+        isRefreshing = false;
       });
     }
   }
@@ -67,6 +73,26 @@ class _DashbordAdminState extends State<DashbordAdmin> {
   void initState() {
     super.initState();
     fetchDashbordAdmin();
+    animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 1000),
+    );
+  }
+
+  @override
+  void dispose() {
+    animationController?.dispose();
+    timer?.cancel();
+    super.dispose();
+  }
+
+  void startAnimation() {
+    animationController?.repeat();
+    timer = Timer(Duration(milliseconds: 1000), () {
+      setState(() {
+        animationController?.stop();
+      });
+    });
   }
 
   void nextPage() {
@@ -156,11 +182,22 @@ class _DashbordAdminState extends State<DashbordAdmin> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              IconButton(
-                                icon: Icon(Icons.refresh),
-                                onPressed: () {
+                              Spacer(),
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    startAnimation(); // Démarrer l'animation
+                                  });
                                   fetchDashbordAdmin();
                                 },
+                                child: RotationTransition(
+                                  turns: animationController!,
+                                  child: Icon(
+                                    Icons.refresh,
+                                    size: 30,
+                                    color: Colors.blue,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -260,9 +297,9 @@ class _DashbordAdminState extends State<DashbordAdmin> {
                                   DataTable(
                                     columnSpacing:
                                         140, // Espacement horizontal entre les colonnes si nécessaire
-                                    headingRowColor: MaterialStateColor
-                                        .resolveWith((states) => Colors
-                                            .red), // Couleur de la ligne d'en-tête
+                                    headingRowColor:
+                                        MaterialStateColor.resolveWith(
+                                            (states) => Colors.red),
                                     dataRowColor:
                                         MaterialStateColor.resolveWith(
                                             (states) => Colors.white),
@@ -408,7 +445,7 @@ class _DashbordAdminState extends State<DashbordAdmin> {
                               alignment: Alignment.center,
                               child: CircularProgressIndicator(),
                             ),
-                          const SizedBox(height: 30),
+                          // const SizedBox(height: 30),
                         ],
                       ),
                     ),

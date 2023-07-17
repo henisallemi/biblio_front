@@ -255,11 +255,10 @@ class AffichierRevue extends StatelessWidget {
                     Icons.circle,
                     color: Colors.green,
                   ),
-                  const SizedBox(
-                      width: 5), // Espacement entre l'icône et le texte
+                  const SizedBox(width: 5),
                   Text(
                     "${revue?.ouvrage.description}",
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
                       fontWeight: FontWeight.normal,

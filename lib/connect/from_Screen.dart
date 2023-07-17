@@ -126,7 +126,7 @@ class _FormScreenState extends State<FormScreen> {
             children: [
               Image.asset(
                 "images/avatar.jpg",
-                height: 150,
+                height: 220,
                 width: 200,
               ),
               const SizedBox(

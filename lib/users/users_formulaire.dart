@@ -312,17 +312,10 @@ class _UserFormulaireState extends State<UserFormulaire> {
                 const SizedBox(
                   width: 530,
                 ),
-                if (isUpdateMode)
-                  Image.network(
-                    widget.user?.imagePath ?? '',
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
-                  ),
-                if (!isUpdateMode)
-                  ImagePickerComponent(
-                    controller: image,
-                  ),
+                ImagePickerComponent(
+                  controller: image,
+                  imagePath: widget.user?.imagePath ?? null,
+                )
               ],
             ),
             const SizedBox(height: 30),

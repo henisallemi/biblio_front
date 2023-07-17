@@ -145,7 +145,7 @@ class _RetourRevueState extends State<RetourRevue> {
               ),
               SizedBox(width: 8.0),
               Text(
-                "L'article a été rendu avec succès",
+                'La revue a été rendu avec succès',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16.0,
@@ -229,14 +229,14 @@ class _RetourRevueState extends State<RetourRevue> {
                       children: [
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.undo,
                               size: 24,
                               color: Colors.black,
                             ),
                             const SizedBox(width: 5),
-                            const Text(
-                              "Rends la revue intitulée ",
+                            Text(
+                              "Rends la revue intitulée  ",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 16,
@@ -246,13 +246,13 @@ class _RetourRevueState extends State<RetourRevue> {
                             ),
                             Text(
                               '"${widget.revue?.ouvrage.titre}" ',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.red,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const Text(
+                            Text(
                               ":",
                               style: TextStyle(
                                 color: Colors.black,
@@ -261,9 +261,9 @@ class _RetourRevueState extends State<RetourRevue> {
                                 fontFamily: 'Roboto',
                               ),
                             ),
-                            const Spacer(),
+                            Spacer(),
                             IconButton(
-                              icon: const Icon(Icons.close),
+                              icon: Icon(Icons.close),
                               iconSize: 32,
                               color: Colors.blueGrey,
                               onPressed: () {
@@ -275,7 +275,7 @@ class _RetourRevueState extends State<RetourRevue> {
                         const SizedBox(height: 20),
                         Row(
                           children: [
-                            const Text(
+                            Text(
                               'Adhérent :',
                               style: TextStyle(
                                 color: Colors.black,
@@ -284,22 +284,21 @@ class _RetourRevueState extends State<RetourRevue> {
                                 fontFamily: 'Roboto',
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            SizedBox(width: 10),
                             Expanded(
                               child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
+                                padding: EdgeInsets.symmetric(horizontal: 10),
                                 decoration: BoxDecoration(
                                   border: Border.all(color: Colors.grey),
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: Row(
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.people_outline_sharp,
                                       color: Colors.grey,
                                     ),
-                                    const SizedBox(width: 10),
+                                    SizedBox(width: 10),
                                     Expanded(
                                       child: DropdownButton<String>(
                                         value: selectedAdherent,
@@ -309,7 +308,7 @@ class _RetourRevueState extends State<RetourRevue> {
                                           });
                                         },
                                         items: [
-                                          const DropdownMenuItem<String>(
+                                          DropdownMenuItem<String>(
                                             value: null,
                                             child: Text(
                                               'Sélectionnez un adhérent',
@@ -323,7 +322,7 @@ class _RetourRevueState extends State<RetourRevue> {
                                                 child: Row(
                                                   children: [
                                                     Text('CIN: ${user.cin},'),
-                                                    const SizedBox(width: 10),
+                                                    SizedBox(width: 10),
                                                     Text(
                                                         '${user.prenom} ${user.nom}'),
                                                   ],
@@ -339,7 +338,7 @@ class _RetourRevueState extends State<RetourRevue> {
                               ),
                             ),
                             const SizedBox(width: 20),
-                            const Text(
+                            Text(
                               'Date de retour de cette revue : ',
                               style: TextStyle(
                                 color: Colors.black,
@@ -387,7 +386,7 @@ class _RetourRevueState extends State<RetourRevue> {
                               onPrimary: Colors.white,
                               minimumSize: Size(120.0, 50.0),
                             ),
-                            child: const Text(
+                            child: Text(
                               'Rends cette revue',
                               style: TextStyle(
                                 fontSize: 16.0,

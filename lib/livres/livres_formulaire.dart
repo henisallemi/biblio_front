@@ -6,7 +6,6 @@ import 'package:projetbiblio/model/model.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 
-// ignore: must_be_immutable
 class LivreFormulaire extends StatefulWidget {
   Livre? livre;
   Function afterSubmit;
@@ -21,6 +20,7 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
   TextEditingController titre = TextEditingController();
   TextEditingController editeur = TextEditingController();
   TextEditingController nombreExemplaire = TextEditingController();
+  TextEditingController nombreDisponible = TextEditingController();
   TextEditingController annee = TextEditingController();
   TextEditingController date = TextEditingController();
   TextEditingController auteur1 = TextEditingController();
@@ -40,7 +40,6 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
 
   Future<void> sendRequest(bool updateMode, BuildContext context) async {
     if (!checkFields()) {
-      // Show error message for missing mandatory fields
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -105,7 +104,46 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
       );
       return;
     }
-
+    if (isbn.text.length < 13) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              'Erreur',
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+            ),
+            content: const Text(
+              'Le numéro ISBN doit avoir 13 chiffres.',
+              style: TextStyle(
+                fontSize: 16.0,
+                color: Colors.black,
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: const Text(
+                  'OK',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
     var headers = {'Content-Type': 'application/json'};
     var body = json.encode({
       'isbn': isbn.text.trim(),
@@ -113,6 +151,7 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
       'editeur': editeur.text.trim(),
       'annee': annee.text.trim(),
       'nombreExemplaire': nombreExemplaire.text.trim(),
+      'nombreDisponible': nombreDisponible.text.trim(),
       'date': date.text.trim(),
       "auteur1": auteur1.text.trim(),
       "auteur2": auteur2.text.trim(),
@@ -162,7 +201,6 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
         );
 
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
         Navigator.pop(context);
       } else {
         print('Request failed with status: ${response.statusCode}');
@@ -178,7 +216,7 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
     DateTime? selectedDate;
 
     void closeForm() {
-      Navigator.pop(context); // Revenir en arrière
+      Navigator.pop(context);
     }
 
     Future<void> _selectDate(BuildContext context) async {
@@ -194,7 +232,6 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
         setState(() {
           selectedDate = DateTime(picked.year, picked.month, picked.day);
 
-          // Utilisez le format 'yyyy-MM-dd' pour extraire la date sans les heures
           date.text = DateFormat('yyyy-MM-dd').format(selectedDate!);
         });
       }
@@ -213,6 +250,8 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
           : "";
       nombreExemplaire.text =
           widget.livre?.ouvrage.nombreExemplaire.toString() ?? "";
+      nombreDisponible.text =
+          widget.livre?.ouvrage.nombreDisponible.toString() ?? "";
       annee.text = widget.livre?.ouvrage.annee ?? "";
       editeur.text = widget.livre?.ouvrage.editeur ?? "";
       description.text = widget.livre?.ouvrage.description ?? "";
@@ -235,8 +274,7 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
                     color: Colors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    fontFamily:
-                        'Roboto', // Remplacez 'Roboto' par la police souhaitée
+                    fontFamily: 'Roboto',
                   ),
                 ),
                 const Text(
@@ -268,20 +306,18 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
                   child: TextFormField(
                     controller: isbn,
                     inputFormatters: [
-                      FilteringTextInputFormatter
-                          .digitsOnly, // Accepter uniquement des chiffres
+                      FilteringTextInputFormatter.digitsOnly,
                     ],
-                    keyboardType:
-                        TextInputType.number, // Utiliser le clavier numérique
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: 'ISBN',
                       border: OutlineInputBorder(),
                       suffixIcon: RichText(
                         text: TextSpan(
-                          text: '*', // Caractère "*" à mettre en rouge
+                          text: '*',
                           style: TextStyle(
                             color: Colors.red,
-                            fontSize: 23, // Couleur rouge pour le "*"
+                            fontSize: 23,
                           ),
                         ),
                       ),
@@ -297,10 +333,10 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
                       border: OutlineInputBorder(),
                       suffixIcon: RichText(
                         text: TextSpan(
-                          text: '*', // Caractère "*" à mettre en rouge
+                          text: '*',
                           style: TextStyle(
                             color: Colors.red,
-                            fontSize: 23, // Couleur rouge pour le "*"
+                            fontSize: 23,
                           ),
                         ),
                       ),
@@ -320,10 +356,10 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
                       border: OutlineInputBorder(),
                       suffixIcon: RichText(
                         text: TextSpan(
-                          text: '*', // Caractère "*" à mettre en rouge
+                          text: '*',
                           style: TextStyle(
                             color: Colors.red,
-                            fontSize: 23, // Couleur rouge pour le "*"
+                            fontSize: 23,
                           ),
                         ),
                       ),
@@ -353,10 +389,10 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
                       border: OutlineInputBorder(),
                       suffixIcon: RichText(
                         text: TextSpan(
-                          text: '*', // Caractère "*" à mettre en rouge
+                          text: '*',
                           style: TextStyle(
                             color: Colors.red,
-                            fontSize: 23, // Couleur rouge pour le "*"
+                            fontSize: 23,
                           ),
                         ),
                       ),
@@ -380,30 +416,27 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
               children: [
                 Expanded(
                   child: Container(
-                    height: 50, // Ajustez la hauteur selon vos besoins
+                    height: 50,
                     child: TextFormField(
                       controller: date,
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
                       ],
-                      readOnly: true, // Définissez le champ en lecture seule
-                      onTap: () => _selectDate(
-                          context), // Ouvrir le DatePickerDialog lorsqu'il est cliqué
+                      readOnly: true,
+                      onTap: () => _selectDate(context),
                       decoration: InputDecoration(
                         labelText: 'Date d\'édition *',
                         border: OutlineInputBorder(),
                         suffixIcon: RichText(
                           text: TextSpan(
-                            text: '*', // Caractère "*" à afficher en rouge
+                            text: '*',
                             style: TextStyle(
                               color: Colors.red,
-                              fontSize: 23, // Couleur rouge pour le "*"
+                              fontSize: 23,
                             ),
                           ),
                         ),
                       ),
-                      // Ajoutez un initialValue pour afficher la date au format 'yyyy-MM-dd'
-                      // Utilisez un formatage pour afficher la date sans les heures
                       initialValue: selectedDate != null
                           ? DateFormat('yyyy-MM-dd').format(selectedDate!)
                           : null,
@@ -427,7 +460,7 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
               children: [
                 Expanded(
                   child: Container(
-                    height: 50, // Ajustez la hauteur selon vos besoins
+                    height: 50,
                     child: TextFormField(
                       controller: nombreExemplaire,
                       inputFormatters: [
@@ -439,10 +472,10 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
                         border: OutlineInputBorder(),
                         suffixIcon: RichText(
                           text: TextSpan(
-                            text: '*', // Caractère "*" à mettre en rouge
+                            text: '*',
                             style: TextStyle(
                               color: Colors.red,
-                              fontSize: 23, // Couleur rouge pour le "*"
+                              fontSize: 23,
                             ),
                           ),
                         ),
@@ -450,7 +483,7 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
                 Expanded(
                   child: TextFormField(
                     controller: description,
@@ -474,9 +507,8 @@ class _LivreFormulaireState extends State<LivreFormulaire> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-
                   padding: EdgeInsets.all(16),
-                  primary: Colors.green, // Changer la couleur en vert
+                  primary: Colors.green,
                 ),
                 icon: Icon(Icons.add),
                 label: Text(

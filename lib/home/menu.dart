@@ -60,7 +60,7 @@ class _MenuState extends State<Menu> {
                 width: 500, // Modifier la largeur de l'image selon vos besoins
                 height: 500, // Modifier la hauteur de l'image selon vos besoins
                 child: Image.network(
-                  "http://localhost:4000/${userState.connectedUser != null ? userState.connectedUser!.imagePath.isNotEmpty ? userState.connectedUser!.imagePath : 'uploads/avatar.jpg' : ''}",
+                  "http://localhost:4000/${userState.connectedUser != null ? userState.connectedUser!.imagePath ?? 'uploads/avatar.jpg' : ''}",
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Image.asset(
