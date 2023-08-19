@@ -89,8 +89,38 @@ class _ListeLivresState extends State<ListeLivres> {
 
     try {
       var response = await http.delete(url);
+
       if (response.statusCode == 200) {
         await fetchLivres();
+
+        final snackBar = SnackBar(
+          content: Row(
+            children: [
+              Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+              SizedBox(width: 8.0),
+              const Text(
+                "Livre supprimé avec succès",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16.0,
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.red, // Couleur rouge
+          duration: Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.all(16.0),
+          padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(13.0),
+          ),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else {
         showDialog(
           context: context,

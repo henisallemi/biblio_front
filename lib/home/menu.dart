@@ -42,7 +42,7 @@ class _MenuState extends State<Menu> {
                     color: Colors.blue), // Ajouter une icône pour le nom
                 SizedBox(width: 8), // Espacement entre l'icône et le texte
                 Text(
-                  "${userState.connectedUser?.prenom ?? ""} ${userState.connectedUser?.nom ?? ""}",
+                  "${userState.connectedUser?.nom ?? ""} ${userState.connectedUser?.prenom ?? ""}",
                 ),
               ],
             ),

@@ -975,7 +975,7 @@ class _ParametreState extends State<Parametre> {
                             child: Row(
                               children: [
                                 const Text(
-                                  "  mot de passe ",
+                                  "  Ancien mot de passe ",
                                   style: TextStyle(
                                     fontSize: 18.0,
                                     fontWeight: FontWeight.bold,
@@ -983,7 +983,7 @@ class _ParametreState extends State<Parametre> {
                                   ),
                                 ),
                                 const SizedBox(
-                                  width: 95,
+                                  width: 32,
                                 ),
                                 Container(
                                   width: 300,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:projetbiblio/model/model.dart';
 
 // ignore: must_be_immutable
@@ -110,7 +111,10 @@ class AffichierArticle extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "${article?.ouvrage.date}",
+                    article?.ouvrage.date != null
+                        ? DateFormat('yyyy-MM-dd')
+                            .format(article?.ouvrage!.date as DateTime)
+                        : "",
                     style: const TextStyle(
                       color: Colors.red,
                       fontSize: 16,

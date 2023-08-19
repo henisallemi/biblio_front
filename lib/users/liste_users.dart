@@ -419,142 +419,137 @@ class _ListeUsersState extends State<ListeUsers> {
                                                       user.email.toString())),
                                                   DataCell(Text(user.telephone
                                                       .toString())),
-                                                  DataCell(Row(
-                                                    children: [
-                                                      ...(user.role ==
-                                                              Roles.adherant
-                                                          ? [
-                                                              IconButton(
-                                                                onPressed: () {
-                                                                  showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder:
-                                                                        (BuildContext
-                                                                            context) {
-                                                                      return FractionallySizedBox(
-                                                                        child:
-                                                                            Dialog(
-                                                                          child:
-                                                                              AffichierUser(
-                                                                            user:
-                                                                                user,
-                                                                            key:
-                                                                                widget.key,
-                                                                          ),
-                                                                        ),
-                                                                      );
-                                                                    },
+                                                  DataCell(
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        if (user.role ==
+                                                            Roles.adherant)
+                                                          IconButton(
+                                                            onPressed: () {
+                                                              showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (BuildContext
+                                                                        context) {
+                                                                  return FractionallySizedBox(
+                                                                    child:
+                                                                        Dialog(
+                                                                      child:
+                                                                          AfficherUser(
+                                                                        user:
+                                                                            user,
+                                                                        key: widget
+                                                                            .key,
+                                                                      ),
+                                                                    ),
                                                                   );
                                                                 },
-                                                                icon:
-                                                                    const Icon(
-                                                                  Icons
-                                                                      .visibility,
-                                                                  size: 32,
-                                                                  color: Colors
-                                                                      .green,
-                                                                ),
-                                                              )
-                                                            ]
-                                                          : []),
-                                                      IconButton(
-                                                        onPressed: () {
-                                                          showDialog(
-                                                            context: context,
-                                                            builder:
-                                                                (BuildContext
-                                                                    context) {
-                                                              return FractionallySizedBox(
-                                                                child: Dialog(
-                                                                  // Dialog content here
-                                                                  child:
-                                                                      Container(
+                                                              );
+                                                            },
+                                                            icon: const Icon(
+                                                              Icons.visibility,
+                                                              size: 32,
+                                                              color:
+                                                                  Colors.green,
+                                                            ),
+                                                          ),
+                                                        IconButton(
+                                                          onPressed: () {
+                                                            showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return FractionallySizedBox(
+                                                                  child: Dialog(
                                                                     child:
-                                                                        UserFormulaire(
-                                                                      role: user
-                                                                          .role,
-                                                                      user:
-                                                                          user,
-                                                                      afterSubmit:
-                                                                          fetchUsers,
+                                                                        Container(
+                                                                      child:
+                                                                          UserFormulaire(
+                                                                        role: user
+                                                                            .role,
+                                                                        user:
+                                                                            user,
+                                                                        afterSubmit:
+                                                                            fetchUsers,
+                                                                      ),
                                                                     ),
                                                                   ),
-                                                                ),
-                                                              );
-                                                            },
-                                                          );
-                                                        },
-                                                        icon: const Icon(
-                                                          Icons.edit,
-                                                          size:
-                                                              32, // Taille de l'icône
-                                                          color: Colors
-                                                              .blue, // Couleur de l'icône
+                                                                );
+                                                              },
+                                                            );
+                                                          },
+                                                          icon: const Icon(
+                                                            Icons.edit,
+                                                            size: 32,
+                                                            color: Colors.blue,
+                                                          ),
                                                         ),
-                                                      ),
-                                                      IconButton(
-                                                        onPressed: () {
-                                                          showDialog(
-                                                            context: context,
-                                                            builder:
-                                                                (BuildContext
-                                                                    context) {
-                                                              return AlertDialog(
-                                                                title: Text(
-                                                                    'Confirmation de suppression d"utilisateur ${user.nom} ${user.prenom}'),
-                                                                content:
-                                                                    const Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  mainAxisSize:
-                                                                      MainAxisSize
-                                                                          .min,
-                                                                  children: [
-                                                                    Text(
-                                                                        'Êtes-vous sûr de vouloir supprimer l"utilisateur suivant ?'),
-                                                                    SizedBox(
-                                                                        height:
-                                                                            16),
+                                                        IconButton(
+                                                          onPressed: () {
+                                                            showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return AlertDialog(
+                                                                  title: Text(
+                                                                      'Confirmation de suppression d"utilisateur ${user.nom} ${user.prenom}'),
+                                                                  content:
+                                                                      const Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    mainAxisSize:
+                                                                        MainAxisSize
+                                                                            .min,
+                                                                    children: [
+                                                                      Text(
+                                                                          'Êtes-vous sûr de vouloir supprimer l"utilisateur suivant ?'),
+                                                                      SizedBox(
+                                                                          height:
+                                                                              16),
+                                                                    ],
+                                                                  ),
+                                                                  actions: <Widget>[
+                                                                    TextButton(
+                                                                      child: const Text(
+                                                                          'Annuler'),
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                      },
+                                                                    ),
+                                                                    TextButton(
+                                                                      child: const Text(
+                                                                          'Supprimer'),
+                                                                      onPressed:
+                                                                          () {
+                                                                        deleteRequest(
+                                                                            user);
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                      },
+                                                                    ),
                                                                   ],
-                                                                ),
-                                                                actions: <Widget>[
-                                                                  TextButton(
-                                                                    child: const Text(
-                                                                        'Annuler'),
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop();
-                                                                    },
-                                                                  ),
-                                                                  TextButton(
-                                                                    child: const Text(
-                                                                        'Supprimer'),
-                                                                    onPressed:
-                                                                        () {
-                                                                      deleteRequest(
-                                                                          user);
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop();
-                                                                    },
-                                                                  ),
-                                                                ],
-                                                              );
-                                                            },
-                                                          );
-                                                        },
-                                                        icon: Icon(
-                                                          Icons.delete,
-                                                          size: 32,
-                                                          color: Colors.red,
+                                                                );
+                                                              },
+                                                            );
+                                                          },
+                                                          icon: Icon(
+                                                            Icons.delete,
+                                                            size: 32,
+                                                            color: Colors.red,
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  )),
+                                                      ],
+                                                    ),
+                                                  )
                                                 ],
                                               ))
                                           .toList(),

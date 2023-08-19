@@ -8,15 +8,15 @@ import 'package:projetbiblio/user_state.dart';
 import 'package:provider/provider.dart';
 import '../types.dart';
 
-class AffichierUser extends StatefulWidget {
+class AfficherUser extends StatefulWidget {
   User? user;
-  AffichierUser({Key? key, required this.user}) : super(key: key);
+  AfficherUser({Key? key, required this.user}) : super(key: key);
 
   @override
-  State<AffichierUser> createState() => _AffichierUserState();
+  State<AfficherUser> createState() => _AfficherUserState();
 }
 
-class _AffichierUserState extends State<AffichierUser> {
+class _AfficherUserState extends State<AfficherUser> {
   History? history;
   int page = 1;
   int limit = 15;
@@ -24,7 +24,7 @@ class _AffichierUserState extends State<AffichierUser> {
   bool isLoading = true;
   bool isDataLoaded = false;
 
-  Future<void> fetchAffichierUser() async {
+  Future<void> fetchAfficherUser() async {
     setState(() {
       isLoading = true;
     });
@@ -56,14 +56,14 @@ class _AffichierUserState extends State<AffichierUser> {
   @override
   void initState() {
     super.initState();
-    fetchAffichierUser();
+    fetchAfficherUser();
   }
 
   void nextPage() {
     setState(() {
       if (page < (totalCount / limit).ceil()) {
         page++;
-        fetchAffichierUser();
+        fetchAfficherUser();
       }
     });
   }
@@ -72,7 +72,7 @@ class _AffichierUserState extends State<AffichierUser> {
     setState(() {
       if (page > 1) {
         page--;
-        fetchAffichierUser();
+        fetchAfficherUser();
       }
     });
   }
@@ -106,7 +106,7 @@ class _AffichierUserState extends State<AffichierUser> {
                   const Icon(Icons.history),
                   const SizedBox(width: 5),
                   const Text(
-                    'Historique des empruntes',
+                    'Historique des emprunts',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -114,16 +114,13 @@ class _AffichierUserState extends State<AffichierUser> {
                     ),
                   ),
                   const SizedBox(
-                      width:
-                          260), // Ajout d'un espacement avant la partie de recherche
-                  // Icône de recherche
-
+                    width: 260,
+                  ),
                   Container(
                     width: 320,
                     child: const TextField(
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons
-                            .search), // Icône de recherche à gauche du champ
+                        prefixIcon: Icon(Icons.search),
                         hintText: 'Titre de document',
                         border: OutlineInputBorder(),
                       ),
@@ -137,8 +134,7 @@ class _AffichierUserState extends State<AffichierUser> {
                       onPressed: () {},
                       child: Text('Chercher'),
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                            Colors.red), // Couleur personnalisée
+                        backgroundColor: MaterialStateProperty.all(Colors.red),
                       ),
                     ),
                   ),
@@ -180,14 +176,29 @@ class _AffichierUserState extends State<AffichierUser> {
                                 height: 28,
                               ),
                               DataTable(
-                                columnSpacing:
-                                    140, // Espacement horizontal entre les colonnes si nécessaire
+                                columnSpacing: 140,
                                 headingRowColor: MaterialStateColor.resolveWith(
-                                    (states) => Colors
-                                        .red), // Couleur de la ligne d'en-tête
-                                dataRowColor: MaterialStateColor.resolveWith(
-                                    (states) => Colors.white),
+                                    (states) => Colors.red),
+                                dataRowColor:
+                                    MaterialStateColor.resolveWith((states) {
+                                  if (states.contains(MaterialState.selected)) {
+                                    return Colors.blue;
+                                  }
 
+                                  final index = states
+                                      .toList()
+                                      .indexOf(MaterialState.disabled);
+                                  if (index >= 0 &&
+                                      index < history!.items.length) {
+                                    final isReturned = history!
+                                        .items[index].emprunt.isReturned;
+                                    return isReturned
+                                        ? Colors.green
+                                        : Colors.red;
+                                  }
+
+                                  return Colors.white;
+                                }),
                                 columns: const [
                                   DataColumn(
                                     label: SizedBox(
@@ -195,8 +206,9 @@ class _AffichierUserState extends State<AffichierUser> {
                                       child: Text(
                                         'Titre',
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white),
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -206,75 +218,122 @@ class _AffichierUserState extends State<AffichierUser> {
                                       child: Text(
                                         'Éditeur',
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white),
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                   ),
                                   DataColumn(
                                     label: SizedBox(
-                                      width:
-                                          180, // Largeur de la deuxième colonne (Titre)
+                                      width: 180,
                                       child: Text(
                                         'Type de document',
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white),
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                   ),
                                   DataColumn(
                                     label: SizedBox(
-                                      width:
-                                          150, // Largeur de la troisième colonne (Auteur)
+                                      width: 150,
                                       child: Text(
-                                        "Date d'emprunte",
+                                        "Date d'emprunt",
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white),
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                   ),
                                   DataColumn(
                                     label: SizedBox(
-                                      width:
-                                          110, // Largeur de la quatrième colonne (Année)
+                                      width: 110,
                                       child: Text(
                                         'Date retour',
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white),
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ],
-                                rows: history!.items
-                                    .map((item) => DataRow(
-                                          cells: [
-                                            DataCell(Text(item.ouvrage.titre)),
-                                            DataCell(
-                                                Text(item.ouvrage.editeur)),
-                                            DataCell(
-                                                Text(item.type == Types.livre
-                                                    ? "Livre"
-                                                    : item.type == Types.article
-                                                        ? "Article"
-                                                        : "Revue")),
-                                            DataCell(Text(DateFormat(
-                                                    'yyyy-MM-dd')
-                                                .format(
-                                                    item.emprunt.dateEmprunt!)
-                                                .toString())),
-                                            DataCell(Text(
-                                                DateFormat('yyyy-MM-dd')
-                                                    .format(item.emprunt
-                                                            .returnedAt ??
-                                                        item.emprunt
-                                                            .dateDeRetour!)
-                                                    .toString())),
-                                          ],
-                                        ))
-                                    .toList(),
+                                rows:
+                                    history!.items.asMap().entries.map((entry) {
+                                  final index = entry.key;
+                                  final item = entry.value;
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(
+                                        Text(
+                                          item.ouvrage.titre,
+                                          style: TextStyle(
+                                            color: item.emprunt.isReturned
+                                                ? Colors.green
+                                                : Colors.red,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          item.ouvrage.editeur,
+                                          style: TextStyle(
+                                            color: item.emprunt.isReturned
+                                                ? Colors.green
+                                                : Colors.red,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          item.type == Types.livre
+                                              ? "Livre"
+                                              : item.type == Types.article
+                                                  ? "Article"
+                                                  : "Revue",
+                                          style: TextStyle(
+                                            color: item.emprunt.isReturned
+                                                ? Colors.green
+                                                : Colors.red,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          DateFormat('yyyy-MM-dd')
+                                              .format(item.emprunt.dateEmprunt!)
+                                              .toString(),
+                                          style: TextStyle(
+                                            color: item.emprunt.isReturned
+                                                ? Colors.green
+                                                : Colors.red,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          DateFormat('yyyy-MM-dd')
+                                              .format(item.emprunt.returnedAt ??
+                                                  item.emprunt.dateDeRetour!)
+                                              .toString(),
+                                          style: TextStyle(
+                                            color: item.emprunt.isReturned
+                                                ? Colors.green
+                                                : Colors.red,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
                               ),
                               const SizedBox(
                                 height: 15,
